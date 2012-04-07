@@ -40,26 +40,35 @@ public class ParametricPlotter {
 	}
 	
 	public Shape3D getPlot() {
-		int length = (int) ((tMax - tMin) / stepsize);
-		LineArray la = new LineArray(length, LineArray.COORDINATES);
+		int length = (int) Math.ceil((tMax - tMin) / stepsize) + 1;
+		LineArray la = new LineArray(2 * (length - 1), LineArray.COORDINATES);
 		
 		float t = tMin;
+
+		
+		Point3f[] points = new Point3f[length + 1];
 		for (int i = 0; i < length; i++) {
 			jep.addVariable("t", t);
-			
+			System.out.println(t);
+
 			try {
 				double xValue = (Double) jep.evaluate(xNode);
 				double yValue = (Double) jep.evaluate(yNode);
 				double zValue = (Double) jep.evaluate(zNode);
-				la.setCoordinate(i, new Point3f((float) xValue, (float) yValue, (float) zValue));
-				
+				points[i] = new Point3f((float) xValue, (float) yValue, (float) zValue);
+
 			} catch (ParseException e) {
 				// Does not happen
 			}
 			t += stepsize;
-			
 		}
 		
+		int vertice = 0;
+		
+		for (int i = 0; i < length - 1; i++) {
+			la.setCoordinate(vertice++, points[i]);
+			la.setCoordinate(vertice++, points[i+1]);
+		}
 		
 		return new Shape3D(la);
 	}

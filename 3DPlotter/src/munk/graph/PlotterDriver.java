@@ -25,7 +25,9 @@ public class PlotterDriver {
 //        p.plotFunction(-i, i, -i, i, "x = z", Colors.BLUE);
 //        p.plotFunction(-i, i, -i, i, "y = x", Colors.TURQUISE);
 //        p.plotFunction(-i, i, -i, i, "y = cos(z)*cos(x)", Colors.INDIGO);
-		p.plotParametricFunction("0.5*cos(t)", "0.5*sin(t)", "1", 0, (float) (2*Math.PI));
+//		p.plotParametricFunction("0.5*cos(t)", "0.5*sin(t)", "1", 0, (float) (2*Math.PI));
+//		p.plotParametricFunction("0.5*cos(t)", "0", "0.5*sin(t)", 0, (float) (2*Math.PI));
+		p.plotParametricFunction("0.5*cos(t)", "t/5", "0.5*sin(t)", 0, (float) (10*Math.PI));
 		
 		final JTextField function = new JTextField();
 		function.addKeyListener(new KeyAdapter() {
