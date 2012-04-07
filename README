@@ -1,12 +1,20 @@
-- Få projektet under git
+Ønske listen:
 - Flottere design :O!
 - At selektionen af funktioner kører lidt mere smooth (må jeg lige kigge på).
 - Implementation af resterende farver (farver burde måske implementeres helt anderledes)
-- Istedet for navn på farven kan dropned menuen vise noget alla farvevælgeren her i gmail ? Ja!! (Det vil muligvis også simplificere koden.)
+   - Istedet for navn på farven kan dropned menuen vise noget alla farvevælgeren her i gmail ?
+     Ja!! (Det vil muligvis også simplificere koden.)
 - Der skal lidt "ipad"-rotation på (når plottet slippes, skal det dreje lidt videre).
+- Parameter funktioner af to variable
+
+- Function objectet skal gennemtænkes/gentænkes.
+  - Skal det samme object håndtere både parameter og normale funktioner ?
+  - Tænker en overklasse m. to subtyper
 
 Done listen:
 - Opdatering af plots bør effektiviseres
 - Zoom view skal gemmes i en variabel, så det det ikke ændres ved reset af plot.
 - Tilføjelse af plots bør effektiviseres
-- Visibility bør håndteres af en ActionListener til hver enkelt Function object istedet for et samlet. 
+- Visibility bør håndteres af en ActionListener til hver enkelt Function object istedet for et samlet.
+- Parameter funktioner af en variabel
+- Få projektet under git
