@@ -7,10 +7,10 @@ import java.awt.event.KeyEvent;
 import javax.swing.JFrame;
 import javax.swing.JTextField;
 
-import org.nfunk.jep.ParseException;
-
 import munk.graph.appearance.Colors;
 import munk.graph.plot.Plotter3D;
+
+import org.nfunk.jep.ParseException;
 
 public class PlotterDriver {
 	
@@ -24,10 +24,12 @@ public class PlotterDriver {
 //        p.plotFunction(-i, i, -i, i, "x = y", Colors.CYAN);
 //        p.plotFunction(-i, i, -i, i, "x = z", Colors.BLUE);
 //        p.plotFunction(-i, i, -i, i, "y = x", Colors.TURQUISE);
-//        p.plotFunction(-i, i, -i, i, "y = cos(z)*cos(x)", Colors.INDIGO);
-//		p.plotParametricFunction("0.5*cos(t)", "0.5*sin(t)", "1", 0, (float) (2*Math.PI));
-//		p.plotParametricFunction("0.5*cos(t)", "0", "0.5*sin(t)", 0, (float) (2*Math.PI));
-		p.plotParametricFunction("0.5*cos(t)", "t/5", "0.5*sin(t)", 0, (float) (10*Math.PI));
+//        p.plotFunction("y = cos(z)*cos(x)", -i, i, -i, i, Colors.INDIGO);
+		p.plotParametric1D("0.5*cos(t)", "0.5*sin(t)", "t/10+5", 0, (float) (2*Math.PI), Colors.RED);
+		p.plotParametric2D("(3*(1+sin(t)) + 2*(1-cos(t)/2)*cos(u))*cos(t)",
+								 "(4+2*(1-cos(t)/2)*cos(u))*sin(t)", 
+								 "-2*(1-cos(t)/2) * sin(u)", 0, (float) (2*Math.PI), 0, 6.28f, Colors.BLUE);
+//		p.plotParametricFunction("0.5*cos(t)", "t/5", "0.5*sin(t)", 0, (float) (5*Math.PI));
 		
 		final JTextField function = new JTextField();
 		function.addKeyListener(new KeyAdapter() {
@@ -38,7 +40,6 @@ public class PlotterDriver {
 						try {
 							p.plotFunction(function.getText(), -i, i, -i, i, Colors.RED);
 						} catch (ParseException e1) {
-							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						}
 				}
@@ -50,6 +51,7 @@ public class PlotterDriver {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 		frame.pack();
+		
 	}
 
 }

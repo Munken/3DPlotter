@@ -1,17 +1,18 @@
 package munk.graph.plot;
 
 import java.awt.GraphicsConfiguration;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.media.j3d.*;
 import javax.swing.JPanel;
 import javax.vecmath.*;
 
-import org.nfunk.jep.ParseException;
-
 import munk.graph.appearance.ColorAppearance;
 import munk.graph.rotaters.KeyRotate;
 import munk.graph.rotaters.ViewZoomer;
+
+import org.nfunk.jep.ParseException;
 
 import com.sun.j3d.utils.behaviors.mouse.MouseRotate;
 import com.sun.j3d.utils.universe.SimpleUniverse;
@@ -114,10 +115,26 @@ public class Plotter3D extends JPanel{
 		
 	}
 	
-	public void plotParametricFunction(String xExpr, String yExpr, String zExpr, 
-										float tMin, float tMax) throws ParseException {
-		ParametricPlotter pp = new ParametricPlotter(xExpr, yExpr, zExpr, tMin, tMax);
+	public void plotParametric1D(String xExpr, String yExpr, String zExpr, 
+										float tMin, float tMax, Color3f color) throws ParseException {
+		Parametric1D pp = new Parametric1D(xExpr, yExpr, zExpr, tMin, tMax);
 		Shape3D shape = pp.getPlot();
+		String hashString = "1D" + xExpr + yExpr + zExpr;
+
+		postPlot(shape, color, hashString);
+	}
+	
+	public void plotParametric2D(String xExpr, String yExpr, String zExpr, 
+			float tMin, float tMax, float uMin, float uMax, Color3f color) throws ParseException {
+		Parametric2D pp = new Parametric2D(xExpr, yExpr, zExpr, tMin, tMax, uMin, uMax);
+		Shape3D shape = pp.getPlot();
+		String hashString = "2D" + xExpr + yExpr + zExpr;
+
+		postPlot(shape, color, hashString);
+	}
+	
+	private void postPlot(Shape3D shape, Color3f color, String hashString) {
+		shape.setAppearance(new ColorAppearance(color));
 		
 		BranchGroup bg = new BranchGroup();
 		bg.setCapability(BranchGroup.ALLOW_DETACH);
@@ -128,7 +145,6 @@ public class Plotter3D extends JPanel{
 		updateAxes();
 		adjustZoom();
 		
-		String hashString = xExpr + yExpr + zExpr;
 		functions.put(hashString, bg);
 		shapes.put(hashString, shape);
 	}
