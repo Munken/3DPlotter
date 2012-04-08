@@ -22,6 +22,10 @@ import org.nfunk.jep.ParseException;
 import munk.graph.appearance.Colors;
 import munk.graph.plot.Plotter3D;
 
+/*
+ * DETTE ER EN TEST
+ */
+
 public class TestGUI {
 	
 	private static final int CANVAS_INITIAL_WIDTH = 600;
