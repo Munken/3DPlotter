@@ -6,7 +6,7 @@ import javax.vecmath.Point3f;
 
 import org.nfunk.jep.ParseException;
 
-public class ParametricTwo extends ParametricPlotter{
+public class Parametric2D extends ParametricPlotter{
 	
 	private static final String[] STD_VAR_NAMES = {"t", "u"};
 	
@@ -18,7 +18,7 @@ public class ParametricTwo extends ParametricPlotter{
 	private float stepsize;
 
 	// The mother of all constructors !
-	public ParametricTwo(String xExpr, String yExpr, String zExpr, 
+	public Parametric2D(String xExpr, String yExpr, String zExpr, 
 						float tMin, float tMax, float uMin, float uMax, 
 						String[] varNames, float stepSize) throws ParseException {
 		
@@ -35,12 +35,12 @@ public class ParametricTwo extends ParametricPlotter{
 		stepsize = stepSize;
 	}
 	
-	public ParametricTwo(String xExpr, String yExpr, String zExpr, 
+	public Parametric2D(String xExpr, String yExpr, String zExpr, 
 			float tMin, float tMax, float uMin, float uMax, float stepSize) throws ParseException {
 		this(xExpr, yExpr, zExpr, tMin, tMax, uMin, uMax, STD_VAR_NAMES, stepSize);
 	}
 	
-	public ParametricTwo(String xExpr, String yExpr, String zExpr, 
+	public Parametric2D(String xExpr, String yExpr, String zExpr, 
 			float tMin, float tMax, float uMin, float uMax) throws ParseException {
 		this(xExpr, yExpr, zExpr, tMin, tMax, uMin, uMax, 0.1f);
 	}
