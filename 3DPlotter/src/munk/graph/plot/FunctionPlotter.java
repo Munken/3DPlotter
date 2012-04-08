@@ -28,6 +28,7 @@ public class FunctionPlotter {
 	private int	factorV2 = 1;
 	
 	private Shape3D shape;
+	private TransformGroup plot;
 	
 	public FunctionPlotter(float xMin, float xMax, float yMin, float yMax, String expr) throws ParseException {
 		this.xMin = xMin;
@@ -38,7 +39,6 @@ public class FunctionPlotter {
 		jep = new JEP();
 		jep.addStandardFunctions();
 		jep.addStandardConstants();
-//		jep.setAllowUndeclared(true);
 		jep.setAllowAssignment(true);
 		preParse(expr);
 		initVariables();
@@ -60,9 +60,20 @@ public class FunctionPlotter {
 	}
 	
 
-
+	public Shape3D getShape() {
+		if (shape == null)
+			plot();
+		return shape;
+	}
 	
 	public TransformGroup getPlot() {
+		if (plot == null)
+			plot = plot();
+		
+		return plot; 
+	}
+
+	private TransformGroup plot() {
 		int xSize = (int) ((xMax - xMin) / stepsize);
 		int ySize = (int) ((yMax - yMin) / stepsize);
 		
@@ -94,8 +105,7 @@ public class FunctionPlotter {
 		TransformGroup result = new TransformGroup();
 		result.addChild(shape);
 		result.setTransform(rotation);
-		
-		return result; 
+		return result;
 	}	
 	
 	private void initVariables() {
@@ -122,10 +132,4 @@ public class FunctionPlotter {
 		
 	}
 	
-	public Shape3D getShape() {
-		return shape;
-	}
-	
-	
-
 }

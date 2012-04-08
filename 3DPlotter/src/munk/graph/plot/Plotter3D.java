@@ -104,6 +104,7 @@ public class Plotter3D extends JPanel{
 		BranchGroup bg = new BranchGroup();
 		bg.setCapability(BranchGroup.ALLOW_DETACH);
 		bg.addChild(tg);
+		bg.compile();
 		
 		plots.addChild(bg);
 		
@@ -114,6 +115,7 @@ public class Plotter3D extends JPanel{
 		shapes.put(expr, shape);
 		
 	}
+
 	
 	public void plotParametric1D(String xExpr, String yExpr, String zExpr, 
 										float tMin, float tMax, Color3f color) throws ParseException {

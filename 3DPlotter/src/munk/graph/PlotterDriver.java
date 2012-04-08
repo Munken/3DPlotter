@@ -24,11 +24,11 @@ public class PlotterDriver {
 //        p.plotFunction(-i, i, -i, i, "x = y", Colors.CYAN);
 //        p.plotFunction(-i, i, -i, i, "x = z", Colors.BLUE);
 //        p.plotFunction(-i, i, -i, i, "y = x", Colors.TURQUISE);
-//        p.plotFunction("y = cos(z)*cos(x)", -i, i, -i, i, Colors.INDIGO);
-		p.plotParametric1D("0.5*cos(t)", "0.5*sin(t)", "t/10+5", 0, (float) (2*Math.PI), Colors.RED);
-		p.plotParametric2D("(3*(1+sin(t)) + 2*(1-cos(t)/2)*cos(u))*cos(t)",
-								 "(4+2*(1-cos(t)/2)*cos(u))*sin(t)", 
-								 "-2*(1-cos(t)/2) * sin(u)", 0, (float) (2*Math.PI), 0, 6.28f, Colors.BLUE);
+        p.plotFunction("y = cos(z)*cos(x)", -i, i, -i, i, Colors.INDIGO);
+//		p.plotParametric1D("0.5*cos(t)", "0.5*sin(t)", "t/10+5", 0, (float) (2*Math.PI), Colors.RED);
+//		p.plotParametric2D("(3*(1+sin(t)) + 2*(1-cos(t)/2)*cos(u))*cos(t)",
+//								 "(4+2*(1-cos(t)/2)*cos(u))*sin(t)", 
+//								 "-2*(1-cos(t)/2) * sin(u)", 0, (float) (2*Math.PI), 0, 6.28f, Colors.BLUE);
 //		p.plotParametricFunction("0.5*cos(t)", "t/5", "0.5*sin(t)", 0, (float) (5*Math.PI));
 		
 		final JTextField function = new JTextField();
