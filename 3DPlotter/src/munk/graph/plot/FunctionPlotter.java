@@ -70,6 +70,7 @@ public class FunctionPlotter {
 		float[] yValues = initAxisArray(yMin, ySize, stepsize);
 		
 		float[][] zValues = new float[ySize][xSize];
+		Point3f[][] points = new Point3f[ySize][xSize];
 		
 		for (int y = 0; y < ySize; y++) {
 			jep.addVariable(var2, factorV2 * yValues[y]);
@@ -79,38 +80,16 @@ public class FunctionPlotter {
 				try {
 					double value = (Double) jep.evaluate(node);
 					zValues[y][x] = (float) value;
+					points[y][x] = new Point3f(xValues[x], yValues[y], (float) value);
 				} catch (ParseException e) {
 					// Does not happen !
 				}
 			}
 		}
+
+		QuadArray quad = PlotUtil.buildQuadArray(points);
 		
-		QuadArray quadGeom = new QuadArray (4 * (xSize - 1) * (ySize - 1), QuadArray.COORDINATES | QuadArray.NORMALS);
-		Vector3f normal = new Vector3f ();
-		int vertice = 0; 
-		for (int y = 0; y < ySize - 1; y++) {
-			for (int x = 0; x < xSize - 1; x++) {
-				
-				// Vectors to define the plane
-				Vector3f v1 = new Vector3f(0, yValues[y+1] - yValues[y], zValues[y+1][x] - zValues[y][x]);
-				Vector3f v2 = new Vector3f(xValues[x] - xValues[x+1], yValues[y+1] - yValues[y], zValues[y+1][x] - zValues[y][x+1]);
-				normal.cross(v1, v2);
-				normal.normalize();
-				
-				
-				quadGeom.setCoordinate (vertice, new Point3f(xValues[x], yValues[y], zValues[y][x]));
-				quadGeom.setNormal(vertice++, normal);
-				quadGeom.setCoordinate (vertice, new Point3f(xValues[x], yValues[y+1], zValues[y+1][x]));
-				quadGeom.setNormal(vertice++, normal);
-				quadGeom.setCoordinate (vertice, new Point3f(xValues[x+1], yValues[y+1], zValues[y+1][x+1]));
-				quadGeom.setNormal(vertice++, normal);
-				quadGeom.setCoordinate (vertice, new Point3f(xValues[x+1], yValues[y], zValues[y][x+1]));
-				quadGeom.setNormal(vertice++, normal);
-			}
-		}
-		
-		
-		shape = new Shape3D(quadGeom);
+		shape = new Shape3D(quad);
 
 		TransformGroup result = new TransformGroup();
 		result.addChild(shape);
