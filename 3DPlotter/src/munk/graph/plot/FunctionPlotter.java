@@ -87,7 +87,7 @@ public class FunctionPlotter {
 			}
 		}
 
-		QuadArray quad = PlotUtil.buildQuadArray(points);
+		GeometryArray quad = PlotUtil.buildQuadArray(points);
 		
 		shape = new Shape3D(quad);
 

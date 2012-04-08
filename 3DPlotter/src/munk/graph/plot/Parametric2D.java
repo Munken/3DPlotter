@@ -1,6 +1,6 @@
 package munk.graph.plot;
 
-import javax.media.j3d.QuadArray;
+import javax.media.j3d.GeometryArray;
 import javax.media.j3d.Shape3D;
 import javax.vecmath.Point3f;
 
@@ -54,7 +54,6 @@ public class Parametric2D extends ParametricPlotter{
 		float[] uValues = PlotUtil.initAxisArray(uMin, uLength, stepsize);
 		
 		Point3f[][] points = new Point3f[tLength][uLength];
-		
 		for (int i = 0; i < tLength; i++) {
 			setVariable("t", tValues[i]);
 			for (int j = 0; j < uLength; j++) {
@@ -64,7 +63,7 @@ public class Parametric2D extends ParametricPlotter{
 			}
 		}
 		
-		QuadArray quad = PlotUtil.buildQuadArray(points);
+		GeometryArray quad = PlotUtil.buildQuadArray(points);
 		
 		return new Shape3D(quad);
 	}
