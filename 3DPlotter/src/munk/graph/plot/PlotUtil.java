@@ -1,5 +1,6 @@
 package munk.graph.plot;
 
+import javax.media.j3d.LineArray;
 import javax.media.j3d.QuadArray;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -45,6 +46,18 @@ public class PlotUtil {
 		}
 		
 		return quad;
+	}
+	
+	public static LineArray buildLineArray(Point3f[] points) {
+		int length = points.length;
+		LineArray la = new LineArray(2 * (length - 1), LineArray.COORDINATES);
+		int vertice = 0;
+		
+		for (int i = 0; i < length - 1; i++) {
+			la.setCoordinate(vertice++, points[i]);
+			la.setCoordinate(vertice++, points[i+1]);
+		}
+		return la;
 	}
 	
 	public static Vector3f directionVector(Point3f p1, Point3f p2) {
