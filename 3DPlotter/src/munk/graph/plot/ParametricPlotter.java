@@ -38,15 +38,15 @@ public abstract class ParametricPlotter {
 		jep.addVariable(var, value);
 	}
 	
-	public float getXValue() {
+	public float xValue() {
 		return evalNode(xNode);
 	}
 	
-	public float getYValue() {
+	public float yValue() {
 		return evalNode(yNode);
 	}
 	
-	public float getZValue() {
+	public float zValue() {
 		return evalNode(zNode);
 	}
 	
