@@ -3,10 +3,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="C:/Users/xXx/Dropbox/GraphPlotter/JARs/djep-full-latest.jar"/>
-	<classpathentry kind="lib" path="C:/Users/xXx/Dropbox/GraphPlotter/JARs/j3dcore.jar"/>
-	<classpathentry kind="lib" path="C:/Users/xXx/Dropbox/GraphPlotter/JARs/j3dutils.jar"/>
-	<classpathentry kind="lib" path="C:/Users/xXx/Dropbox/GraphPlotter/JARs/jep-2.4.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/xXx/Dropbox/GraphPlotter/JARs/vecmath.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Munk/My Dropbox/git/3DPlot/GraphPlotter/jep-2.4.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -1,20 +1,35 @@
-Ã˜nske listen:
-- Flottere design :O!
-- At selektionen af funktioner kÃ¸rer lidt mere smooth (mÃ¥ jeg lige kigge pÃ¥).
-- Implementation af resterende farver (farver burde mÃ¥ske implementeres helt anderledes)
-   - Istedet for navn pÃ¥ farven kan dropned menuen vise noget alla farvevÃ¦lgeren her i gmail ?
-     Ja!! (Det vil muligvis ogsÃ¥ simplificere koden.)
-- Der skal lidt "ipad"-rotation pÃ¥ (nÃ¥r plottet slippes, skal det dreje lidt videre).
-- Parameter funktioner af to variable
+Ønske listen:
 
-- Function objectet skal gennemtÃ¦nkes/gentÃ¦nkes.
-  - Skal det samme object hÃ¥ndtere bÃ¥de parameter og normale funktioner ?
-  - TÃ¦nker en overklasse m. to subtyper
+- GUI
+	- Flottere design :O!
+	- At selektionen af funktioner kører lidt mere smooth (må jeg lige kigge på).
+	- Farveselektor
+		- I stil med den i GMail
+		- Så skal Color3f blot benyttes
+
+	- Der skal lidt "ipad"-rotation på (når plottet slippes, skal det dreje lidt videre).
+	- Håndtering af nye funktionstyper
+	- GUI skal opdateres til at håndtere de nye funktionstyper
+	- Foreslår at det detekteres om der anvendes 1 eller 2 variable i parameter plots og korrekte metode kaldes derefter
+		- Dermed undgås at have for mange muligheder
+	
+- Plotning	
+	- Implicit plotning skal optimeres
+		- Parallelisering ?
+	- Implicit skal smukkeseres :)
+
+
+- Function objectet skal gennemtænkes/gentænkes.
+  - Skal det samme object håndtere både parameter og normale funktioner ?
+  - Tænker en overklasse m. to subtyper
 
 Done listen:
-- Opdatering af plots bÃ¸r effektiviseres
-- Zoom view skal gemmes i en variabel, sÃ¥ det det ikke Ã¦ndres ved reset af plot.
-- TilfÃ¸jelse af plots bÃ¸r effektiviseres
-- Visibility bÃ¸r hÃ¥ndteres af en ActionListener til hver enkelt Function object istedet for et samlet.
+- Opdatering af plots bør effektiviseres
+- Zoom view skal gemmes i en variabel, så det det ikke ændres ved reset af plot.
+- Tilføjelse af plots bør effektiviseres
+- Visibility bør håndteres af en ActionListener til hver enkelt Function object istedet for et samlet.
 - Parameter funktioner af en variabel
-- FÃ¥ projektet under git
+- Få projektet under git
+- Parameter funktioner af to variable
+- Parameter funktioner af en variabl
+- Plotning af implicitte funktioner
