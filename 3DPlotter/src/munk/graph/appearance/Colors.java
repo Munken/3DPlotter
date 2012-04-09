@@ -1,6 +1,9 @@
 package munk.graph.appearance;
 
+import javax.swing.Icon;
 import javax.vecmath.Color3f;
+
+import munk.graph.gui.ColorIcon;
 
 public class Colors {
 	
@@ -15,35 +18,21 @@ public class Colors {
 	public static final Color3f MAGENTA	 = new Color3f(1, 0, 1);
 	public static final Color3f PINK = new Color3f(1, .0784f, .574f);
 	public static final Color3f TURQUISE = new Color3f(0, 0.96f, 1);
-	
-	// Disse skal staves på samme måde som i getAllColorNames
-	public static String getColorName(Color3f color){
-		if(color.equals(new Color3f(1, 0, 0))) return "Red"; 
-		if(color.equals(new Color3f(1, 1, 0))) return "Yellow";
-		if(color.equals(new Color3f(1, 0.6f, 0))) return "Orange";
-		if(color.equals(new Color3f(0, .0749f, 1))) return "Skyblue";		
-		return "ERROR";
-	}
-	
-	public static Color3f getColor(String name){
-		if(name.equals("Red")) return new Color3f(1, 0, 0);
-		if(name.equals("Yellow")) return new Color3f(1, 1, 0);
-		if(name.equals("Orange")) return new Color3f(1, 0.6f, 0);
-		if(name.equals("Skyblue")) return new Color3f(0, .0749f, 1);
-		return new Color3f(1,0,0);
-	}
-	
-	public static String[] getAllColorNames(){
-		return new String[]{"Red", 
-			"Yellow", 
-			"Orange", 
-			"Skyblue", 
-			"Indigo",
-			"Green",
-			"Cyan",
-			"Blue",
-			"Magenta",
-			"Pink",
-			"Turquise"};
+
+	/*
+	 * Render an array of icons of all available colors.
+	 */
+	public static Icon[] getAllColors(){
+		return new Icon[]{new ColorIcon(Colors.RED),
+				new ColorIcon(Colors.YELLOW),
+				new ColorIcon(Colors.ORANGE),
+				new ColorIcon(Colors.SKYBLUE),
+				new ColorIcon(Colors.INDIGO),
+				new ColorIcon(Colors.GREEN),
+				new ColorIcon(Colors.CYAN),
+				new ColorIcon(Colors.BLUE),
+				new ColorIcon(Colors.MAGENTA),
+				new ColorIcon(Colors.PINK),
+				new ColorIcon(Colors.TURQUISE)};
 	}
 }
