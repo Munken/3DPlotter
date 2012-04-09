@@ -353,9 +353,9 @@ public class MarchingCubes {
 		/* Create the triangle */
 		int ntriang = 0;
 		for (int i=0;TRI_TABLE[cubeindex][i]!=-1;i+=3) {
-			triangles[ntriang].vertices[0] = vertlist[TRI_TABLE[cubeindex][i  ]];
-			triangles[ntriang].vertices[1] = vertlist[TRI_TABLE[cubeindex][i+1]];
-			triangles[ntriang].vertices[2] = vertlist[TRI_TABLE[cubeindex][i+2]];
+			triangles[ntriang].setVertex(0, vertlist[TRI_TABLE[cubeindex][i  ]]);
+			triangles[ntriang].setVertex(1, vertlist[TRI_TABLE[cubeindex][i+1]]);
+			triangles[ntriang].setVertex(2, vertlist[TRI_TABLE[cubeindex][i+2]]);
 			ntriang++;
 		}
 
