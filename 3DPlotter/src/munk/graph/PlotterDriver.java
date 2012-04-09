@@ -10,13 +10,11 @@ import javax.swing.JTextField;
 import munk.graph.appearance.Colors;
 import munk.graph.plot.Plotter3D;
 
-import org.nfunk.jep.ParseException;
-
 import com.graphbuilder.math.ExpressionParseException;
 
 public class PlotterDriver {
 	
-	public static void main(String[] args) throws ParseException, ExpressionParseException {
+	public static void main(String[] args) throws ExpressionParseException {
 		final JFrame frame = new JFrame("Mega ultra");
 		
 		final Plotter3D p = new Plotter3D();

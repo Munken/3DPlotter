@@ -8,11 +8,9 @@ import javax.media.j3d.*;
 import javax.swing.JPanel;
 import javax.vecmath.*;
 
-import munk.graph.appearance.*;
+import munk.graph.appearance.ColorAppearance;
 import munk.graph.rotaters.KeyRotate;
 import munk.graph.rotaters.ViewZoomer;
-
-import org.nfunk.jep.ParseException;
 
 import com.graphbuilder.math.ExpressionParseException;
 import com.sun.j3d.utils.behaviors.mouse.MouseRotate;
@@ -91,7 +89,7 @@ public class Plotter3D extends JPanel{
 	
 
 	public void plotFunction(String expr, float xMin, float xMax, float yMin, 
-								float yMax, Color3f color) throws ParseException {
+								float yMax, Color3f color) throws ExpressionParseException {
 		// TODO: Hvem skal have ansvar for appearance ?
 		FunctionPlotter fp = new FunctionPlotter(xMin, xMax, yMin, yMax, expr, 0.1f);
 		
@@ -122,7 +120,7 @@ public class Plotter3D extends JPanel{
 										float tMin, float tMax, Color3f color) throws ExpressionParseException {
 		Parametric1D pp = new Parametric1D(xExpr, yExpr, zExpr, tMin, tMax);
 		Shape3D shape = pp.getPlot();
-		String hashString = "1D" + xExpr + yExpr + zExpr;
+		String hashString = xExpr + yExpr + zExpr;
 
 		postPlot(shape, color, hashString);
 	}
@@ -131,7 +129,7 @@ public class Plotter3D extends JPanel{
 			float tMin, float tMax, float uMin, float uMax, Color3f color) throws ExpressionParseException {
 		Parametric2D pp = new Parametric2D(xExpr, yExpr, zExpr, tMin, tMax, uMin, uMax);
 		Shape3D shape = pp.getPlot();
-		String hashString = "2D" + xExpr + yExpr + zExpr;
+		String hashString = xExpr + yExpr + zExpr;
 
 		postPlot(shape, color, hashString);
 	}
