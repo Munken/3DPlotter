@@ -12,6 +12,7 @@ import munk.graph.marching.*;
 
 import org.nfunk.jep.*;
 
+import com.graphbuilder.math.*;
 import com.sun.j3d.utils.geometry.GeometryInfo;
 import com.sun.j3d.utils.geometry.NormalGenerator;
 
@@ -33,9 +34,13 @@ public class ImplicitPlotter {
 	private JEP jep;
 	private Node node;
 	
+	private Expression ex;
+	private VarMap vm;
+	private FuncMap fm;
+	
 	
 	public ImplicitPlotter(String expr, float xMin, float xMax, float yMin,
-			float yMax, float zMin, float zMax, float stepsize) throws ParseException {
+			float yMax, float zMin, float zMax, float stepsize) throws ExpressionParseException  {
 		
 		expr = preParse(expr);
 		this.xMin = xMin;
@@ -48,14 +53,22 @@ public class ImplicitPlotter {
 		
 		this.stepsize = stepsize;
 		
-		jep = new JEP();
-		jep.addStandardFunctions();
-		jep.addStandardConstants();
-		jep.addVariable("x", xMin);
-		jep.addVariable("y", yMin);
-		jep.addVariable("z", zMin);
+		ex = ExpressionTree.parse(expr);
+		vm = new VarMap();
+		vm.setValue("x", xMin);
+		vm.setValue("y", yMin);
+		vm.setValue("z", zMin);
 		
-		node = jep.parse(expr);
+		fm = new FuncMap();
+		fm.loadDefaultFunctions();
+//		jep = new JEP();
+//		jep.addStandardFunctions();
+//		jep.addStandardConstants();
+//		jep.addVariable("x", xMin);
+//		jep.addVariable("y", yMin);
+//		jep.addVariable("z", zMin);
+//		
+//		node = jep.parse(expr);
 	}
 
 	private String preParse(String expr) {
@@ -200,16 +213,22 @@ public class ImplicitPlotter {
 	}
 	
 	private float value(float x, float y, float z) {
-		jep.addVariable("x", x);
-		jep.addVariable("y", y);
-		jep.addVariable("z", z);
+//		jep.addVariable("x", x);
+//		jep.addVariable("y", y);
+//		jep.addVariable("z", z);
+//		
+//		try {
+//			double value = (double) jep.evaluate(node);
+//			return (float) value;
+//		} catch (ParseException e) {
+//			return Float.NaN;
+//		}
 		
-		try {
-			double value = (double) jep.evaluate(node);
-			return (float) value;
-		} catch (ParseException e) {
-			return Float.NaN;
-		}
+		vm.setValue("x", x);
+		vm.setValue("y", y);
+		vm.setValue("z", z);
+		
+		return (float) ex.eval(vm, fm);
 //		return x*x + y*y + z*z - 1;
 	}
 	
