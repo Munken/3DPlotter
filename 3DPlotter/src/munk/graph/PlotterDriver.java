@@ -18,7 +18,7 @@ public class PlotterDriver {
 		final JFrame frame = new JFrame("Mega ultra");
 		
 		final Plotter3D p = new Plotter3D();
-		final float i = .3f;
+		final float i = 1.1f;
 //		p.plotFunction("z = y", i, -i, i, -i, Colors.MAGENTA);
 //        p.plotFunction(-i, i, -i, i, "z = x", Colors.RED);
 //        p.plotFunction(-i, i, -i, i, "x = y", Colors.CYAN);

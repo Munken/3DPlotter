@@ -35,6 +35,7 @@ public class GridCell {
 		this.points = corners;
 		this.values = values;
 	}
+	
 }
 
 

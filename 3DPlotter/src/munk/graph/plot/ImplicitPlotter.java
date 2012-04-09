@@ -19,15 +19,12 @@ public class ImplicitPlotter {
 	
 	private static Pattern PATTERN = Pattern.compile("([^=]+)=([^=]+)$");
 	private float xMin;
-	private float xMax;
 	private int xLength;
 	
 	private float yMin;
-	private float yMax;
 	private int yLength;
 	
 	private float zMin;
-	private float zMax;
 	private int zLength;
 	
 	private float stepsize;
@@ -42,11 +39,8 @@ public class ImplicitPlotter {
 		
 		expr = preParse(expr);
 		this.xMin = xMin;
-		this.xMax = xMax;
 		this.yMin = yMin;
-		this.yMax = yMax;
 		this.zMin = zMin;
-		this.zMax = zMax;
 		
 		xLength = (int) Math.ceil((xMax - xMin) / stepsize) + 1;
 		yLength = (int) Math.ceil((yMax - yMin) / stepsize) + 1;
@@ -86,77 +80,71 @@ public class ImplicitPlotter {
 	private Shape3D plot() {
 		MarchingCubes m = new MarchingCubes();
 
-		Point3f[] corners = new Point3f[8];
+		Point3f[] corners = initPoint3fArray(8);
 		float[] values = new float[8];
-		Triangle[] tri = new Triangle[5];
-
-		for (int q = 0; q < tri.length; q++) {
-			tri[q] = new Triangle();
-		}
-		for (int q = 0; q < corners.length; q++) {
-			corners[q] = new Point3f();
-		}
+		
+		GridCell grid = new GridCell(corners, values);
+		Triangle[] tri = initTriangleArray(MarchingCubes.MAX_TRIANGLES_RETURNED);
 
 		
-		long current = System.currentTimeMillis();
+		
 		float z = zMin;
 		
 		float[][] lower = bottomLayerValues();
 		float[][] upper = new float[yLength][xLength];
 		
-		List<Point3f> triangles = new ArrayList<Point3f>();
-		for (int k = 0; k < zLength; k++) {
+		List<Point3f> triangles = new ArrayList<Point3f>(3000);
+		for (int k = 0; k < zLength - 1; k++) {
 		
-//			calcEdges(upper, z+stepsize);
-			
-			
+			calcYEdge(upper, z+stepsize);
 			float y = yMin;
-			for (int j = 0; j < yLength; j++) {
+			for (int j = 0; j < yLength - 1; j++) {
 				
 				float x = xMin;
-				for (int i = 0; i < xLength; i++) {
+				for (int i = 0; i < xLength - 1; i++) {
 					
 					corners[0].x = x;
 					corners[0].y = y;
 					corners[0].z = z;
-					values[0] = value(corners[0]);
+					values[0] = lower[j][i];
 					
 					corners[1].x = x + stepsize;
 					corners[1].y = y;
 					corners[1].z = z; 
-					values[1] = value(corners[1]);
+					values[1] = lower[j][i+1];
 					
 					corners[2].x = x + stepsize;
 					corners[2].y = y + stepsize;
 					corners[2].z = z;
-					values[2] = value(corners[2]);
+					values[2] = lower[j+1][i+1];
 					
 					corners[3].x = x;
 					corners[3].y = y + stepsize;
 					corners[3].z = z;
-					values[3] = value(corners[3]);
+					values[3] = lower[j+1][i];
 					
 					corners[4].x = x;
 					corners[4].y = y;
 					corners[4].z = z + stepsize;
-					values[4] = value(corners[4]);
+					values[4] = upper[j][i];
 					
 					corners[5].x = x + stepsize;
 					corners[5].y = y;
 					corners[5].z = z + stepsize;
 					values[5] = value(corners[5]);
+					upper[j][i+1] = values[5];
 					
 					corners[6].x = x + stepsize;
 					corners[6].y = y + stepsize;
 					corners[6].z = z + stepsize;
 					values[6] = value(corners[6]);
+					upper[j+1][i+1] = values[6];
 					
 					corners[7].x = x;
 					corners[7].y = y + stepsize;
 					corners[7].z = z + stepsize;
-					values[7] = value(corners[7]);
-					
-					GridCell grid = new GridCell(corners, values);
+					values[7] = upper[j+1][i];
+									
 					
 					int facets = m.Pologynise(grid, tri, 0);
 					
@@ -171,6 +159,11 @@ public class ImplicitPlotter {
 				
 				y += stepsize;
 			}
+			
+			float[][] tmp = upper;
+			upper = lower;
+			lower = tmp;
+			
 			z += stepsize;
 		}
 		
@@ -180,10 +173,25 @@ public class ImplicitPlotter {
 			gi.setCoordinates((Point3f[]) triangles.toArray(points));
 			NormalGenerator ng = new NormalGenerator();
 			ng.generateNormals(gi);
-			System.out.println(System.currentTimeMillis() - current);
 			return new Shape3D(gi.getGeometryArray());
 		} else 
 			return null;
+	}
+
+	private Point3f[] initPoint3fArray(int N) {
+		Point3f[] result = new Point3f[N];
+		for (int q = 0; q < N; q++) {
+			result[q] = new Point3f();
+		}
+		return result;
+	}
+
+	private Triangle[] initTriangleArray(int N) {
+		Triangle[] result = new Triangle[N];
+		for (int q = 0; q < N; q++) {
+			result[q] = new Triangle();
+		}
+		return result;
 	}
 	
 	private float value(Point3f point) {
@@ -228,7 +236,16 @@ public class ImplicitPlotter {
 		return result;
 	}
 	
-	private void calcEdges(float[][] upperValues, float z) {
+	private void calcYEdge(float[][] upperValues, float z) {
+		float y = yMin;
+		float x = xMin;
+		for (int j = 0; j < 1; j++) {
+			upperValues[j][1] = value(x, y, z);
+			y += stepsize;
+		}
+
+		
+		/* Overkill 
 		float y = yMin;
 		for (int j = 0; j <= 1; j++) {
 			
@@ -253,6 +270,7 @@ public class ImplicitPlotter {
 			
 			y += stepsize;
 		}
+		*/
 	}
 	
 //	private Shape3D plot() {
