@@ -2,40 +2,41 @@ package munk.graph.plot;
 
 import javax.media.j3d.Shape3D;
 
-import org.nfunk.jep.*;
+import com.graphbuilder.math.*;
 
 public abstract class ParametricPlotter {
 	
-	private JEP jep;
-	private Node xNode;
-	private Node yNode;
-	private Node zNode;
+	private VarMap vm;
+	private FuncMap fm;
+	private Expression xNode;
+	private Expression yNode;
+	private Expression zNode;
 	
-	public ParametricPlotter(String xExpr, String yExpr, String zExpr, String[] variables, float[] startValues, float stepSize) throws ParseException {
-		jep = new JEP();
-		jep.addStandardFunctions();
-		jep.addStandardConstants();
-		
+	public ParametricPlotter(String xExpr, String yExpr, String zExpr, String[] variables, float[] startValues, float stepSize) throws ExpressionParseException {
 		if (variables.length != startValues.length) {
 			throw new IllegalStateException("There must be an equal amount of startvalues and variables");
 		}
 		
+		vm = new VarMap();
 		for (int i = 0; i < variables.length; i++) {
 			String var = variables[i];
-			jep.addVariable(var, startValues[i]);
+			vm.setValue(var, startValues[i]);
 		}
 		
-		xNode = jep.parse(xExpr);
-		yNode = jep.parse(yExpr);
-		zNode = jep.parse(zExpr);
+		xNode = ExpressionTree.parse(xExpr);
+		yNode = ExpressionTree.parse(yExpr);
+		zNode = ExpressionTree.parse(zExpr);
+		
+		fm = new FuncMap();
+		fm.loadDefaultFunctions();
 	}
 	
-	public ParametricPlotter(String xExpr, String yExpr, String zExpr, String[] variables, float[] startValues) throws ParseException {
+	public ParametricPlotter(String xExpr, String yExpr, String zExpr, String[] variables, float[] startValues) throws ExpressionParseException {
 		this(xExpr, yExpr, zExpr, variables, startValues, 0.1f);
 	}
 	
 	public void setVariable(String var, float value) {
-		jep.addVariable(var, value);
+		vm.setValue(var, value);
 	}
 	
 	public float xValue() {
@@ -50,14 +51,8 @@ public abstract class ParametricPlotter {
 		return evalNode(zNode);
 	}
 	
-	private float evalNode(Node node) {
-		try {
-			double value = (double) jep.evaluate(node);
-			return (float) value;
-		} catch (ParseException e) {
-			// Does not happen
-			return Float.NaN;
-		}
+	private float evalNode(Expression ex) {
+		return (float) ex.eval(vm, fm);
 	}
 	
 	public abstract Shape3D getPlot();

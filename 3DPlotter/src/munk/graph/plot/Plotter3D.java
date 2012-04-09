@@ -14,6 +14,7 @@ import munk.graph.rotaters.ViewZoomer;
 
 import org.nfunk.jep.ParseException;
 
+import com.graphbuilder.math.ExpressionParseException;
 import com.sun.j3d.utils.behaviors.mouse.MouseRotate;
 import com.sun.j3d.utils.universe.SimpleUniverse;
 
@@ -118,7 +119,7 @@ public class Plotter3D extends JPanel{
 
 	
 	public void plotParametric1D(String xExpr, String yExpr, String zExpr, 
-										float tMin, float tMax, Color3f color) throws ParseException {
+										float tMin, float tMax, Color3f color) throws ExpressionParseException {
 		Parametric1D pp = new Parametric1D(xExpr, yExpr, zExpr, tMin, tMax);
 		Shape3D shape = pp.getPlot();
 		String hashString = "1D" + xExpr + yExpr + zExpr;
@@ -127,7 +128,7 @@ public class Plotter3D extends JPanel{
 	}
 	
 	public void plotParametric2D(String xExpr, String yExpr, String zExpr, 
-			float tMin, float tMax, float uMin, float uMax, Color3f color) throws ParseException {
+			float tMin, float tMax, float uMin, float uMax, Color3f color) throws ExpressionParseException {
 		Parametric2D pp = new Parametric2D(xExpr, yExpr, zExpr, tMin, tMax, uMin, uMax);
 		Shape3D shape = pp.getPlot();
 		String hashString = "2D" + xExpr + yExpr + zExpr;
@@ -136,7 +137,7 @@ public class Plotter3D extends JPanel{
 	}
 	
 	public void plotImplicit(String expr, float xMin, float xMax, float yMin, float yMax, 
-										  float zMin, float zMax, Color3f color) throws ParseException {
+										  float zMin, float zMax, Color3f color) throws ExpressionParseException {
 		ImplicitPlotter ip = new ImplicitPlotter(expr, xMin, xMax, yMin, yMax, zMin, zMax, 0.05f);
 		Shape3D shape = ip.getPlot();
 		

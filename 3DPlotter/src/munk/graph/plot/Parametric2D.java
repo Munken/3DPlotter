@@ -4,7 +4,7 @@ import javax.media.j3d.GeometryArray;
 import javax.media.j3d.Shape3D;
 import javax.vecmath.Point3f;
 
-import org.nfunk.jep.ParseException;
+import com.graphbuilder.math.ExpressionParseException;
 
 public class Parametric2D extends ParametricPlotter{
 	
@@ -20,7 +20,7 @@ public class Parametric2D extends ParametricPlotter{
 	// The mother of all constructors !
 	public Parametric2D(String xExpr, String yExpr, String zExpr, 
 						float tMin, float tMax, float uMin, float uMax, 
-						String[] varNames, float stepSize) throws ParseException {
+						String[] varNames, float stepSize) throws ExpressionParseException {
 		
 		super(xExpr, yExpr, zExpr, varNames, new float[] {tMin, uMin});
 		
@@ -36,12 +36,12 @@ public class Parametric2D extends ParametricPlotter{
 	}
 	
 	public Parametric2D(String xExpr, String yExpr, String zExpr, 
-			float tMin, float tMax, float uMin, float uMax, float stepSize) throws ParseException {
+			float tMin, float tMax, float uMin, float uMax, float stepSize) throws ExpressionParseException  {
 		this(xExpr, yExpr, zExpr, tMin, tMax, uMin, uMax, STD_VAR_NAMES, stepSize);
 	}
 	
 	public Parametric2D(String xExpr, String yExpr, String zExpr, 
-			float tMin, float tMax, float uMin, float uMax) throws ParseException {
+			float tMin, float tMax, float uMin, float uMax) throws ExpressionParseException {
 		this(xExpr, yExpr, zExpr, tMin, tMax, uMin, uMax, 0.1f);
 	}
 
