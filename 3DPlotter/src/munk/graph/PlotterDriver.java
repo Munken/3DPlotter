@@ -25,7 +25,7 @@ public class PlotterDriver {
 //        p.plotFunction(-i, i, -i, i, "z = x", Colors.RED);
 //        p.plotFunction(-i, i, -i, i, "x = y", Colors.CYAN);
 //        p.plotFunction(-i, i, -i, i, "x = z", Colors.BLUE);
-//        p.plotFunction(-i, i, -i, i, "y = x", Colors.TURQUISE);
+//        p.plotFunction(-i, i, -i, i, "y = x", Colors.TURQUISE);	
 //        p.plotFunction("x = cos(z)*cos(y)", -i, i, -i, i, Colors.INDIGO);
 //		p.plotParametric1D("0.5*cos(t)", "0.5*sin(t)", "t/10+5", 0, (float) (2*Math.PI), Colors.RED);
 //		p.plotParametric2D("(3*(1+sin(t)) + 2*(1-cos(t)/2)*cos(u))*cos(t)",

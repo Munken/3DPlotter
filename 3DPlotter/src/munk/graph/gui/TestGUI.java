@@ -28,6 +28,8 @@ import munk.graph.plot.Plotter3D;
 
 import org.nfunk.jep.ParseException;
 
+import com.graphbuilder.math.ExpressionParseException;
+
 /**
  * A simple GUI for the 3DPlotter application.
  * @author xXx
@@ -55,6 +57,9 @@ public class TestGUI {
 	private FunctionList<Function> functionList; 
 	private int noOfFunctions;
 	private boolean maximized;
+	
+	// Option variables
+	private static final float STEP_SIZE = (float) 1; 
 	
 	/**
 	 * Launch the application.
@@ -250,7 +255,7 @@ public class TestGUI {
 	
 	// Just for now (custom colors will be available later?)
 	private void addPlot(String expr) {
-		addPlot(expr, Colors.RED);
+		addPlot(expr, Colors.BLUE);
 	}
 	
 	/*
@@ -277,17 +282,27 @@ public class TestGUI {
 	 */
 	private boolean setPlot(int index, String newExpr, Color3f color) {
 		// Fixed zoom level for now
-		int i = 3;
+		int i = 1;
+		// Try evaluating the function using jep.
 		try {
 			plotter.plotFunction(newExpr,-i, i, -i, i, color);
 			functionList.get(index).setEquation(newExpr);
 			return true;
-		} catch (ParseException e) {
-			// TODO Hvis der trykkes enter fanges den også af plotfeltet.
-			String message = ("Unable to parse equation. Please try again.");
-			JLabel label = new JLabel(message,JLabel.CENTER);
-			JOptionPane.showMessageDialog(frame,label);
-			return false;
+		} 
+		// Try to plot using implicit plotter.
+		catch (ParseException e1) {
+			try{
+				plotter.plotImplicit(newExpr, -i, i, -i, i, -i, STEP_SIZE, color);
+				return true;
+			}
+			// Catch error.
+			catch (ExpressionParseException e2) {
+				// TODO Hvis der trykkes enter fanges den også af plotfeltet.
+				String message = ("Unable to parse equation. Please try again.");
+				JLabel label = new JLabel(message,JLabel.CENTER);
+				JOptionPane.showMessageDialog(frame,label);
+				return false;
+			}
 		}
 		finally{
 			frame.pack();
@@ -337,23 +352,44 @@ public class TestGUI {
 	 * Spawn an edit dialog and process the input.
 	 */
 	private void spawnEditDialog(Function currentFunction) {
-		// Spawn the edit dialog.
 		String curExpr = currentFunction.getEquation();
+		
+		// Set up dialog.
+		JPanel inputPanel = new JPanel();
+		GridBagLayout gbl_inputPanel = new GridBagLayout();
+		gbl_inputPanel.columnWidths = new int[]{5, 193, 20, 5, 0};
+		gbl_inputPanel.rowHeights = new int[]{5, 20, 0};
+		gbl_inputPanel.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gbl_inputPanel.rowWeights = new double[]{0.0, 0.0, Double.MIN_VALUE};
+		inputPanel.setLayout(gbl_inputPanel);
+		
 		JTextField equation = new JTextField(curExpr);
-		String currentColor = Colors.getColorName(currentFunction.getColor());
-		String color = (String) JOptionPane.showInputDialog(
-		                    frame,
-		                    equation,
-		                    "Edit function",
-		                    JOptionPane.PLAIN_MESSAGE,
-		                    null, Colors.getAllColorNames(),
-		                    currentColor);
+		GridBagConstraints gbc_equation = new GridBagConstraints();
+		gbc_equation.fill = GridBagConstraints.HORIZONTAL;
+		gbc_equation.anchor = GridBagConstraints.NORTH;
+		gbc_equation.insets = new Insets(0, 0, 0, 5);
+		gbc_equation.gridx = 1;
+		gbc_equation.gridy = 1;
+		inputPanel.add(equation, gbc_equation);
+		
+		JComboBox<Icon> colors = new JComboBox<Icon>(Colors.getAllColors());
+		GridBagConstraints gbc_colors = new GridBagConstraints();
+		gbc_colors.insets = new Insets(0, 0, 0, 5);
+		gbc_colors.anchor = GridBagConstraints.NORTHWEST;
+		gbc_colors.gridx = 2;
+		gbc_colors.gridy = 1;
+		inputPanel.add(colors, gbc_colors);
+		
+		JOptionPane.showMessageDialog(frame, inputPanel, "Edit Function", JOptionPane.PLAIN_MESSAGE, null);
+		
 		// Update function in case of changes.
+		ColorIcon selectedIcon = (ColorIcon) colors.getSelectedItem();
 		String newExpr = equation.getText();
+		Color3f newColor = selectedIcon.getColor();
 		if (!curExpr.equals(newExpr)) {
-			updateFunction(currentFunction, newExpr, Colors.getColor(color));
-		} else if (color != null && !currentColor.equals(color)) {
-			changeColor(currentFunction, Colors.getColor(color));
+			updateFunction(currentFunction, newExpr, newColor);
+		} else if (newColor != null && !currentFunction.getColor().equals(newColor)) {
+			changeColor(currentFunction, newColor);
 		}
 	}
 }
