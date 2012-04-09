@@ -104,15 +104,14 @@ public class ImplicitPlotter {
 					
 					if (facets > 0) {
 						for (int i = 0; i < facets; i++) {
-							triangles.add(tri[i]);
+							Triangle newTri = new Triangle(tri[i]);
+							triangles.add(newTri);
 						}
 					}
 				}
 			}
 		}
-		
-		TriangleArray triArray = new TriangleArray(triangles.size(), TriangleArray.COORDINATES);
-		
+		TriangleArray triArray = new TriangleArray(3*triangles.size(), TriangleArray.COORDINATES);
 		int vertice = 0;
 		for (Triangle t : triangles) {
 			for (int i = 0; i < 3; i++) {

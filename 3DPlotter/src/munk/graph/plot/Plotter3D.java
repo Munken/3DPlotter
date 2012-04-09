@@ -8,8 +8,7 @@ import javax.media.j3d.*;
 import javax.swing.JPanel;
 import javax.vecmath.*;
 
-import munk.graph.appearance.ColorAppearance;
-import munk.graph.appearance.Colors;
+import munk.graph.appearance.*;
 import munk.graph.rotaters.KeyRotate;
 import munk.graph.rotaters.ViewZoomer;
 
@@ -140,7 +139,16 @@ public class Plotter3D extends JPanel{
 		ImplicitPlotter ip = new ImplicitPlotter(xMin, xMax, yMin, yMax, zMin, zMax, 0.1f);
 		Shape3D shape = ip.getPlot();
 		
-		postPlot(shape, Colors.RED, expr);
+		shape.setAppearance(new ColorAppearance(Colors.RED));
+		
+		BranchGroup bg = new BranchGroup();
+		bg.setCapability(BranchGroup.ALLOW_DETACH);
+		bg.addChild(shape);
+		
+		plots.addChild(bg);
+		
+		updateAxes();
+		adjustZoom();
 	}
 	
 	private void postPlot(Shape3D shape, Color3f color, String hashString) {
