@@ -135,20 +135,13 @@ public class Plotter3D extends JPanel{
 		postPlot(shape, color, hashString);
 	}
 	
-	public void plotImplicit(String expr, float xMin, float xMax, float yMin, float yMax, float zMin, float zMax) {
-		ImplicitPlotter ip = new ImplicitPlotter(xMin, xMax, yMin, yMax, zMin, zMax, 0.1f);
+	public void plotImplicit(String expr, float xMin, float xMax, float yMin, float yMax, 
+										  float zMin, float zMax, Color3f color) throws ParseException {
+		ImplicitPlotter ip = new ImplicitPlotter(expr, xMin, xMax, yMin, yMax, zMin, zMax, 0.05f);
 		Shape3D shape = ip.getPlot();
 		
-		shape.setAppearance(new ColorAppearance(Colors.RED));
-		
-		BranchGroup bg = new BranchGroup();
-		bg.setCapability(BranchGroup.ALLOW_DETACH);
-		bg.addChild(shape);
-		
-		plots.addChild(bg);
-		
-		updateAxes();
-		adjustZoom();
+		String hashString = expr;
+		postPlot(shape, color, hashString);
 	}
 	
 	private void postPlot(Shape3D shape, Color3f color, String hashString) {

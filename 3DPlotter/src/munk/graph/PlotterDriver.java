@@ -30,7 +30,7 @@ public class PlotterDriver {
 //								 "(4+2*(1-cos(t)/2)*cos(u))*sin(t)", 
 //								 "-2*(1-cos(t)/2) * sin(u)", 0, (float) (2*Math.PI), 0, 6.28f, Colors.BLUE);
 		
-		p.plotImplicit("x", -i, i, -i, i, -i, i);
+		p.plotImplicit("x^2 + y^2 + z^2 = 1", -i, i, -i, i, -i, i, Colors.RED);
 //		p.plotParametricFunction("0.5*cos(t)", "t/5", "0.5*sin(t)", 0, (float) (5*Math.PI));
 		
 		final JTextField function = new JTextField();
@@ -40,7 +40,8 @@ public class PlotterDriver {
 			public void keyReleased(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 						try {
-							p.plotFunction(function.getText(), -i, i, -i, i, Colors.RED);
+//							p.plotFunction(function.getText(), -i, i, -i, i, Colors.RED);
+							p.plotImplicit(function.getText(), -i, i, -i, i, -i, i, Colors.RED);
 						} catch (ParseException e1) {
 							e1.printStackTrace();
 						}
