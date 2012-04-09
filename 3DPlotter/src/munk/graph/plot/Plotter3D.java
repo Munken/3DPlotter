@@ -9,6 +9,7 @@ import javax.swing.JPanel;
 import javax.vecmath.*;
 
 import munk.graph.appearance.ColorAppearance;
+import munk.graph.appearance.Colors;
 import munk.graph.rotaters.KeyRotate;
 import munk.graph.rotaters.ViewZoomer;
 
@@ -133,6 +134,13 @@ public class Plotter3D extends JPanel{
 		String hashString = "2D" + xExpr + yExpr + zExpr;
 
 		postPlot(shape, color, hashString);
+	}
+	
+	public void plotImplicit(String expr, float xMin, float xMax, float yMin, float yMax, float zMin, float zMax) {
+		ImplicitPlotter ip = new ImplicitPlotter(xMin, xMax, yMin, yMax, zMin, zMax, 0.1f);
+		Shape3D shape = ip.getPlot();
+		
+		postPlot(shape, Colors.RED, expr);
 	}
 	
 	private void postPlot(Shape3D shape, Color3f color, String hashString) {
