@@ -248,7 +248,7 @@ public class TestGUI {
 	
 	// Just for now (custom colors will be available later?)
 	private void addPlot(String expr) {
-		addPlot(expr, Colors.BLUE);
+		addPlot(expr, Colors.RED);
 	}
 	
 	/*

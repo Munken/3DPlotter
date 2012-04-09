@@ -140,8 +140,11 @@ public class Plotter3D extends JPanel{
 		ImplicitPlotter ip = new ImplicitPlotter(expr, xMin, xMax, yMin, yMax, zMin, zMax, 0.05f);
 		Shape3D shape = ip.getPlot();
 		
-		String hashString = expr;
-		postPlot(shape, color, hashString);
+		// TODO What todo if nothing should be plotted ?
+		if (shape != null) {
+			String hashString = expr;
+			postPlot(shape, color, hashString);
+		}
 	}
 	
 	private void postPlot(Shape3D shape, Color3f color, String hashString) {

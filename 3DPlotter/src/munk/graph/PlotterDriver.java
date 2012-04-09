@@ -18,7 +18,7 @@ public class PlotterDriver {
 		final JFrame frame = new JFrame("Mega ultra");
 		
 		final Plotter3D p = new Plotter3D();
-		final float i = 1.1f;
+		final float i = .3f;
 //		p.plotFunction("z = y", i, -i, i, -i, Colors.MAGENTA);
 //        p.plotFunction(-i, i, -i, i, "z = x", Colors.RED);
 //        p.plotFunction(-i, i, -i, i, "x = y", Colors.CYAN);
@@ -31,6 +31,7 @@ public class PlotterDriver {
 //								 "-2*(1-cos(t)/2) * sin(u)", 0, (float) (2*Math.PI), 0, 6.28f, Colors.BLUE);
 		
 		p.plotImplicit("x^2 + y^2 + z^2 = 1", -i, i, -i, i, -i, i, Colors.RED);
+//		p.plotImplicit("x^2 + y^2 + z^2 = 1", 0, i, 0, i, 0, i, Colors.RED);
 //		p.plotParametricFunction("0.5*cos(t)", "t/5", "0.5*sin(t)", 0, (float) (5*Math.PI));
 		
 		final JTextField function = new JTextField();

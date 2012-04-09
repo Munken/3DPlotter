@@ -20,10 +20,16 @@ public class ImplicitPlotter {
 	private static Pattern PATTERN = Pattern.compile("([^=]+)=([^=]+)$");
 	private float xMin;
 	private float xMax;
+	private int xLength;
+	
 	private float yMin;
 	private float yMax;
+	private int yLength;
+	
 	private float zMin;
 	private float zMax;
+	private int zLength;
+	
 	private float stepsize;
 	private Shape3D plot;
 	
@@ -35,13 +41,17 @@ public class ImplicitPlotter {
 			float yMax, float zMin, float zMax, float stepsize) throws ParseException {
 		
 		expr = preParse(expr);
-		System.out.println(expr);
 		this.xMin = xMin;
 		this.xMax = xMax;
 		this.yMin = yMin;
 		this.yMax = yMax;
 		this.zMin = zMin;
 		this.zMax = zMax;
+		
+		xLength = (int) Math.ceil((xMax - xMin) / stepsize) + 1;
+		yLength = (int) Math.ceil((yMax - yMin) / stepsize) + 1;
+		zLength = (int) Math.ceil((zMax - zMin) / stepsize) + 1;
+		
 		this.stepsize = stepsize;
 		
 		jep = new JEP();
@@ -86,11 +96,25 @@ public class ImplicitPlotter {
 		for (int q = 0; q < corners.length; q++) {
 			corners[q] = new Point3f();
 		}
+
+		
+		long current = System.currentTimeMillis();
+		float z = zMin;
+		
+		float[][] lower = bottomLayerValues();
+		float[][] upper = new float[yLength][xLength];
 		
 		List<Point3f> triangles = new ArrayList<Point3f>();
-		for (float z = zMin; z <= zMax; z += stepsize) {
-			for (float y = yMin; y <= yMax; y += stepsize) {
-				for (float x = xMin; x < xMax; x += stepsize) {
+		for (int k = 0; k < zLength; k++) {
+		
+//			calcEdges(upper, z+stepsize);
+			
+			
+			float y = yMin;
+			for (int j = 0; j < yLength; j++) {
+				
+				float x = xMin;
+				for (int i = 0; i < xLength; i++) {
 					
 					corners[0].x = x;
 					corners[0].y = y;
@@ -137,28 +161,40 @@ public class ImplicitPlotter {
 					int facets = m.Pologynise(grid, tri, 0);
 					
 					if (facets > 0) {
-						for (int i = 0; i < facets; i++) {
-							addVerticesToList(tri[i], triangles);
+						for (int q = 0; q < facets; q++) {
+							addVerticesToList(tri[q], triangles);
 						}
 					}
+					
+					x += stepsize;
 				}
+				
+				y += stepsize;
 			}
+			z += stepsize;
 		}
 		
-		GeometryInfo gi = new GeometryInfo(GeometryInfo.TRIANGLE_ARRAY);
-		Point3f[] points = new Point3f[triangles.size()]; 
-		gi.setCoordinates((Point3f[]) triangles.toArray(points));
-		
-		NormalGenerator ng = new NormalGenerator();
-		ng.generateNormals(gi);
-		
-		return new Shape3D(gi.getGeometryArray());
+		if (triangles.size() >= 3) {
+			GeometryInfo gi = new GeometryInfo(GeometryInfo.TRIANGLE_ARRAY);
+			Point3f[] points = new Point3f[triangles.size()];
+			gi.setCoordinates((Point3f[]) triangles.toArray(points));
+			NormalGenerator ng = new NormalGenerator();
+			ng.generateNormals(gi);
+			System.out.println(System.currentTimeMillis() - current);
+			return new Shape3D(gi.getGeometryArray());
+		} else 
+			return null;
 	}
 	
 	private float value(Point3f point) {
-		jep.addVariable("x", point.x);
-		jep.addVariable("y", point.y);
-		jep.addVariable("z", point.z);
+		return value(point.x, point.y, point.z);
+//		return point.x*point.x + point.y*point.y + point.z*point.z - 1;
+	}
+	
+	private float value(float x, float y, float z) {
+		jep.addVariable("x", x);
+		jep.addVariable("y", y);
+		jep.addVariable("z", z);
 		
 		try {
 			double value = (double) jep.evaluate(node);
@@ -166,13 +202,56 @@ public class ImplicitPlotter {
 		} catch (ParseException e) {
 			return Float.NaN;
 		}
-//		return point.x*point.x + point.y*point.y + point.z*point.z - 1;
+//		return x*x + y*y + z*z - 1;
 	}
 	
 	private void addVerticesToList(Triangle tri, List<Point3f> list) {
 		for (Point3f vertex : tri) {
 			Point3f newVertex = (Point3f) vertex.clone();
 			list.add(newVertex);
+		}
+	}
+	
+	private float[][] bottomLayerValues() {
+		float[][] result = new float[yLength][xLength];
+		
+		float y = yMin;
+		for (int j = 0; j < yLength; j++) {
+			float x = xMin;
+			for (int i = 0; i < xLength; i++) {
+				result[j][i] = value(x, y, zMin);
+				x += stepsize;
+			}
+			y += stepsize;
+		}
+		
+		return result;
+	}
+	
+	private void calcEdges(float[][] upperValues, float z) {
+		float y = yMin;
+		for (int j = 0; j <= 1; j++) {
+			
+			float x = xMin;
+			for (int i = 0; i < xLength; i++) {
+			
+				upperValues[j][i] = value(x, y, z);
+				x += stepsize;
+			}
+			
+			y += stepsize;
+		}
+		
+		for (int j = 0; j < yLength; j++) {
+			
+			float x = xMin;
+			for (int i = 0; i <= 1; i++) {
+			
+				upperValues[j][i] = value(x, y, z);
+				x += stepsize;
+			}
+			
+			y += stepsize;
 		}
 	}
 	
