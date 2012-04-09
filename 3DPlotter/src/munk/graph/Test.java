@@ -1,13 +1,16 @@
 package munk.graph;
 
+import javax.vecmath.Point3f;
+
 
 public class Test {
-	
-	public Test() {
+
+
+	public static void main(String[] args) {
 
 	}
 	
-	public static void main(String[] args) {
-		System.out.println("y= 2".matches("^y *=.*"));
+	private static float value(Point3f point) {
+		return point.x*point.x + point.y*point.y + point.z*point.z - 1;
 	}
 }

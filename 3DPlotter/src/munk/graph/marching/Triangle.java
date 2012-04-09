@@ -1,8 +1,10 @@
 package munk.graph.marching;
 
+import java.util.Iterator;
+
 import javax.vecmath.Point3f;
 
-public class Triangle {
+public class Triangle implements Iterable<Point3f>{
 	Point3f[] vertices;
 	
 	public Triangle(Triangle triangle) {
@@ -42,5 +44,28 @@ public class Triangle {
 			result += p + ", ";
 		}
 		return result.substring(0, result.length()-2) + "]";
+	}
+
+	@Override
+	public Iterator<Point3f> iterator() {
+		return new Iterator<Point3f>() {
+			int index = 0;
+			
+			@Override
+			public boolean hasNext() {
+				return index < vertices.length;
+			}
+
+			@Override
+			public Point3f next() {
+				return vertices[index++];
+			}
+
+			@Override
+			public void remove() {
+				throw new UnsupportedOperationException();
+			}
+
+		};
 	}
 }
