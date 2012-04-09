@@ -271,7 +271,7 @@ public class TestGUI {
 			return true;
 		} 
 		// Try to plot using implicit plotter.
-		catch (ExpressionParseException e1) {
+		catch (ExpressionParseException | IllegalStateException e1) {
 			try{
 				plotter.plotImplicit(newExpr, -i, i, -i, i, -i, STEP_SIZE, color);
 				return true;

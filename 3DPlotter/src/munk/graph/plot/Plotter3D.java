@@ -148,6 +148,7 @@ public class Plotter3D extends JPanel{
 	
 	private void postPlot(Shape3D shape, Color3f color, String hashString) {
 		shape.setAppearance(new ColorAppearance(color));
+		shape.setCapability(Shape3D.ALLOW_APPEARANCE_WRITE);
 		
 		BranchGroup bg = new BranchGroup();
 		bg.setCapability(BranchGroup.ALLOW_DETACH);
