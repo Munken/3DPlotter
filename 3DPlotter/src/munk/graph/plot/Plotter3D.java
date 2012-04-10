@@ -9,8 +9,7 @@ import javax.swing.JPanel;
 import javax.vecmath.*;
 
 import munk.graph.appearance.ColorAppearance;
-import munk.graph.function.ImplicitFunction;
-import munk.graph.function.XYZFunction;
+import munk.graph.function.*;
 import munk.graph.rotaters.KeyRotate;
 import munk.graph.rotaters.ViewZoomer;
 
@@ -92,52 +91,49 @@ public class Plotter3D extends JPanel{
 
 	public void plotFunction(String expr, float xMin, float xMax, float yMin, 
 								float yMax, Color3f color) throws ExpressionParseException {
-		// TODO: Hvem skal have ansvar for appearance ?
 		
 		float[] bounds = {xMin, xMax, yMin, yMax};
 		
 		XYZFunction xyz = new XYZFunction(expr, color, bounds, 0.1f);
-//		XYZPlotter fp = new XYZPlotter(expr, xMin, xMax, yMin, yMax, 0.1f);
-//		
-//		TransformGroup tg = fp.getPlot();
-//		Shape3D shape = fp.getShape();
-//		
-//		shape.setAppearance(new ColorAppearance(color));
-//		shape.setCapability(Shape3D.ALLOW_APPEARANCE_WRITE);
-////		shape.setAppearance(new GridAppearance(color));
-//		
-//		BranchGroup bg = new BranchGroup();
-//		bg.setCapability(BranchGroup.ALLOW_DETACH);
-//		bg.addChild(tg);
-//		bg.compile();
-//		
-//		plots.addChild(bg);
-//		
-//		updateAxes();
-//		adjustZoom();
-//		
-//		functions.put(expr, bg);
-//		shapes.put(expr, shape);
 		
+		BranchGroup bg = xyz.getPlot();
+		
+		plots.addChild(bg);
+	
+		updateAxes();
+		adjustZoom();
 	}
+	
 
 	
 	public void plotParametric1D(String xExpr, String yExpr, String zExpr, 
 										float tMin, float tMax, Color3f color) throws ExpressionParseException {
-		Parametric1D pp = new Parametric1D(xExpr, yExpr, zExpr, tMin, tMax);
-		Shape3D shape = pp.getPlot();
-		String hashString = xExpr + yExpr + zExpr;
+		
+		float[] bounds = {tMin, tMax};
+		ParametricFunction pp = new ParametricFunction(xExpr, yExpr, zExpr, color, bounds, 0.1f);
+//		Parametric1D pp = new Parametric1D(xExpr, yExpr, zExpr, tMin, tMax);
+		BranchGroup bg = pp.getPlot();
 
-		postPlot(shape, color, hashString);
+		plots.addChild(bg);
+		
+		updateAxes();
+		adjustZoom();
 	}
 	
 	public void plotParametric2D(String xExpr, String yExpr, String zExpr, 
 			float tMin, float tMax, float uMin, float uMax, Color3f color) throws ExpressionParseException {
-		Parametric2D pp = new Parametric2D(xExpr, yExpr, zExpr, tMin, tMax, uMin, uMax);
-		Shape3D shape = pp.getPlot();
-		String hashString = xExpr + yExpr + zExpr;
-
-		postPlot(shape, color, hashString);
+		
+		String[] expressions = {xExpr, yExpr, zExpr};
+		float[] bounds = {tMin, tMax, uMin, uMax};
+		ParametricFunction pp = new ParametricFunction(expressions, color, bounds, 0.1f);
+		
+//		Parametric2D pp = new Parametric2D(xExpr, yExpr, zExpr, tMin, tMax, uMin, uMax);
+		BranchGroup bg = pp.getPlot();
+		
+		plots.addChild(bg);
+		
+		updateAxes();
+		adjustZoom();
 	}
 	
 	public void plotImplicit(String expr, float xMin, float xMax, float yMin, float yMax, 
