@@ -10,6 +10,7 @@ import javax.vecmath.*;
 
 import munk.graph.appearance.ColorAppearance;
 import munk.graph.function.ImplicitFunction;
+import munk.graph.function.XYZFunction;
 import munk.graph.rotaters.KeyRotate;
 import munk.graph.rotaters.ViewZoomer;
 
@@ -92,27 +93,31 @@ public class Plotter3D extends JPanel{
 	public void plotFunction(String expr, float xMin, float xMax, float yMin, 
 								float yMax, Color3f color) throws ExpressionParseException {
 		// TODO: Hvem skal have ansvar for appearance ?
-		FunctionPlotter fp = new FunctionPlotter(xMin, xMax, yMin, yMax, expr, 0.1f);
 		
-		TransformGroup tg = fp.getPlot();
-		Shape3D shape = fp.getShape();
+		float[] bounds = {xMin, xMax, yMin, yMax};
 		
-		shape.setAppearance(new ColorAppearance(color));
-		shape.setCapability(Shape3D.ALLOW_APPEARANCE_WRITE);
-//		shape.setAppearance(new GridAppearance(color));
-		
-		BranchGroup bg = new BranchGroup();
-		bg.setCapability(BranchGroup.ALLOW_DETACH);
-		bg.addChild(tg);
-		bg.compile();
-		
-		plots.addChild(bg);
-		
-		updateAxes();
-		adjustZoom();
-		
-		functions.put(expr, bg);
-		shapes.put(expr, shape);
+		XYZFunction xyz = new XYZFunction(expr, color, bounds, 0.1f);
+//		XYZPlotter fp = new XYZPlotter(expr, xMin, xMax, yMin, yMax, 0.1f);
+//		
+//		TransformGroup tg = fp.getPlot();
+//		Shape3D shape = fp.getShape();
+//		
+//		shape.setAppearance(new ColorAppearance(color));
+//		shape.setCapability(Shape3D.ALLOW_APPEARANCE_WRITE);
+////		shape.setAppearance(new GridAppearance(color));
+//		
+//		BranchGroup bg = new BranchGroup();
+//		bg.setCapability(BranchGroup.ALLOW_DETACH);
+//		bg.addChild(tg);
+//		bg.compile();
+//		
+//		plots.addChild(bg);
+//		
+//		updateAxes();
+//		adjustZoom();
+//		
+//		functions.put(expr, bg);
+//		shapes.put(expr, shape);
 		
 	}
 
@@ -140,7 +145,7 @@ public class Plotter3D extends JPanel{
 
 		
 		float[] bounds = {xMin, xMax, yMin, yMax, zMin, zMax};
-		ImplicitFunction ip = new ImplicitFunction(expr, color, bounds);
+		ImplicitFunction ip = new ImplicitFunction(expr, color, bounds, 0.1f);
 		
 		BranchGroup bg = ip.getPlot();
 		

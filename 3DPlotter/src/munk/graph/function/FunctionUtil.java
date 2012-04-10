@@ -1,14 +1,13 @@
 package munk.graph.function;
 
-import javax.media.j3d.BranchGroup;
-import javax.media.j3d.Shape3D;
+import javax.media.j3d.*;
 import javax.vecmath.Color3f;
 
 import munk.graph.appearance.ColorAppearance;
 
 public class FunctionUtil {
 	
-	public static BranchGroup setApperancePackInBranchGroup(Color3f color, Shape3D shape) {
+	public static BranchGroup setApperancePackInBranchGroup(Color3f color, Shape3D shape, Node handle) {
 		shape.setAppearance(new ColorAppearance(color));
 		shape.setCapability(Shape3D.ALLOW_APPEARANCE_WRITE);
 		
@@ -17,6 +16,11 @@ public class FunctionUtil {
 		bg.addChild(shape);
 		
 		return bg;
+	}
+
+	public static String[] expressionArray(String expr) {
+		String[] result = {expr};
+		return result;
 	}
 
 }
