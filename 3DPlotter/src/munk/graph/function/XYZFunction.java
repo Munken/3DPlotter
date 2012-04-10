@@ -34,6 +34,7 @@ public class XYZFunction extends AbstractFunction {
 		
 		if (shape != null) {
 			BranchGroup bg = setApperancePackInBranchGroup(getColor(), shape, tg);
+			setShape(shape);
 			return bg;
 		} else 
 			return null;

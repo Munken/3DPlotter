@@ -55,6 +55,7 @@ public class ParametricFunction extends AbstractFunction {
 		
 		if (shape != null) {
 			BranchGroup bg = FunctionUtil.setApperancePackInBranchGroup(getColor(), shape, shape);
+			setShape(shape);
 			return bg;
 		} else 
 			return null;
