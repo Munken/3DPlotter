@@ -24,5 +24,6 @@ public class GridAppearance extends Appearance{
 		mat.setLightingEnable(true);
 		setMaterial(mat);
 	}
+	
 
 }

@@ -22,4 +22,5 @@ public class ColorAppearance extends Appearance{
 		mat.setLightingEnable(true);
 		setMaterial(mat);
 	}
+	
 }

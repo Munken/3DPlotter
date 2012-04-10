@@ -305,7 +305,7 @@ public class V2GUI {
      	canvasResize();
 
 		// TEST
-		addPlot("y=x", Colors.BLUE);
+		addPlot("z = x*(cos(y)*cos(x))", Colors.BLUE);
 	}
 
 	/*
