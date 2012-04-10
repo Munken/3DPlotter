@@ -14,6 +14,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import munk.graph.function.Function;
+import javax.swing.JButton;
 
 @SuppressWarnings("serial")
 public class FunctionLabel extends JPanel{
@@ -29,17 +30,24 @@ public class FunctionLabel extends JPanel{
 		
 		// GUI representation
 		GridBagLayout gbl_fLabel = new GridBagLayout();
-		gbl_fLabel.columnWidths = new int[]{80, 20, 0};
+		gbl_fLabel.columnWidths = new int[]{0, 80, 20, 0};
 		gbl_fLabel.rowHeights = new int[]{0, 0};
-		gbl_fLabel.columnWeights = new double[]{1.0, 0.0, Double.MIN_VALUE};
+		gbl_fLabel.columnWeights = new double[]{0.0, 1.0, 0.0, Double.MIN_VALUE};
 		gbl_fLabel.rowWeights = new double[]{1.0, Double.MIN_VALUE};
 		this.setLayout(gbl_fLabel);
+		
+		JButton btnEdit = new JButton("Edit");
+		GridBagConstraints gbc_btnEdit = new GridBagConstraints();
+		gbc_btnEdit.insets = new Insets(0, 0, 0, 5);
+		gbc_btnEdit.gridx = 0;
+		gbc_btnEdit.gridy = 0;
+		add(btnEdit, gbc_btnEdit);
 
 		exprField = new JTextField(mother.getExpression()[0]);
 		GridBagConstraints gbc_list = new GridBagConstraints();
 		gbc_list.insets = new Insets(0, 0, 0, 5);
 		gbc_list.fill = GridBagConstraints.HORIZONTAL;
-		gbc_list.gridx = 0;
+		gbc_list.gridx = 1;
 		gbc_list.gridy = 0;
 		this.add(exprField, gbc_list);
 		exprField.setEditable(true);
@@ -51,22 +59,17 @@ public class FunctionLabel extends JPanel{
 			
 			@Override
 			public void keyReleased(KeyEvent e) {
+				if (!exprField.getText().equals(mother.getExpression()[0])) exprField.setBackground(Color.RED);
 				if(e.getKeyCode() == KeyEvent.VK_ENTER){
 					exprField.setBackground(Color.WHITE);
 					listener.actionPerformed(new ActionEvent(mother, 0, exprField.getText()));
 				}
-				
-			}
-			
-			@Override
-			public void keyPressed(KeyEvent e) {
-				exprField.setBackground(Color.RED);
 			}
 		});
 
 		chckbx = new JCheckBox("");
 		GridBagConstraints gbc_chckbxTest = new GridBagConstraints();
-		gbc_chckbxTest.gridx = 1;
+		gbc_chckbxTest.gridx = 2;
 		gbc_chckbxTest.gridy = 0;
 		chckbx.setSelected(true);
 		this.add(chckbx, gbc_chckbxTest);

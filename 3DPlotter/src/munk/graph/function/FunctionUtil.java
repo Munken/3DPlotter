@@ -1,5 +1,7 @@
 package munk.graph.function;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -9,6 +11,7 @@ import javax.media.j3d.*;
 import javax.vecmath.Color3f;
 
 import munk.graph.appearance.ColorAppearance;
+import munk.graph.plot.*;
 
 import com.graphbuilder.math.*;
 
@@ -90,5 +93,14 @@ public class FunctionUtil {
 		String[] varNames = new String[variables.size()];
 		variables.toArray(varNames);
 		return varNames;
+	}
+	
+	public static ActionListener createActionListener(final Plotter3D plotter){
+		return new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Function source = (Function) e.getSource();
+				plotter.showPlot(source);
+			}
+		};
 	}
 }
