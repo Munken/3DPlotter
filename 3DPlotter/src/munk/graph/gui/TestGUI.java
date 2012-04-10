@@ -27,7 +27,6 @@ import munk.graph.appearance.Colors;
 import munk.graph.function.Function;
 import munk.graph.function.FunctionList;
 import munk.graph.function.FunctionUtil;
-import munk.graph.plot.Plotter3D;
 
 import com.graphbuilder.math.ExpressionParseException;
 

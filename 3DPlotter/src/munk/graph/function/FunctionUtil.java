@@ -11,6 +11,7 @@ import javax.media.j3d.*;
 import javax.vecmath.Color3f;
 
 import munk.graph.appearance.ColorAppearance;
+import munk.graph.gui.Plotter3D;
 import munk.graph.plot.*;
 
 import com.graphbuilder.math.*;
