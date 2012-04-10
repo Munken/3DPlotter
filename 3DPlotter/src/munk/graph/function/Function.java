@@ -6,9 +6,11 @@ import javax.media.j3d.Appearance;
 import javax.media.j3d.BranchGroup;
 import javax.vecmath.Color3f;
 
+import com.graphbuilder.math.ExpressionParseException;
+
 public interface Function {
 
-	public BranchGroup getPlot();
+	public BranchGroup getPlot() throws ExpressionParseException;
 	
 	public void setAppearance(Appearance a); 
 	
@@ -17,6 +19,8 @@ public interface Function {
 	public String[] getExpression();
 	
 	public Color3f getColor();
+	
+	public float[] getBounds();
 	
 	public void setColor(Color3f color);
 	

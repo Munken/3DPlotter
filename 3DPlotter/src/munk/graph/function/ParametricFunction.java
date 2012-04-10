@@ -14,10 +14,6 @@ public class ParametricFunction extends AbstractFunction {
 		super(expr,color,bounds,a);
 	}
 	
-	public ParametricFunction(AbstractFunction oldFunc, String[] newExpr) {
-		super(oldFunc, newExpr);
-	}
-
 	@Override
 	protected BranchGroup plot() {
 		return null;

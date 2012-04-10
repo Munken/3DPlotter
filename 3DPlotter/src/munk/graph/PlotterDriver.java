@@ -26,11 +26,11 @@ public class PlotterDriver {
 //        p.plotFunction(-i, i, -i, i, "y = x", Colors.TURQUISE);	
 //        p.plotFunction("x = cos(z)*cos(y)", -i, i, -i, i, Colors.INDIGO);
 //		p.plotParametric1D("0.5*cos(t)", "0.5*sin(t)", "t/10+5", 0, (float) (2*Math.PI), Colors.RED);
-//		p.plotParametric2D("(3*(1+sin(t)) + 2*(1-cos(t)/2)*cos(u))*cos(t)",
-//								 "(4+2*(1-cos(t)/2)*cos(u))*sin(t)", 
-//								 "-2*(1-cos(t)/2) * sin(u)", 0, (float) (2*Math.PI), 0, 6.28f, Colors.BLUE);
+		p.plotParametric2D("(3*(1+sin(t)) + 2*(1-cos(t)/2)*cos(u))*cos(t)",
+								 "(4+2*(1-cos(t)/2)*cos(u))*sin(t)", 
+								 "-2*(1-cos(t)/2) * sin(u)", 0, (float) (2*Math.PI), 0, 6.28f, Colors.BLUE);
 		
-		p.plotImplicit("x^2 + y^2 = 1", -i, i, -i, i, -i, i, Colors.RED);
+		p.plotImplicit("x^2 + y^2 + z^2 = 1", -i, i, -i, i, -i, i, Colors.RED);
 //		p.plotImplicit("2 - ((1/2.3)^2 *(x^2 + y^2 + z^2))^-6 - ( (1/2)^8 * (x^8 + y^8 + z^8) )^6 = 0", -i, i, -i, i, -i, i, Colors.RED);
 //		p.plotParametricFunction("0.5*cos(t)", "t/5", "0.5*sin(t)", 0, (float) (5*Math.PI));
 		

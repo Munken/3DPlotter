@@ -9,6 +9,7 @@ import javax.swing.JPanel;
 import javax.vecmath.*;
 
 import munk.graph.appearance.ColorAppearance;
+import munk.graph.function.ImplicitFunction;
 import munk.graph.rotaters.KeyRotate;
 import munk.graph.rotaters.ViewZoomer;
 
@@ -136,14 +137,21 @@ public class Plotter3D extends JPanel{
 	
 	public void plotImplicit(String expr, float xMin, float xMax, float yMin, float yMax, 
 										  float zMin, float zMax, Color3f color) throws ExpressionParseException {
-		ImplicitPlotter ip = new ImplicitPlotter(expr, xMin, xMax, yMin, yMax, zMin, zMax, 0.05f);
-		Shape3D shape = ip.getPlot();
+//		ImplicitPlotter ip = new ImplicitPlotter(expr, xMin, xMax, yMin, yMax, zMin, zMax, 0.05f);
+//		Shape3D shape = ip.getPlot();
+//		
+//		// TODO What todo if nothing should be plotted ?
+//		if (shape != null) {
+//			String hashString = expr;
+//			postPlot(shape, color, hashString);
+//		}
 		
-		// TODO What todo if nothing should be plotted ?
-		if (shape != null) {
-			String hashString = expr;
-			postPlot(shape, color, hashString);
-		}
+		float[] bounds = {xMin, xMax, yMin, yMax, zMin, zMax};
+		ImplicitFunction ip = new ImplicitFunction(expr, color, bounds);
+		plots.addChild(ip.getPlot());
+		
+		updateAxes();
+		adjustZoom();
 	}
 	
 	private void postPlot(Shape3D shape, Color3f color, String hashString) {

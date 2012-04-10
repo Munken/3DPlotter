@@ -14,10 +14,6 @@ public class XYZFunction extends AbstractFunction {
 		super(expr,color,bounds,a);
 	}
 	
-	public XYZFunction(AbstractFunction oldFunc, String[] newExpr) {
-		super(oldFunc, newExpr);
-	}
-
 	@Override
 	protected BranchGroup plot() {
 		return null;

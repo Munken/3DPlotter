@@ -8,6 +8,8 @@ import javax.media.j3d.BranchGroup;
 import javax.media.j3d.Shape3D;
 import javax.vecmath.Color3f;
 
+import com.graphbuilder.math.ExpressionParseException;
+
 public abstract class AbstractFunction implements Function{
 	
 	private String[] expr;
@@ -20,34 +22,28 @@ public abstract class AbstractFunction implements Function{
 	private Shape3D shape;
 
 	public AbstractFunction(String[] expr, Color3f color, float[] bounds, ActionListener a){
+		this(expr, color, bounds);
+		addActionListener(a);
+	}
+	
+	public AbstractFunction(String[] expr, Color3f color, float[] bounds) {
 		this.expr = expr;
 		this.visible = true;
 		this.selected = false;
 		this.color = color;
+		this.bounds = bounds;
 		listeners = new ArrayList<ActionListener>();
-		addActionListener(a);
-	}
-	
-	public AbstractFunction(AbstractFunction oldFunc, String[] newExpr) {
-		this.color = oldFunc.color;
-		this.selected = oldFunc.selected;
-		this.visible = oldFunc.visible;
-		this.listeners = oldFunc.listeners;
-		this.plot = oldFunc.plot;
-		this.bounds = oldFunc.bounds;
-		this.shape = oldFunc.shape;
-		this.expr = newExpr;
 	}
 	
 	/*
 	 * Implemented differently for each function type.
 	 */
-	protected abstract BranchGroup plot();
+	protected abstract BranchGroup plot() throws ExpressionParseException;
 	
 	/*
 	 * Lazy evaluation of plotting.
 	 */
-	public BranchGroup getPlot(){
+	public BranchGroup getPlot() throws ExpressionParseException{
 		if(plot == null){
 			plot = plot();
 		}
@@ -103,4 +99,9 @@ public abstract class AbstractFunction implements Function{
 			a.actionPerformed(event);
 		}
 	}
+
+	public float[] getBounds() {
+		return bounds;
+	}
+
 }
