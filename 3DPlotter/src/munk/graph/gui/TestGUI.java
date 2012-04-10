@@ -1,32 +1,13 @@
 package munk.graph.gui;
 
-import java.awt.EventQueue;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.*;
+import java.awt.event.*;
 
-import javax.swing.BoxLayout;
-import javax.swing.Icon;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.UIManager;
+import javax.swing.*;
 import javax.vecmath.Color3f;
 
 import munk.graph.appearance.Colors;
 import munk.graph.plot.Plotter3D;
-
-import org.nfunk.jep.ParseException;
 
 import com.graphbuilder.math.ExpressionParseException;
 
@@ -54,7 +35,7 @@ public class TestGUI {
 	private Plotter3D plotter;
 	private int controlsWidth;
 	private int controlsHeight;
-	private FunctionList<Function> functionList; 
+	private FunctionList<AbstractFunction> functionList; 
 	private int noOfFunctions;
 	private boolean maximized;
 	
@@ -85,7 +66,7 @@ public class TestGUI {
 	 */
 	public TestGUI() {
 		frame = new JFrame("Ultra Mega Epic Xtreme Plotter 3D");
-		functionList = new FunctionList<Function>();
+		functionList = new FunctionList<AbstractFunction>();
 		noOfFunctions = 0;
 		maximized = false;
 		initialize();
@@ -130,7 +111,7 @@ public class TestGUI {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if(e.getActionCommand().equals("ADD")){
-					functionPanel.add((FunctionLabel) new FunctionLabel((Function)e.getSource()));
+					functionPanel.add((FunctionLabel) new FunctionLabel((AbstractFunction)e.getSource()));
 				}
 				else if(e.getActionCommand().equals("REMOVE")){
 					functionPanel.remove(e.getID());
@@ -174,7 +155,7 @@ public class TestGUI {
      		// Edit the graph.
      		@Override
      		public void actionPerformed(ActionEvent arg0) {
-     			for(Function f : functionList){
+     			for(AbstractFunction f : functionList){
      				if(f.isSelected()) spawnEditDialog(f);
      			}
      		}
@@ -263,9 +244,9 @@ public class TestGUI {
 	 */
 	private void addPlot(String expr, Color3f color) {
 		// Create the function.
-		functionList.add(new Function(expr,color,new ActionListener() {
+		functionList.add(new AbstractFunction(expr,color,new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Function source = (Function) e.getSource();
+				AbstractFunction source = (AbstractFunction) e.getSource();
 				plotter.showPlot(source.getEquation(), source.isVisible());
 			}
 		}));
@@ -290,7 +271,7 @@ public class TestGUI {
 			return true;
 		} 
 		// Try to plot using implicit plotter.
-		catch (ParseException e1) {
+		catch (ExpressionParseException | IllegalStateException e1) {
 			try{
 				plotter.plotImplicit(newExpr, -i, i, -i, i, -i, STEP_SIZE, color);
 				return true;
@@ -312,7 +293,7 @@ public class TestGUI {
 	/*
 	 * Change the color of a function in the plot.
 	 */
-	private void changeColor(Function function, Color3f color) {
+	private void changeColor(AbstractFunction function, Color3f color) {
 		plotter.changeColor(function.getEquation(), color);
 		functionList.get(functionList.indexOf(function)).setColor(color);
 	}
@@ -327,7 +308,7 @@ public class TestGUI {
 	/*
 	 * Update a function.
 	 */
-	private void updateFunction(Function function, String newExpr, Color3f color) {
+	private void updateFunction(AbstractFunction function, String newExpr, Color3f color) {
 		plotter.removePlot(function.getEquation());
 		setPlot(functionList.indexOf(function), newExpr, color);
 	}
@@ -337,7 +318,7 @@ public class TestGUI {
 	 */
 	private void deleteSelectedFunctions() {
 		for (int i = 0; i < functionList.size(); i++) {
-			Function f = functionList.get(i);
+			AbstractFunction f = functionList.get(i);
 			if (f.isSelected()) {
 				noOfFunctions--;
 				removePlot(f.getEquation());
@@ -351,7 +332,7 @@ public class TestGUI {
 	/*
 	 * Spawn an edit dialog and process the input.
 	 */
-	private void spawnEditDialog(Function currentFunction) {
+	private void spawnEditDialog(AbstractFunction currentFunction) {
 		String curExpr = currentFunction.getEquation();
 		
 		// Set up dialog.

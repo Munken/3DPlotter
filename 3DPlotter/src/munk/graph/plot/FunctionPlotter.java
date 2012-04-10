@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 import javax.media.j3d.*;
 import javax.vecmath.Point3f;
 
-import org.nfunk.jep.ParseException;
+
 
 import com.graphbuilder.math.*;
 
@@ -38,7 +38,7 @@ public class FunctionPlotter {
 	private Shape3D shape;
 	private TransformGroup plot;
 	
-	public FunctionPlotter(float xMin, float xMax, float yMin, float yMax, String expr) throws ParseException {
+	public FunctionPlotter(float xMin, float xMax, float yMin, float yMax, String expr) throws ExpressionParseException{
 		this.xMin = xMin;
 		this.xMax = xMax;
 		this.yMin = yMin;
@@ -55,7 +55,7 @@ public class FunctionPlotter {
 		fm.loadDefaultFunctions();
 	}
 	
-	public FunctionPlotter(float xMin, float xMax, float yMin, float yMax, String expr, float stepSize) throws ParseException {
+	public FunctionPlotter(float xMin, float xMax, float yMin, float yMax, String expr, float stepSize) throws ExpressionParseException{
 		this(xMin, xMax, yMin, yMax, expr);
 		stepsize = stepSize;
 	}

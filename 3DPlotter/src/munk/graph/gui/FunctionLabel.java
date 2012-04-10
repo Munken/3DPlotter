@@ -18,9 +18,9 @@ public class FunctionLabel extends JPanel{
 	
 	JCheckBox chckbx;
 	JTextField textLabel;
-	Function mother;
+	AbstractFunction mother;
 
-	public FunctionLabel (Function f){
+	public FunctionLabel (AbstractFunction f){
 		this.mother = f;
 		// GUI representation
 		GridBagLayout gbl_fLabel = new GridBagLayout();
