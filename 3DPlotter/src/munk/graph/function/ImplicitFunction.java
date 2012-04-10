@@ -38,8 +38,6 @@ public class ImplicitFunction extends AbstractFunction {
 				bounds[0], bounds[1], bounds[2], bounds[3], bounds[4], bounds[5], getStepsize());
 	}
 	
-	
-	
 	@Override
 	protected BranchGroup plot() {
 		Shape3D shape = ip.getPlot();
