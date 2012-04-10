@@ -252,6 +252,11 @@ public class TestGUI {
 		frame.addComponentListener(new ComponentAdapter() {
 			public void componentResized(ComponentEvent e) {
 				plotter.updateSize(frame.getWidth()- controlsWidth,frame.getHeight()- controlsHeight);
+				
+				// Er nedenstående nødvendigt ?
+				// XXX Ja, med mindre du har en bedre løsning. 
+				// Problemet er, at frame.pack() resizer vinduet. 
+				// Dvs. uden dette check opnås et uendeligt loop.
 				if(!e.getSource().equals(frame) || maximized){
 					frame.pack();
 					maximized = false;
@@ -260,6 +265,7 @@ public class TestGUI {
 					frame.pack();
 					maximized = true;
 				}
+				frame.pack();
 			}
 		});
 	}
@@ -303,7 +309,6 @@ public class TestGUI {
 		// Try evaluating the function.
 		try {
 			Function newFunc = FunctionUtil.createFunction(newExpr, newColor, bounds, stepsize);
-			newFunc.addActionListener(FunctionUtil.createActionListener(plotter));
 			functionList.set(functionList.indexOf(oldFunc),newFunc);
 			plotter.removePlot(oldFunc);
 			plotter.plotFunction(newFunc);
