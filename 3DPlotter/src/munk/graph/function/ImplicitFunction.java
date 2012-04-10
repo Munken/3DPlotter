@@ -30,8 +30,6 @@ public class ImplicitFunction extends AbstractFunction {
 		super(expr,color,bounds);
 	}
 	
-	
-	
 	@Override
 	protected BranchGroup plot() {
 		float[] bounds = getBounds();

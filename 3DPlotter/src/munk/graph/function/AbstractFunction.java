@@ -65,6 +65,7 @@ public abstract class AbstractFunction implements Function{
 	public String[] getExpression(){
 		return expr;
 	}
+	
 	public Color3f getColor() {
 		return color;
 	}

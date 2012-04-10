@@ -8,6 +8,9 @@ import javax.vecmath.Color3f;
 
 import munk.graph.appearance.Colors;
 import munk.graph.function.AbstractFunction;
+import munk.graph.function.Function;
+import munk.graph.function.ImplicitFunction;
+import munk.graph.gui.FunctionLabel;
 import munk.graph.function.FunctionList;
 import munk.graph.plot.Plotter3D;
 
@@ -23,6 +26,7 @@ public class TestGUI {
 	
 	private static final int CANVAS_INITIAL_WIDTH = 600;
 	private static final int CANVAS_INITIAL_HEIGTH = 600;
+	private static final float[] DEFAULT_BOUNDS = {-1,1,-1,1,-1,1};
 	
 	// GUI Variables.
 	private static TestGUI window;
@@ -38,7 +42,8 @@ public class TestGUI {
 	private Plotter3D plotter;
 	private int controlsWidth;
 	private int controlsHeight;
-	private FunctionList<AbstractFunction> functionList; 
+	private FunctionList<Function> functionList; 
+	private FunctionList<Function> ParamfunctionList; 
 	private int noOfFunctions;
 	private boolean maximized;
 	
@@ -69,7 +74,8 @@ public class TestGUI {
 	 */
 	public TestGUI() {
 		frame = new JFrame("Ultra Mega Epic Xtreme Plotter 3D");
-		functionList = new FunctionList<AbstractFunction>();
+		functionList = new FunctionList<Function>();
+		ParamfunctionList = new FunctionList<Function>();
 		noOfFunctions = 0;
 		maximized = false;
 		initialize();
@@ -114,7 +120,7 @@ public class TestGUI {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if(e.getActionCommand().equals("ADD")){
-					functionPanel.add((FunctionLabel) new FunctionLabel((AbstractFunction)e.getSource()));
+					functionPanel.add((FunctionLabel) new FunctionLabel((Function) e.getSource()));
 				}
 				else if(e.getActionCommand().equals("REMOVE")){
 					functionPanel.remove(e.getID());
@@ -158,7 +164,7 @@ public class TestGUI {
      		// Edit the graph.
      		@Override
      		public void actionPerformed(ActionEvent arg0) {
-     			for(AbstractFunction f : functionList){
+     			for(Function f : functionList){
      				if(f.isSelected()) spawnEditDialog(f);
      			}
      		}
@@ -247,73 +253,70 @@ public class TestGUI {
 	 */
 	private void addPlot(String expr, Color3f color) {
 		// Create the function.
-		functionList.add(new AbstractFunction(expr,color,new ActionListener() {
+		try{
+		Function newFunc = new ImplicitFunction(expr,color,DEFAULT_BOUNDS);
+		newFunc.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				AbstractFunction source = (AbstractFunction) e.getSource();
-				plotter.showPlot(source.getEquation(), source.isVisible());
+				Function source = (Function) e.getSource();
+				plotter.showPlot(source);
 			}
-		}));
-		// In case of parsing success, increment counter, otherwise discard function.
-		boolean succes = setPlot(noOfFunctions, expr, color);
-		if (succes)
-			noOfFunctions++;
-		else 
-			functionList.remove(noOfFunctions);
+		});
+		functionList.add(newFunc);
+		plotter.plotFunction(newFunc);
+		noOfFunctions++;
+		frame.pack();
+		}
+		catch(ExpressionParseException e){
+			String message = e.getMessage();
+			JLabel label = new JLabel(message,JLabel.CENTER);
+			JOptionPane.showMessageDialog(frame,label);
+		}
 	}
-	
+
 	/*
 	 * Plot the function and update function label.
 	 */
-	private boolean setPlot(int index, String newExpr, Color3f color) {
-		// Fixed zoom level for now
-		int i = 1;
-		// Try evaluating the function using jep.
-		try {
-			plotter.plotFunction(newExpr,-i, i, -i, i, color);
-			functionList.get(index).setEquation(newExpr);
-			return true;
-		} 
-		// Try to plot using implicit plotter.
-		catch (ExpressionParseException | IllegalStateException e1) {
-			try{
-				plotter.plotImplicit(newExpr, -i, i, -i, i, -i, STEP_SIZE, color);
-				return true;
-			}
-			// Catch error.
-			catch (ExpressionParseException e2) {
-				// TODO Hvis der trykkes enter fanges den også af plotfeltet.
-				String message = ("Unable to parse equation. Please try again.");
-				JLabel label = new JLabel(message,JLabel.CENTER);
-				JOptionPane.showMessageDialog(frame,label);
-				return false;
-			}
-		}
-		finally{
-			frame.pack();
-		}
+	private boolean setPlot(int index, Function newFunc) {
+
 	}
-	
+
 	/*
 	 * Change the color of a function in the plot.
 	 */
-	private void changeColor(AbstractFunction function, Color3f color) {
-		plotter.changeColor(function.getEquation(), color);
-		functionList.get(functionList.indexOf(function)).setColor(color);
+	private void changeColor(Function function, Color3f newColor) {
+		plotter.changeColor(function, newColor);
+		functionList.get(functionList.indexOf(function)).setColor(newColor);
 	}
 	
 	/*
 	 * Remove a function from the plot.
 	 */
-	private void removePlot(String expr) {
-		plotter.removePlot(expr);
+	private void removePlot(Function function) {
+		plotter.removePlot(function);
 	}
 	
 	/*
 	 * Update a function.
 	 */
-	private void updateFunction(AbstractFunction function, String newExpr, Color3f color) {
-		plotter.removePlot(function.getEquation());
-		setPlot(functionList.indexOf(function), newExpr, color);
+	private void updatePlot(Function olfFunc, String newExpr, Color3f newColor) {
+		// Try evaluating the function.
+		try {
+			Function newFunc = 
+			functionList.get(index).setExpression(newFunc.getExpression());
+			return true;
+			plotter.removePlot(function);
+		} 
+		// Catch error.
+		catch (ExpressionParseException e2) {
+			// TODO Hvis der trykkes enter fanges den også af plotfeltet.
+			String message = ("Unable to parse equation. Please try again.");
+			JLabel label = new JLabel(message,JLabel.CENTER);
+			JOptionPane.showMessageDialog(frame,label);
+			return false;
+		}
+		finally{
+			frame.pack();
+		}
 	}
 
 	/*
@@ -335,8 +338,8 @@ public class TestGUI {
 	/*
 	 * Spawn an edit dialog and process the input.
 	 */
-	private void spawnEditDialog(AbstractFunction currentFunction) {
-		String curExpr = currentFunction.getEquation();
+	private void spawnEditDialog(Function f) {
+		String curExpr = f.getEquation();
 		
 		// Set up dialog.
 		JPanel inputPanel = new JPanel();
@@ -371,9 +374,9 @@ public class TestGUI {
 		String newExpr = equation.getText();
 		Color3f newColor = selectedIcon.getColor();
 		if (!curExpr.equals(newExpr)) {
-			updateFunction(currentFunction, newExpr, newColor);
-		} else if (newColor != null && !currentFunction.getColor().equals(newColor)) {
-			changeColor(currentFunction, newColor);
+			updateFunction(f, newExpr, newColor);
+		} else if (newColor != null && !f.getColor().equals(newColor)) {
+			changeColor(f, newColor);
 		}
 	}
 }

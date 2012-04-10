@@ -6,25 +6,25 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import munk.graph.function.AbstractFunction;
-
+import munk.graph.function.Function;
 
 @SuppressWarnings("serial")
 public class FunctionLabel extends JPanel{
 	
 	JCheckBox chckbx;
-	JTextField textLabel;
-	AbstractFunction mother;
+	JTextField exprField;
+	Function mother;
 
-	public FunctionLabel (AbstractFunction f){
-		this.mother = f;
+	public FunctionLabel (Function function){
+		this.mother = function;
+		
 		// GUI representation
 		GridBagLayout gbl_fLabel = new GridBagLayout();
 		gbl_fLabel.columnWidths = new int[]{80, 20, 0};
@@ -33,34 +33,26 @@ public class FunctionLabel extends JPanel{
 		gbl_fLabel.rowWeights = new double[]{1.0, Double.MIN_VALUE};
 		this.setLayout(gbl_fLabel);
 
-		textLabel = new JTextField(mother.getEquation());
+		exprField = new JTextField(mother.getExpression()[0]);
 		GridBagConstraints gbc_list = new GridBagConstraints();
 		gbc_list.insets = new Insets(0, 0, 0, 5);
 		gbc_list.fill = GridBagConstraints.HORIZONTAL;
 		gbc_list.gridx = 0;
 		gbc_list.gridy = 0;
-		this.add(textLabel, gbc_list);
-		textLabel.setEditable(false);
-		textLabel.setBackground(Color.WHITE);
-		// Update selection.
-		textLabel.addMouseListener(new MouseListener() {
+		this.add(exprField, gbc_list);
+		exprField.setEditable(true);
+
+		exprField.addKeyListener(new KeyAdapter() {
+			
 			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				mother.setSelected(!mother.isSelected());
-				if(mother.isSelected()){
-					textLabel.setBackground(Color.BLUE);
-				}
-				else{
-					textLabel.setBackground(Color.WHITE);
-				}
+			public void keyReleased(KeyEvent e) {
+				if(e.getKeyCode() == KeyEvent.VK_ENTER);
+				exprField.setBackground(Color.WHITE);
 			}
-			public void mouseEntered(MouseEvent e) {
-			}
-			public void mouseExited(MouseEvent e) {	
-			}
-			public void mousePressed(MouseEvent e) {	
-			}
-			public void mouseReleased(MouseEvent e) {
+			
+			@Override
+			public void keyPressed(KeyEvent e) {
+				exprField.setBackground(Color.RED);
 			}
 		});
 
@@ -70,6 +62,7 @@ public class FunctionLabel extends JPanel{
 		gbc_chckbxTest.gridy = 0;
 		chckbx.setSelected(true);
 		this.add(chckbx, gbc_chckbxTest);
+		
 		// Update visibility.
 		chckbx.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
