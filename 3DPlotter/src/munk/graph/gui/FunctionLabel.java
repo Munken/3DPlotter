@@ -30,10 +30,10 @@ public class FunctionLabel extends JPanel{
 		
 		// GUI representation
 		GridBagLayout gbl_fLabel = new GridBagLayout();
-		gbl_fLabel.columnWidths = new int[]{0, 80, 20, 0};
+		gbl_fLabel.columnWidths = new int[]{30, 170, 15, 0};
 		gbl_fLabel.rowHeights = new int[]{0, 0};
 		gbl_fLabel.columnWeights = new double[]{0.0, 1.0, 0.0, Double.MIN_VALUE};
-		gbl_fLabel.rowWeights = new double[]{1.0, Double.MIN_VALUE};
+		gbl_fLabel.rowWeights = new double[]{0.0, Double.MIN_VALUE};
 		this.setLayout(gbl_fLabel);
 		
 		JButton btnEdit = new JButton("Edit");
@@ -51,12 +51,26 @@ public class FunctionLabel extends JPanel{
 		gbc_list.gridy = 0;
 		this.add(exprField, gbc_list);
 		exprField.setEditable(true);
+		
+		chckbx = new JCheckBox("");
+		GridBagConstraints gbc_chckbxTest = new GridBagConstraints();
+		gbc_chckbxTest.gridx = 2;
+		gbc_chckbxTest.gridy = 0;
+		chckbx.setSelected(true);
+		this.add(chckbx, gbc_chckbxTest);
+		
+		// Spawn edit dialog on click.
+		btnEdit.addActionListener(new ActionListener() {
 
-		/*
-		 * If text is updated, color the cell RED. When "enter" is pressed, process the new function, and recolor the cell WHITE.
-		 */
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				listener.actionPerformed(new ActionEvent(mother, 1, exprField.getText()));
+			}
+		});
+
+		//If text is updated, color the cell RED. When "enter" is pressed, process the new function, and recolor the cell WHITE.
 		exprField.addKeyListener(new KeyAdapter() {
-			
+
 			@Override
 			public void keyReleased(KeyEvent e) {
 				if (!exprField.getText().equals(mother.getExpression()[0])) exprField.setBackground(Color.RED);
@@ -66,13 +80,6 @@ public class FunctionLabel extends JPanel{
 				}
 			}
 		});
-
-		chckbx = new JCheckBox("");
-		GridBagConstraints gbc_chckbxTest = new GridBagConstraints();
-		gbc_chckbxTest.gridx = 2;
-		gbc_chckbxTest.gridy = 0;
-		chckbx.setSelected(true);
-		this.add(chckbx, gbc_chckbxTest);
 		
 		// Update visibility.
 		chckbx.addActionListener(new ActionListener() {
