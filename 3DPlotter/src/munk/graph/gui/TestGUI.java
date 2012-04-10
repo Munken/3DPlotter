@@ -265,7 +265,6 @@ public class TestGUI {
 					frame.pack();
 					maximized = true;
 				}
-				frame.pack();
 			}
 		});
 	}
