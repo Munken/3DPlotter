@@ -27,6 +27,12 @@ public class FunctionList<Function> extends ArrayList<Function> {
 		return source;
 	}
 	
+	public Function set(int i, Function f){
+		Function source = f;
+		signalAll("SET",i,source);
+		return super.set(i, f);
+	}
+	
 	public void addActionListener(ActionListener a){
 		listeners.add(a);
 	}

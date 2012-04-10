@@ -70,4 +70,9 @@ public class FunctionLabel extends JPanel{
 			}
 		});
 	}
+	
+	public void setMother(Function f){
+		mother = f;
+		exprField.setText(mother.getExpression()[0]);
+	}
 }

@@ -9,6 +9,7 @@ import javax.vecmath.Color3f;
 import munk.graph.appearance.Colors;
 import munk.graph.function.AbstractFunction;
 import munk.graph.function.Function;
+import munk.graph.function.FunctionUtil;
 import munk.graph.function.ImplicitFunction;
 import munk.graph.gui.FunctionLabel;
 import munk.graph.function.FunctionList;
@@ -26,6 +27,7 @@ public class TestGUI {
 	
 	private static final int CANVAS_INITIAL_WIDTH = 600;
 	private static final int CANVAS_INITIAL_HEIGTH = 600;
+	private static final float DEFAULT_STEPSIZE = (float) 0.1;
 	private static final float[] DEFAULT_BOUNDS = {-1,1,-1,1,-1,1};
 	
 	// GUI Variables.
@@ -113,7 +115,8 @@ public class TestGUI {
      	gbc_list.fill = GridBagConstraints.HORIZONTAL;
      	gbc_list.gridx = 2;
      	gbc_list.gridy = 7;
-     	frame.getContentPane().add(functionPanel, gbc_list);
+     	frame.getContentPane().add(functionPanel, gbc_list);    	
+     	
      	// Auto update List according to the function list.
      	functionList.addActionListener(new ActionListener() {
 
@@ -124,6 +127,10 @@ public class TestGUI {
 				}
 				else if(e.getActionCommand().equals("REMOVE")){
 					functionPanel.remove(e.getID());
+				}
+				else if(e.getActionCommand().equals("SET")){
+					FunctionLabel label = (FunctionLabel) functionPanel.getComponent(e.getID());
+					label.setMother((Function) e.getSource());
 				}
 			}
 		});
@@ -254,7 +261,7 @@ public class TestGUI {
 	private void addPlot(String expr, Color3f color) {
 		// Create the function.
 		try{
-		Function newFunc = new ImplicitFunction(expr,color,DEFAULT_BOUNDS);
+		Function newFunc = FunctionUtil.createFunction(expr,color,DEFAULT_BOUNDS,DEFAULT_STEPSIZE);
 		newFunc.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Function source = (Function) e.getSource();
@@ -271,13 +278,6 @@ public class TestGUI {
 			JLabel label = new JLabel(message,JLabel.CENTER);
 			JOptionPane.showMessageDialog(frame,label);
 		}
-	}
-
-	/*
-	 * Plot the function and update function label.
-	 */
-	private boolean setPlot(int index, Function newFunc) {
-
 	}
 
 	/*
@@ -298,13 +298,14 @@ public class TestGUI {
 	/*
 	 * Update a function.
 	 */
-	private void updatePlot(Function olfFunc, String newExpr, Color3f newColor) {
+	private void updatePlot(Function oldFunc, String newExpr, Color3f newColor, float[] bounds, float stepsize) {
 		// Try evaluating the function.
 		try {
-			Function newFunc = 
-			functionList.get(index).setExpression(newFunc.getExpression());
-			return true;
-			plotter.removePlot(function);
+			Function newFunc = FunctionUtil.getFunction(oldFunc, newExpr, newColor, bounds, stepsize);
+			functionList.set(functionList.indexOf(oldFunc),newFunc);
+			plotter.removePlot(oldFunc);
+			plotter.plotFunction(newFunc);
+			frame.pack();
 		} 
 		// Catch error.
 		catch (ExpressionParseException e2) {
@@ -312,10 +313,6 @@ public class TestGUI {
 			String message = ("Unable to parse equation. Please try again.");
 			JLabel label = new JLabel(message,JLabel.CENTER);
 			JOptionPane.showMessageDialog(frame,label);
-			return false;
-		}
-		finally{
-			frame.pack();
 		}
 	}
 
@@ -324,10 +321,10 @@ public class TestGUI {
 	 */
 	private void deleteSelectedFunctions() {
 		for (int i = 0; i < functionList.size(); i++) {
-			AbstractFunction f = functionList.get(i);
+			Function f = functionList.get(i);
 			if (f.isSelected()) {
 				noOfFunctions--;
-				removePlot(f.getEquation());
+				removePlot(f);
 				functionList.remove(i);
 				i--;
 			}
@@ -339,7 +336,7 @@ public class TestGUI {
 	 * Spawn an edit dialog and process the input.
 	 */
 	private void spawnEditDialog(Function f) {
-		String curExpr = f.getEquation();
+		String curExpr = f.getExpression()[0];
 		
 		// Set up dialog.
 		JPanel inputPanel = new JPanel();
@@ -373,8 +370,9 @@ public class TestGUI {
 		ColorIcon selectedIcon = (ColorIcon) colors.getSelectedItem();
 		String newExpr = equation.getText();
 		Color3f newColor = selectedIcon.getColor();
+		// TODO: Implement the option to change bounds and stepsize.
 		if (!curExpr.equals(newExpr)) {
-			updateFunction(f, newExpr, newColor);
+			updatePlot(f, newExpr, newColor, DEFAULT_BOUNDS, DEFAULT_STEPSIZE);
 		} else if (newColor != null && !f.getColor().equals(newColor)) {
 			changeColor(f, newColor);
 		}

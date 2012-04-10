@@ -23,6 +23,14 @@ public class FunctionUtil {
 		return result;
 	}
 	
+	public static Function getFunction(String[] expr,Color3f color, float[] bounds,float stepsize){
+		// Determine function type and return the correct function.
+		return null;
+	}
 	
-
+	public static Function getFunction(Function oldFunc, String[] expr,Color3f color, float[] bounds,float stepsize){
+		return null;
+	}
+	
+	
 }
