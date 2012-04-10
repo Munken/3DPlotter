@@ -35,4 +35,15 @@ public class Colors {
 				new ColorIcon(Colors.PINK),
 				new ColorIcon(Colors.TURQUISE)};
 	}
+	
+	/*
+	 * Get the color index.
+	 */
+	public static int getIndex(Color3f color){
+		Icon[] allColors = getAllColors();
+		for(int i = 0; i < allColors.length ; i++){
+			if(((ColorIcon) allColors[i]).getColor().equals(color)) return i;
+		}
+		return -1;
+	}
 }
