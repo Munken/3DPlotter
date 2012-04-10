@@ -300,18 +300,7 @@ public class MarchingCubes {
 
 	public int Pologynise(GridCell grid, Triangle[] triangles, float isolevel) {
 		int cubeindex = 0;
-		if (grid.values[0] < isolevel) cubeindex |= 1;
-		if (grid.values[1] < isolevel) cubeindex |= 2;
-		if (grid.values[2] < isolevel) cubeindex |= 4;
-		if (grid.values[3] < isolevel) cubeindex |= 8;
-		if (grid.values[4] < isolevel) cubeindex |= 16;
-		if (grid.values[5] < isolevel) cubeindex |= 32;
-		if (grid.values[6] < isolevel) cubeindex |= 64;
-		if (grid.values[7] < isolevel) cubeindex |= 128;
-
-		/* Cube is entirely in/out of the surface */
-		if (EDGE_TABLE[cubeindex] == 0)
-			return 0;
+		cubeindex = isAtBoundary(grid, isolevel, cubeindex);
 		
 		Point3f[] vertlist = new Point3f[12]; 
 		if ((EDGE_TABLE[cubeindex] & 1) != 0)
@@ -361,6 +350,24 @@ public class MarchingCubes {
 		}
 
 		return ntriang;
+	}
+
+
+
+	private int isAtBoundary(GridCell grid, float isolevel, int cubeindex) {
+		if (grid.values[0] < isolevel) cubeindex |= 1;
+		if (grid.values[1] < isolevel) cubeindex |= 2;
+		if (grid.values[2] < isolevel) cubeindex |= 4;
+		if (grid.values[3] < isolevel) cubeindex |= 8;
+		if (grid.values[4] < isolevel) cubeindex |= 16;
+		if (grid.values[5] < isolevel) cubeindex |= 32;
+		if (grid.values[6] < isolevel) cubeindex |= 64;
+		if (grid.values[7] < isolevel) cubeindex |= 128;
+
+		/* Cube is entirely in/out of the surface */
+		if (EDGE_TABLE[cubeindex] == 0)
+			return 0;
+		return cubeindex;
 	}
 
 
