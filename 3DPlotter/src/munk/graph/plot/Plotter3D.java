@@ -97,6 +97,10 @@ public class Plotter3D extends JPanel{
 		float[] bounds = {xMin, xMax, yMin, yMax};
 		
 		XYZFunction xyz = new XYZFunction(expr, color, bounds, 0.1f);
+		
+		BranchGroup bg = xyz.getPlot();
+		
+		plots.addChild(bg);
 //		XYZPlotter fp = new XYZPlotter(expr, xMin, xMax, yMin, yMax, 0.1f);
 //		
 //		TransformGroup tg = fp.getPlot();
@@ -113,8 +117,8 @@ public class Plotter3D extends JPanel{
 //		
 //		plots.addChild(bg);
 //		
-//		updateAxes();
-//		adjustZoom();
+		updateAxes();
+		adjustZoom();
 //		
 //		functions.put(expr, bg);
 //		shapes.put(expr, shape);

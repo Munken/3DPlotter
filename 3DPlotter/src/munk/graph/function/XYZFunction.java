@@ -17,14 +17,6 @@ import com.graphbuilder.math.ExpressionParseException;
 public class XYZFunction extends AbstractFunction {
 
 	private XYZPlotter fp;
-	public XYZFunction(String expr, Color3f color, float[] bounds, float stepsize, ActionListener a) throws ExpressionParseException{
-		this(expressionArray(expr),color,bounds, stepsize, a);
-	}
-	
-	public XYZFunction(String[] expr, Color3f color, float[] bounds, float stepsize, ActionListener a) throws ExpressionParseException{
-		this(expr,color,bounds, stepsize);
-		addActionListener(a);
-	}
 	
 	public XYZFunction(String expr, Color3f color, float[] bounds, float stepsize) throws ExpressionParseException{
 		this(expressionArray(expr),color,bounds, stepsize);
