@@ -3,12 +3,9 @@ package munk.graph.function;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import javax.media.j3d.Appearance;
-import javax.media.j3d.BranchGroup;
-import javax.media.j3d.Shape3D;
-import javax.vecmath.Color3f;
 
-import com.graphbuilder.math.ExpressionParseException;
+import javax.media.j3d.*;
+import javax.vecmath.Color3f;
 
 public abstract class AbstractFunction implements Function{
 	
@@ -35,12 +32,12 @@ public abstract class AbstractFunction implements Function{
 	/*
 	 * Implemented differently for each function type.
 	 */
-	protected abstract BranchGroup plot() throws ExpressionParseException;
+	protected abstract BranchGroup plot() ;
 	
 	/*
 	 * Lazy evaluation of plotting.
 	 */
-	public BranchGroup getPlot() throws ExpressionParseException{
+	public BranchGroup getPlot() {
 		if(plot == null){
 			plot = plot();
 		}
