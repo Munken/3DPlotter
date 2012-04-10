@@ -21,9 +21,11 @@ public class FunctionLabel extends JPanel{
 	JCheckBox chckbx;
 	JTextField exprField;
 	Function mother;
+	ActionListener listener;
 
-	public FunctionLabel (Function function){
+	public FunctionLabel (Function function, ActionListener a){
 		this.mother = function;
+		this.listener = a;
 		
 		// GUI representation
 		GridBagLayout gbl_fLabel = new GridBagLayout();
@@ -42,12 +44,18 @@ public class FunctionLabel extends JPanel{
 		this.add(exprField, gbc_list);
 		exprField.setEditable(true);
 
+		/*
+		 * If text is updated, color the cell RED. When "enter" is pressed, process the new function, and recolor the cell WHITE.
+		 */
 		exprField.addKeyListener(new KeyAdapter() {
 			
 			@Override
 			public void keyReleased(KeyEvent e) {
-				if(e.getKeyCode() == KeyEvent.VK_ENTER);
-				exprField.setBackground(Color.WHITE);
+				if(e.getKeyCode() == KeyEvent.VK_ENTER){
+					exprField.setBackground(Color.WHITE);
+					listener.actionPerformed(new ActionEvent(mother, 0, exprField.getText()));
+				}
+				
 			}
 			
 			@Override
