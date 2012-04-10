@@ -59,7 +59,7 @@ public class TestGUI {
 	private int controlsWidth;
 	private int controlsHeight;
 	private FunctionList<Function> functionList; 
-	private FunctionList<Function> ParamFunctionList; 
+	private FunctionList<Function> paramFunctionList; 
 	private int noOfFunctions;
 	private boolean maximized;
 	
@@ -91,7 +91,7 @@ public class TestGUI {
 	public TestGUI() {
 		frame = new JFrame("Ultra Mega Epic Xtreme Plotter 3D");
 		functionList = new FunctionList<Function>();
-		ParamFunctionList = new FunctionList<Function>();
+		paramFunctionList = new FunctionList<Function>();
 		noOfFunctions = 0;
 		maximized = false;
 		initialize();
@@ -313,7 +313,7 @@ public class TestGUI {
 	private void updatePlot(Function oldFunc, String newExpr, Color3f newColor, float[] bounds, float stepsize) {
 		// Try evaluating the function.
 		try {
-			Function newFunc = FunctionUtil.getFunction(newExpr, newColor, bounds, stepsize);
+			Function newFunc = FunctionUtil.createFunction(newExpr, newColor, bounds, stepsize);
 			functionList.set(functionList.indexOf(oldFunc),newFunc);
 			plotter.removePlot(oldFunc);
 			plotter.plotFunction(newFunc);

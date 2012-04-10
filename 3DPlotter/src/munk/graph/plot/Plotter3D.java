@@ -9,11 +9,10 @@ import javax.swing.JPanel;
 import javax.vecmath.*;
 
 import munk.graph.appearance.ColorAppearance;
-import munk.graph.function.*;
+import munk.graph.function.Function;
 import munk.graph.rotaters.KeyRotate;
 import munk.graph.rotaters.ViewZoomer;
 
-import com.graphbuilder.math.ExpressionParseException;
 import com.sun.j3d.utils.behaviors.mouse.MouseRotate;
 import com.sun.j3d.utils.universe.SimpleUniverse;
 
@@ -104,8 +103,8 @@ public class Plotter3D extends JPanel{
 	}
 	
 	
-	public void removePlot(String expr) {
-		BranchGroup bg = functions.get(expr);
+	public void removePlot(Function function) {
+		BranchGroup bg = function.getPlot();
 		
 		if (bg != null) {
 			bg.detach();
@@ -114,17 +113,18 @@ public class Plotter3D extends JPanel{
 		adjustZoom();
 	}
 	
-	public void showPlot(String expr, boolean show) {
-		BranchGroup bg = functions.get(expr);
+	public void showPlot(Function function) {
+		BranchGroup bg = function.getPlot();
 		
-		if (bg != null) {
-			if (show) {
-				if (bg.getParent() == null) // Should be overkill. Lets keep for robustness
-					plots.addChild(bg);	
-			}
-			else bg.detach();
+		boolean show = function.isVisible();
+		if (show) {
+			if (bg.getParent() == null) // Should be overkill. Lets keep for robustness
+				plots.addChild(bg);	
 		}
+		else bg.detach();
 	}
+	
+	
 
 
 	protected void addLights(BranchGroup b) {

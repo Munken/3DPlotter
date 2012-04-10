@@ -3,15 +3,11 @@
 - GUI
 	- Flottere design :O!
 	- At selektionen af funktioner kører lidt mere smooth (må jeg lige kigge på).
-	- Farveselektor
-		- I stil med den i GMail
-		- Så skal Color3f blot benyttes
+
 
 	- Der skal lidt "ipad"-rotation på (når plottet slippes, skal det dreje lidt videre).
-	- Håndtering af nye funktionstyper
 	- GUI skal opdateres til at håndtere de nye funktionstyper
-	- Foreslår at det detekteres om der anvendes 1 eller 2 variable i parameter plots og korrekte metode kaldes derefter
-		- Dermed undgås at have for mange muligheder
+	- Zoom knap
 	
 - Plotning	
 	- Implicit plotning skal optimeres
@@ -19,9 +15,7 @@
 	- Implicit skal smukkeseres :)
 
 
-- Function objectet skal gennemtænkes/gentænkes.
-  - Skal det samme object håndtere både parameter og normale funktioner ?
-  - Tænker en overklasse m. to subtyper
+
 
 Done listen:
 - Opdatering af plots bør effektiviseres
@@ -33,3 +27,13 @@ Done listen:
 - Parameter funktioner af to variable
 - Parameter funktioner af en variabl
 - Plotning af implicitte funktioner
+- Håndtering af nye funktionstyper
+- Foreslår at det detekteres om der anvendes 1 eller 2 variable i parameter plots og korrekte metode kaldes derefter
+  - Dermed undgås at have for mange mulighede
+- Farveselektor
+  - I stil med den i GMail
+  - Så skal Color3f blot benyttes
+
+- Function objectet skal gennemtænkes/gentænkes.
+  - Skal det samme object håndtere både parameter og normale funktioner ?
+  - Tænker en overklasse m. to subtyper
