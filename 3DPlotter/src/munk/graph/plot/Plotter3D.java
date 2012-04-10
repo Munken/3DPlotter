@@ -91,6 +91,7 @@ public class Plotter3D extends JPanel{
 		BranchGroup bg = function.getPlot();
 		
 		if (bg != null) {
+			bg.compile();
 			plots.addChild(bg);
 			updateAxes();
 			adjustZoom();
