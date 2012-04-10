@@ -1,4 +1,4 @@
-package munk.graph.gui;
+package function;
 
 public class ImplicitFunction extends AbstractFunction {
 	

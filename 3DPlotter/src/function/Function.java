@@ -1,4 +1,7 @@
-package munk.graph.gui;
+package function;
+
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 import javax.media.j3d.Appearance;
 import javax.media.j3d.BranchGroup;
@@ -26,5 +29,8 @@ public interface Function {
 	
 	public void setSelected(boolean b);
 	
+	public void addActionListener(ActionListener a);
+	
+	public ArrayList<ActionListener> getListeners();
 }
 

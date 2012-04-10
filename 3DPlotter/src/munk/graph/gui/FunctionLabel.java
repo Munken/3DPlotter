@@ -13,6 +13,8 @@ import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import function.AbstractFunction;
+
 @SuppressWarnings("serial")
 public class FunctionLabel extends JPanel{
 	

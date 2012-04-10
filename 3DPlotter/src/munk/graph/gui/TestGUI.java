@@ -11,6 +11,9 @@ import munk.graph.plot.Plotter3D;
 
 import com.graphbuilder.math.ExpressionParseException;
 
+import function.AbstractFunction;
+import function.FunctionList;
+
 /**
  * A simple GUI for the 3DPlotter application.
  * @author xXx
