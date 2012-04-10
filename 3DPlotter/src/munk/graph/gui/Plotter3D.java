@@ -1,4 +1,4 @@
-package munk.graph.plot;
+package munk.graph.gui;
 
 import java.awt.GraphicsConfiguration;
 import java.util.HashMap;
@@ -10,8 +10,8 @@ import javax.vecmath.*;
 
 import munk.graph.appearance.ColorAppearance;
 import munk.graph.function.Function;
-import munk.graph.rotaters.KeyRotate;
-import munk.graph.rotaters.ViewZoomer;
+import munk.graph.plot.Axes;
+import munk.graph.rotaters.*;
 
 import com.sun.j3d.utils.behaviors.mouse.MouseRotate;
 import com.sun.j3d.utils.universe.SimpleUniverse;
@@ -54,6 +54,7 @@ public class Plotter3D extends JPanel{
 	    initMouseRotation();
 	    canvas.addKeyListener(new KeyRotate(root));
 	    canvas.addKeyListener(new ViewZoomer(universe.getViewingPlatform().getViewPlatformTransform()));
+	    canvas.addMouseWheelListener(new WheelZoomer(universe.getViewingPlatform().getViewPlatformTransform()));
 	    
 	    root.addChild(plots);
 	    group.addChild(root);
