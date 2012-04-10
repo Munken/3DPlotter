@@ -8,6 +8,7 @@ import javax.swing.JFrame;
 import javax.swing.JTextField;
 
 import munk.graph.appearance.Colors;
+import munk.graph.function.ParametricFunction;
 import munk.graph.plot.Plotter3D;
 
 import com.graphbuilder.math.ExpressionParseException;
@@ -19,13 +20,23 @@ public class PlotterDriver {
 		
 		final Plotter3D p = new Plotter3D();
 		final float i = 2.2f;
+		
+		float[] bounds = {0, (float) (2*Math.PI)};
+		ParametricFunction pp = new ParametricFunction("0.5*cos(u)", "0.5*sin(u)", "u/10", Colors.RED, bounds, 0.1f);
+		p.plotFunction(pp);
+		
+		bounds = new float[] {0, (float) (2*Math.PI), 0, 6.28f};
+		ParametricFunction p2 = new ParametricFunction("(3*(1+sin(v)) + 2*(1-cos(v)/2)*cos(u))*cos(v)",
+				 									   "(4+2*(1-cos(v)/2)*cos(u))*sin(v)", 
+				 									   "-2*(1-cos(v)/2) * sin(u)", Colors.RED, bounds, 0.1f);
+		p.plotFunction(p2);
 //		p.plotFunction("z = y", -i, i, -i, i, Colors.MAGENTA);
 //        p.plotFunction(-i, i, -i, i, "z = x", Colors.RED);
 //        p.plotFunction(-i, i, -i, i, "x = y", Colors.CYAN);
 //        p.plotFunction(-i, i, -i, i, "x = z", Colors.BLUE);
 //        p.plotFunction(-i, i, -i, i, "y = x", Colors.TURQUISE);	
 //        p.plotFunction("x = cos(z)*cos(y)", -i, i, -i, i, Colors.INDIGO);
-		p.plotParametric1D("0.5*cos(t)", "0.5*sin(t)", "t/10", 0, (float) (2*Math.PI), Colors.RED);
+//		p.plotParametric1D("0.5*cos(u)", "0.5*sin(u)", "u/10", 0, (float) (2*Math.PI), Colors.RED);
 //		p.plotParametric2D("(3*(1+sin(v)) + 2*(1-cos(v)/2)*cos(u))*cos(v)",
 //								 "(4+2*(1-cos(v)/2)*cos(u))*sin(v)", 
 //								 "-2*(1-cos(v)/2) * sin(u)", 0, (float) (2*Math.PI), 0, 6.28f, Colors.BLUE);
@@ -35,23 +46,23 @@ public class PlotterDriver {
 //		p.plotParametricFunction("0.5*cos(t)", "t/5", "0.5*sin(t)", 0, (float) (5*Math.PI));
 		
 		final JTextField function = new JTextField();
-		function.addKeyListener(new KeyAdapter() {
-			
-			@Override
-			public void keyReleased(KeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-
-//							p.plotFunction(function.getText(), -i, i, -i, i, Colors.RED);
-							try {
-								p.plotImplicit(function.getText(), -i, i, -i, i, -i, i, Colors.RED);
-							} catch (ExpressionParseException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							}
-
-				}
-			}
-		});
+//		function.addKeyListener(new KeyAdapter() {
+//			
+////			@Override
+////			public void keyReleased(KeyEvent e) {
+////				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+////
+//////							p.plotFunction(function.getText(), -i, i, -i, i, Colors.RED);
+////							try {
+////								p.plotImplicit(function.getText(), -i, i, -i, i, -i, i, Colors.RED);
+////							} catch (ExpressionParseException e1) {
+////								// TODO Auto-generated catch block
+////								e1.printStackTrace();
+////							}
+////
+////				}
+////			}
+////		});
 		frame.add(function,BorderLayout.NORTH);
      	frame.add(p);
 

@@ -34,7 +34,7 @@ public class ParametricFunction extends AbstractFunction {
 	public ParametricFunction(String[] expressions, Color3f color, float[] bounds, float stepsize) throws ExpressionParseException {
 		super(expressions, color, bounds, stepsize);
 		
-		varNames = variableNames(expressions);
+		varNames = FunctionUtil.variableNames(expressions);
 		int nVariables = varNames.length;
 		
 		String xExpr = expressions[0];
@@ -64,22 +64,5 @@ public class ParametricFunction extends AbstractFunction {
 	
 	private static String[] expressionArray(String... expr) {
 		return expr;
-	}
-	
-	private static String[] variableNames (String[] expressions) {
-		Set<String> variables = new HashSet<String>();
-		
-		for (String ex : expressions) {
-			Expression n = ExpressionTree.parse(ex);
-			
-			String[] variableNames = n.getVariableNames();
-			for (String var : variableNames) {
-				variables.add(var);
-			}
-		}
-		
-		String[] varNames = new String[variables.size()];
-		variables.toArray(varNames);
-		return varNames;
 	}
 }
