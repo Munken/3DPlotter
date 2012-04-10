@@ -1,4 +1,4 @@
-package munk.function;
+package munk.graph.function;
 
 import java.awt.event.ActionListener;
 

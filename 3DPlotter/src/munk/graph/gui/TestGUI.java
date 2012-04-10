@@ -6,9 +6,9 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.vecmath.Color3f;
 
-import munk.function.AbstractFunction;
-import munk.function.FunctionList;
 import munk.graph.appearance.Colors;
+import munk.graph.function.AbstractFunction;
+import munk.graph.function.FunctionList;
 import munk.graph.plot.Plotter3D;
 
 import com.graphbuilder.math.ExpressionParseException;

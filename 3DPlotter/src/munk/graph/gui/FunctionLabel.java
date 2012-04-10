@@ -13,7 +13,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import munk.function.AbstractFunction;
+import munk.graph.function.AbstractFunction;
 
 
 @SuppressWarnings("serial")
