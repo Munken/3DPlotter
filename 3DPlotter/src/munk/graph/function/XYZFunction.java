@@ -1,8 +1,7 @@
 package munk.graph.function;
 
-import static munk.graph.function.FunctionUtil.*;
-
-import java.awt.event.ActionListener;
+import static munk.graph.function.FunctionUtil.expressionArray;
+import static munk.graph.function.FunctionUtil.setApperancePackInBranchGroup;
 
 import javax.media.j3d.*;
 import javax.vecmath.Color3f;

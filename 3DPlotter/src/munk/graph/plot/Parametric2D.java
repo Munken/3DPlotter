@@ -16,6 +16,9 @@ public class Parametric2D extends ParametricPlotter{
 	private float   uMax;
 	
 	private float stepsize;
+	
+	private String var1;
+	private String var2;
 
 	// The mother of all constructors !
 	public Parametric2D(String xExpr, String yExpr, String zExpr, 
@@ -27,6 +30,8 @@ public class Parametric2D extends ParametricPlotter{
 		if (varNames.length > 2) 
 			throw new IllegalStateException("There must only be two parameters!");
 		
+		var1 = varNames[0];
+		var2 = varNames[1];
 		
 		this.tMin = tMin;
 		this.tMax = tMax;
@@ -55,9 +60,9 @@ public class Parametric2D extends ParametricPlotter{
 		
 		Point3f[][] points = new Point3f[tLength][uLength];
 		for (int i = 0; i < tLength; i++) {
-			setVariable("t", tValues[i]);
+			setVariable(var1, tValues[i]);
 			for (int j = 0; j < uLength; j++) {
-				setVariable("u", uValues[j]);
+				setVariable(var2, uValues[j]);
 				
 				points[i][j] = new Point3f(xValue(), yValue(), zValue());
 			}

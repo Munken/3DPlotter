@@ -1,15 +1,15 @@
 package munk.graph.function;
 
-import java.awt.event.ActionListener;
+import static munk.graph.function.FunctionUtil.expressionArray;
+import static munk.graph.function.FunctionUtil.setApperancePackInBranchGroup;
 
 import javax.media.j3d.BranchGroup;
 import javax.media.j3d.Shape3D;
 import javax.vecmath.Color3f;
 
-import com.graphbuilder.math.ExpressionParseException;
-
 import munk.graph.plot.ImplicitPlotter;
-import static munk.graph.function.FunctionUtil.*;
+
+import com.graphbuilder.math.ExpressionParseException;
 
 /*
  * Implicit functions; calculated numerically using Marching Cubes algorithm.
