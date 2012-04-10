@@ -13,7 +13,7 @@ public class FunctionUtil {
 		
 		BranchGroup bg = new BranchGroup();
 		bg.setCapability(BranchGroup.ALLOW_DETACH);
-		bg.addChild(handle);
+		bg.addChild(shape);
 		
 		return bg;
 	}
@@ -22,5 +22,7 @@ public class FunctionUtil {
 		String[] result = {expr};
 		return result;
 	}
+	
+	
 
 }

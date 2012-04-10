@@ -17,7 +17,15 @@ import com.graphbuilder.math.ExpressionParseException;
 public class ImplicitFunction extends AbstractFunction {
 
 	private ImplicitPlotter ip;
-
+	public ImplicitFunction(String expr, Color3f color, float[] bounds, float stepsize, ActionListener a) throws ExpressionParseException{
+		this(expressionArray(expr),color,bounds, stepsize, a);
+	}
+	
+	public ImplicitFunction(String[] expr, Color3f color, float[] bounds, float stepsize, ActionListener a) throws ExpressionParseException{
+		this(expr,color,bounds, stepsize);
+		addActionListener(a);
+	}
+	
 	public ImplicitFunction(String expr, Color3f color, float[] bounds, float stepsize) throws ExpressionParseException{
 		this(expressionArray(expr),color,bounds, stepsize);
 	}
