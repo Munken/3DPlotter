@@ -37,6 +37,7 @@ public class ImplicitFunction extends AbstractFunction {
 		
 		if (shape != null) {
 			BranchGroup bg = setApperancePackInBranchGroup(getColor(), shape, shape);
+			setShape(shape);
 			return bg;
 		} else 
 			return null;

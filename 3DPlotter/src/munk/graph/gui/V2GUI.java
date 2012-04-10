@@ -9,6 +9,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
@@ -17,6 +18,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
@@ -26,11 +28,8 @@ import munk.graph.appearance.Colors;
 import munk.graph.function.Function;
 import munk.graph.function.FunctionList;
 import munk.graph.function.FunctionUtil;
-import munk.graph.function.XYZFunction;
-import munk.graph.plot.Plotter3D;
 
 import com.graphbuilder.math.ExpressionParseException;
-import javax.swing.JScrollPane;
 
 
 /**
@@ -67,6 +66,15 @@ public class V2GUI {
 	private static final float STEP_SIZE = (float) 1; 
 	private JScrollPane scrollPane;
 	private JTextField stdFuncInput;
+	private JLabel label_1;
+	private JLabel label_2;
+	private JLabel label_3;
+	private JTextField txtXmin;
+	private JTextField txtYmin;
+	private JTextField txtZmin;
+	private JTextField txtXmax;
+	private JTextField txtYmax;
+	private JTextField txtZmax;
 	
 	/**
 	 * Launch the application.
@@ -106,9 +114,9 @@ public class V2GUI {
 		// Layout definition.
 		frame.setBounds(100, 100, 1000, 1000);
      	GridBagLayout gbl = new GridBagLayout();
-     	gbl.columnWidths = new int[]{10, 250, 0, 2, 0};
+     	gbl.columnWidths = new int[]{10, 0, 250, 0, 0, 2, 0, 0};
      	gbl.rowHeights = new int[]{2, 0, 0, 0};
-     	gbl.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+     	gbl.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
      	gbl.rowWeights = new double[]{0.0, 1.0, 0.0, Double.MIN_VALUE};
      	frame.getContentPane().setLayout(gbl);
      	
@@ -116,8 +124,8 @@ public class V2GUI {
      	tabbedPane = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
      	GridBagConstraints gbc_tabbedPane = new GridBagConstraints();
      	gbc_tabbedPane.insets = new Insets(0, 0, 5, 5);
-     	gbc_tabbedPane.fill = GridBagConstraints.BOTH;
-     	gbc_tabbedPane.gridx = 1;
+     	gbc_tabbedPane.fill = GridBagConstraints.VERTICAL;
+     	gbc_tabbedPane.gridx = 2;
      	gbc_tabbedPane.gridy = 1;
      	frame.getContentPane().add(tabbedPane, gbc_tabbedPane);
      	
@@ -125,7 +133,7 @@ public class V2GUI {
      	plotter = new Plotter3D();
     	GridBagConstraints gbc_plotter = new GridBagConstraints();
      	gbc_plotter.insets = new Insets(0, 0, 5, 5);
-     	gbc_plotter.gridx = 2;
+     	gbc_plotter.gridx = 4;
      	gbc_plotter.gridy = 1;
      	frame.getContentPane().add(plotter, gbc_plotter);
      	GridBagConstraints gbc_list = new GridBagConstraints();
@@ -139,21 +147,22 @@ public class V2GUI {
      	stdFuncTab = new JPanel();
      	tabbedPane.addTab("Standard equations", stdFuncTab);
      	GridBagLayout gbl_functionPanel = new GridBagLayout();
-     	gbl_functionPanel.columnWidths = new int[]{5, 225, 5, 0};
-     	gbl_functionPanel.rowHeights = new int[]{5, 0, 0, 5, 5, 0};
-     	gbl_functionPanel.columnWeights = new double[]{0.0, 0.0, 0.0, Double.MIN_VALUE};
-     	gbl_functionPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
+     	gbl_functionPanel.columnWidths = new int[]{5, 25, 50, 50, 50, 25, 5, 0};
+     	gbl_functionPanel.rowHeights = new int[]{5, 0, 0, 0, 0, 10, 5, 5, 0};
+     	gbl_functionPanel.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+     	gbl_functionPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
      	stdFuncTab.setLayout(gbl_functionPanel);
      	
      	// Function input field.
      	stdFuncInput = new JTextField();
-     	GridBagConstraints gbc_textField = new GridBagConstraints();
-     	gbc_textField.insets = new Insets(0, 0, 5, 5);
-     	gbc_textField.fill = GridBagConstraints.HORIZONTAL;
-     	gbc_textField.anchor = GridBagConstraints.NORTH;
-     	gbc_textField.gridx = 1;
-     	gbc_textField.gridy = 1;
-     	stdFuncTab.add(stdFuncInput, gbc_textField);
+     	GridBagConstraints gbc_stdFuncInput = new GridBagConstraints();
+     	gbc_stdFuncInput.gridwidth = 5;
+     	gbc_stdFuncInput.insets = new Insets(0, 0, 5, 5);
+     	gbc_stdFuncInput.fill = GridBagConstraints.HORIZONTAL;
+     	gbc_stdFuncInput.anchor = GridBagConstraints.NORTH;
+     	gbc_stdFuncInput.gridx = 1;
+     	gbc_stdFuncInput.gridy = 1;
+     	stdFuncTab.add(stdFuncInput, gbc_stdFuncInput);
      	stdFuncInput.setColumns(10);
      	stdFuncInput.addKeyListener(new KeyAdapter() {
      		// Plot the graph.
@@ -165,14 +174,91 @@ public class V2GUI {
      		}
      	});
      	
+     	// The limit data.
+     	txtXmin = new JTextField();
+     	txtXmin.setText("" + DEFAULT_BOUNDS[0]);
+     	GridBagConstraints gbc_txtXmin = new GridBagConstraints();
+     	gbc_txtXmin.insets = new Insets(0, 0, 5, 5);
+     	gbc_txtXmin.gridx = 2;
+     	gbc_txtXmin.gridy = 2;
+     	stdFuncTab.add(txtXmin, gbc_txtXmin);
+     	txtXmin.setColumns(10);
+     	
+     	label_1 = new JLabel("< X <");
+     	GridBagConstraints gbc_label_1 = new GridBagConstraints();
+     	gbc_label_1.insets = new Insets(0, 0, 5, 5);
+     	gbc_label_1.gridx = 3;
+     	gbc_label_1.gridy = 2;
+     	stdFuncTab.add(label_1, gbc_label_1);
+     	
+     	txtXmax = new JTextField();
+     	txtXmax.setText("" + DEFAULT_BOUNDS[1]);
+     	GridBagConstraints gbc_txtXman = new GridBagConstraints();
+     	gbc_txtXman.insets = new Insets(0, 0, 5, 5);
+     	gbc_txtXman.gridx = 4;
+     	gbc_txtXman.gridy = 2;
+     	stdFuncTab.add(txtXmax, gbc_txtXman);
+     	txtXmax.setColumns(10);
+     	
+     	txtYmin = new JTextField();
+     	txtYmin.setText("" + DEFAULT_BOUNDS[2]);
+     	GridBagConstraints gbc_txtYmin = new GridBagConstraints();
+     	gbc_txtYmin.insets = new Insets(0, 0, 5, 5);
+     	gbc_txtYmin.gridx = 2;
+     	gbc_txtYmin.gridy = 3;
+     	stdFuncTab.add(txtYmin, gbc_txtYmin);
+     	txtYmin.setColumns(10);
+     	
+     	label_2 = new JLabel("< Y <");
+     	GridBagConstraints gbc_label_2 = new GridBagConstraints();
+     	gbc_label_2.insets = new Insets(0, 0, 5, 5);
+     	gbc_label_2.gridx = 3;
+     	gbc_label_2.gridy = 3;
+     	stdFuncTab.add(label_2, gbc_label_2);
+     	
+     	txtYmax = new JTextField();
+     	txtYmax.setText("" + DEFAULT_BOUNDS[3]);
+     	GridBagConstraints gbc_txtYmax = new GridBagConstraints();
+     	gbc_txtYmax.insets = new Insets(0, 0, 5, 5);
+     	gbc_txtYmax.gridx = 4;
+     	gbc_txtYmax.gridy = 3;
+     	stdFuncTab.add(txtYmax, gbc_txtYmax);
+     	txtYmax.setColumns(10);
+     	
+     	txtZmin = new JTextField();
+     	txtZmin.setText("" + DEFAULT_BOUNDS[4]);
+     	GridBagConstraints gbc_txtZmin = new GridBagConstraints();
+     	gbc_txtZmin.insets = new Insets(0, 0, 5, 5);
+     	gbc_txtZmin.gridx = 2;
+     	gbc_txtZmin.gridy = 4;
+     	stdFuncTab.add(txtZmin, gbc_txtZmin);
+     	txtZmin.setColumns(10);
+     	
+     	label_3 = new JLabel("< Z <");
+     	GridBagConstraints gbc_label_3 = new GridBagConstraints();
+     	gbc_label_3.insets = new Insets(0, 0, 5, 5);
+     	gbc_label_3.gridx = 3;
+     	gbc_label_3.gridy = 4;
+     	stdFuncTab.add(label_3, gbc_label_3);
+     	
+     	txtZmax = new JTextField();
+     	txtZmax.setText("" + DEFAULT_BOUNDS[5]);
+     	GridBagConstraints gbc_txtZmax = new GridBagConstraints();
+     	gbc_txtZmax.insets = new Insets(0, 0, 5, 5);
+     	gbc_txtZmax.gridx = 4;
+     	gbc_txtZmax.gridy = 4;
+     	stdFuncTab.add(txtZmax, gbc_txtZmax);
+     	txtZmax.setColumns(10);
+     	
      	// The standard function list
      	stdFuncPanel = new JPanel();
      	stdFuncPanel.setLayout(new BoxLayout(stdFuncPanel, BoxLayout.Y_AXIS));
      	GridBagConstraints gbc_stdFuncPanel = new GridBagConstraints();
+     	gbc_stdFuncPanel.gridwidth = 5;
      	gbc_stdFuncPanel.anchor = GridBagConstraints.NORTH;
      	gbc_stdFuncPanel.insets = new Insets(0, 0, 5, 5);
      	gbc_stdFuncPanel.gridx = 1;
-     	gbc_stdFuncPanel.gridy = 3;
+     	gbc_stdFuncPanel.gridy = 6;
      	stdFuncTab.add(stdFuncPanel, gbc_stdFuncPanel);
 
      	// Auto update List according to the function list.
@@ -252,7 +338,7 @@ public class V2GUI {
 	private void addPlot(String expr, Color3f color) {
 		// Create the function.
 		try{
-		Function newFunc = FunctionUtil.createFunction(expr,color,DEFAULT_BOUNDS,DEFAULT_STEPSIZE);
+		Function newFunc = FunctionUtil.createFunction(expr,color,getBounds(),DEFAULT_STEPSIZE);
 		newFunc.addActionListener(FunctionUtil.createActionListener(plotter));
 		functionList.add(newFunc);
 		plotter.plotFunction(newFunc);
@@ -280,6 +366,7 @@ public class V2GUI {
 		// Try evaluating the function.
 		try {
 			Function newFunc = FunctionUtil.createFunction(newExpr, newColor, bounds, stepsize);
+			newFunc.addActionListener(FunctionUtil.createActionListener(plotter));
 			functionList.set(functionList.indexOf(oldFunc),newFunc);
 			plotter.removePlot(oldFunc);
 			plotter.plotFunction(newFunc);
@@ -314,6 +401,20 @@ public class V2GUI {
 		// TODO: To be implemented.
 		return Colors.BLUE;
 	}
+	
+	/*
+	 * Return current bounds (set in GUI).
+	 */
+	private float[] getBounds(){
+		float[] bounds = new float[6];
+		bounds[0] = Float.parseFloat(txtXmin.getText());
+		bounds[1] = Float.parseFloat(txtXmax.getText());
+		bounds[2] = Float.parseFloat(txtYmin.getText());
+		bounds[3] = Float.parseFloat(txtYmax.getText());
+		bounds[4] = Float.parseFloat(txtZmin.getText());
+		bounds[5] = Float.parseFloat(txtZmax.getText());
+		return bounds;
+	}
 
 	/*
 	 * Spawn an edit dialog and process the input.
@@ -346,7 +447,8 @@ public class V2GUI {
 		gbc_colors.gridx = 2;
 		gbc_colors.gridy = 1;
 		inputPanel.add(colors, gbc_colors);
-		
+		colors.setSelectedIndex(Colors.getIndex(f.getColor()));
+
 		JOptionPane.showMessageDialog(frame, inputPanel, "Edit Function", JOptionPane.PLAIN_MESSAGE, null);
 		
 		// Update function in case of changes.
@@ -355,7 +457,7 @@ public class V2GUI {
 		Color3f newColor = selectedIcon.getColor();
 		// TODO: Implement the option to change bounds and stepsize.
 		if (!curExpr.equals(newExpr)) {
-			updatePlot(f, newExpr, newColor, DEFAULT_BOUNDS, DEFAULT_STEPSIZE);
+			updatePlot(f, newExpr, newColor, getBounds(), DEFAULT_STEPSIZE);
 		} else if (newColor != null && !f.getColor().equals(newColor)) {
 			functionList.get(functionList.indexOf(f)).setColor(newColor);
 		}
