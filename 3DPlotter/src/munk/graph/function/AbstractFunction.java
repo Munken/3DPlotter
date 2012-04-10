@@ -39,11 +39,13 @@ public abstract class AbstractFunction implements Function{
 		this.expr = newExpr;
 	}
 	
+	/*
+	 * Implemented differently for each function type.
+	 */
 	protected abstract BranchGroup plot();
 	
 	/*
 	 * Lazy evaluation of plotting.
-	 * @see munk.function.Function#getPlot()
 	 */
 	public BranchGroup getPlot(){
 		if(plot == null){
