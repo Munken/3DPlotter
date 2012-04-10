@@ -10,7 +10,7 @@ public interface Function {
 
 	public BranchGroup getPlot();
 	
-	public void setAppearance(); 
+	public void setAppearance(Appearance a); 
 	
 	public Appearance getApprearance();
 

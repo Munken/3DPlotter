@@ -3,7 +3,7 @@ package munk.function;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-
+import javax.media.j3d.Appearance;
 import javax.media.j3d.BranchGroup;
 import javax.media.j3d.Shape3D;
 import javax.vecmath.Color3f;
@@ -41,10 +41,6 @@ public abstract class AbstractFunction implements Function{
 	
 	protected abstract BranchGroup plot();
 	
-	protected void setShape(Shape3D shape){
-		this.shape = shape;
-	}
-	
 	/*
 	 * Lazy evaluation of plotting.
 	 * @see munk.function.Function#getPlot()
@@ -55,7 +51,19 @@ public abstract class AbstractFunction implements Function{
 		}
 		return plot;
 	}
-
+	
+	public Appearance getApprearance(){
+		return shape.getAppearance();
+	}
+	
+	public void setAppearance(Appearance a){
+		shape.setAppearance(a);
+	}
+	
+	protected void setShape(Shape3D shape){
+		this.shape = shape;
+	}
+	
 	public String[] getExpression(){
 		return expr;
 	}
