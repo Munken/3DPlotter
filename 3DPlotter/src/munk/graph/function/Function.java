@@ -31,6 +31,8 @@ public interface Function {
 	public void setSelected(boolean b);
 	
 	public void addActionListener(ActionListener a);
+	
+	public float getStepsize();
 
 }
 

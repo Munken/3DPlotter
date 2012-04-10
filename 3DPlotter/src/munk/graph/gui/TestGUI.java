@@ -1,18 +1,32 @@
 package munk.graph.gui;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.EventQueue;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
-import javax.swing.*;
+import javax.swing.BoxLayout;
+import javax.swing.Icon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.UIManager;
 import javax.vecmath.Color3f;
 
 import munk.graph.appearance.Colors;
-import munk.graph.function.AbstractFunction;
 import munk.graph.function.Function;
-import munk.graph.function.FunctionUtil;
-import munk.graph.function.ImplicitFunction;
-import munk.graph.gui.FunctionLabel;
 import munk.graph.function.FunctionList;
+import munk.graph.function.FunctionUtil;
 import munk.graph.plot.Plotter3D;
 
 import com.graphbuilder.math.ExpressionParseException;
@@ -45,7 +59,7 @@ public class TestGUI {
 	private int controlsWidth;
 	private int controlsHeight;
 	private FunctionList<Function> functionList; 
-	private FunctionList<Function> ParamfunctionList; 
+	private FunctionList<Function> ParamFunctionList; 
 	private int noOfFunctions;
 	private boolean maximized;
 	
@@ -77,7 +91,7 @@ public class TestGUI {
 	public TestGUI() {
 		frame = new JFrame("Ultra Mega Epic Xtreme Plotter 3D");
 		functionList = new FunctionList<Function>();
-		ParamfunctionList = new FunctionList<Function>();
+		ParamFunctionList = new FunctionList<Function>();
 		noOfFunctions = 0;
 		maximized = false;
 		initialize();
@@ -123,7 +137,13 @@ public class TestGUI {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if(e.getActionCommand().equals("ADD")){
-					functionPanel.add((FunctionLabel) new FunctionLabel((Function) e.getSource()));
+					functionPanel.add(new FunctionLabel((Function) e.getSource(), new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							Function oldFunc = (Function) e.getSource();
+							String newExpr = e.getActionCommand();
+							updatePlot(oldFunc, newExpr, oldFunc.getColor(), oldFunc.getBounds(), oldFunc.getStepsize());
+						}
+					}));
 				}
 				else if(e.getActionCommand().equals("REMOVE")){
 					functionPanel.remove(e.getID());
@@ -286,7 +306,7 @@ public class TestGUI {
 	private void removePlot(Function function) {
 		plotter.removePlot(function);
 	}
-	
+
 	/*
 	 * Update a function.
 	 */
@@ -300,9 +320,9 @@ public class TestGUI {
 			frame.pack();
 		} 
 		// Catch error.
-		catch (ExpressionParseException e2) {
+		catch (ExpressionParseException e) {
 			// TODO Hvis der trykkes enter fanges den også af plotfeltet.
-			String message = ("Unable to parse equation. Please try again.");
+			String message = e.getMessage();
 			JLabel label = new JLabel(message,JLabel.CENTER);
 			JOptionPane.showMessageDialog(frame,label);
 		}
