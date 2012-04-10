@@ -10,7 +10,7 @@ import com.graphbuilder.math.ExpressionParseException;
 
 public interface Function {
 
-	public BranchGroup getPlot() throws ExpressionParseException;
+	public BranchGroup getPlot();
 	
 	public void setAppearance(Appearance a); 
 	

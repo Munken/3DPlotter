@@ -88,7 +88,15 @@ public class Plotter3D extends JPanel{
         root.setTransform(scaling);
 	}
 	
-
+	public void plotFunction(Function function) {
+		BranchGroup bg = function.getPlot();
+		
+		if (bg != null) {
+			plots.addChild(bg);
+			updateAxes();
+			adjustZoom();
+		}
+	}
 	public void plotFunction(String expr, float xMin, float xMax, float yMin, 
 								float yMax, Color3f color) throws ExpressionParseException {
 		
@@ -153,21 +161,12 @@ public class Plotter3D extends JPanel{
 		}
 	}
 	
-	private void postPlot(Shape3D shape, Color3f color, String hashString) {
-		shape.setAppearance(new ColorAppearance(color));
-		shape.setCapability(Shape3D.ALLOW_APPEARANCE_WRITE);
-		
-		BranchGroup bg = new BranchGroup();
-		bg.setCapability(BranchGroup.ALLOW_DETACH);
-		bg.addChild(shape);
-		
-		plots.addChild(bg);
-		
-		updateAxes();
-		adjustZoom();
-		
-		functions.put(hashString, bg);
-		shapes.put(hashString, shape);
+	private void postPlot(BranchGroup bg) {
+		if (bg != null) {
+			plots.addChild(bg);
+			updateAxes();
+			adjustZoom();
+		}
 	}
 	
 	public void changeColor(String expr, Color3f color) {
