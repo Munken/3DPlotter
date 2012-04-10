@@ -1,0 +1,5 @@
+package munk.function;
+
+public class XYZFunction {
+
+}
