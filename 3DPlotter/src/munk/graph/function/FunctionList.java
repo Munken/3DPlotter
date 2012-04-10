@@ -30,7 +30,7 @@ public class FunctionList<Function> extends ArrayList<Function> {
 	public Function set(int i, Function f){
 		Function source = f;
 		signalAll("SET",i,source);
-		return super.set(i, f);
+		return super.set(i, source);
 	}
 	
 	public void addActionListener(ActionListener a){

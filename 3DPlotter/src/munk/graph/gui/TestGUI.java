@@ -282,12 +282,7 @@ public class TestGUI {
 		// Create the function.
 		try{
 		Function newFunc = FunctionUtil.createFunction(expr,color,DEFAULT_BOUNDS,DEFAULT_STEPSIZE);
-		newFunc.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				Function source = (Function) e.getSource();
-				plotter.showPlot(source);
-			}
-		});
+		newFunc.addActionListener(FunctionUtil.createActionListener(plotter));
 		functionList.add(newFunc);
 		plotter.plotFunction(newFunc);
 		noOfFunctions++;
@@ -314,6 +309,7 @@ public class TestGUI {
 		// Try evaluating the function.
 		try {
 			Function newFunc = FunctionUtil.createFunction(newExpr, newColor, bounds, stepsize);
+			newFunc.addActionListener(FunctionUtil.createActionListener(plotter));
 			functionList.set(functionList.indexOf(oldFunc),newFunc);
 			plotter.removePlot(oldFunc);
 			plotter.plotFunction(newFunc);
