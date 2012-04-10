@@ -6,8 +6,6 @@ import javax.media.j3d.Appearance;
 import javax.media.j3d.BranchGroup;
 import javax.vecmath.Color3f;
 
-import com.graphbuilder.math.ExpressionParseException;
-
 public interface Function {
 
 	public BranchGroup getPlot();

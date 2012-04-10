@@ -279,14 +279,6 @@ public class TestGUI {
 			JOptionPane.showMessageDialog(frame,label);
 		}
 	}
-
-	/*
-	 * Change the color of a function in the plot.
-	 */
-	private void changeColor(Function function, Color3f newColor) {
-		plotter.changeColor(function, newColor);
-		functionList.get(functionList.indexOf(function)).setColor(newColor);
-	}
 	
 	/*
 	 * Remove a function from the plot.
@@ -301,7 +293,7 @@ public class TestGUI {
 	private void updatePlot(Function oldFunc, String newExpr, Color3f newColor, float[] bounds, float stepsize) {
 		// Try evaluating the function.
 		try {
-			Function newFunc = FunctionUtil.getFunction(oldFunc, newExpr, newColor, bounds, stepsize);
+			Function newFunc = FunctionUtil.getFunction(newExpr, newColor, bounds, stepsize);
 			functionList.set(functionList.indexOf(oldFunc),newFunc);
 			plotter.removePlot(oldFunc);
 			plotter.plotFunction(newFunc);
@@ -374,7 +366,7 @@ public class TestGUI {
 		if (!curExpr.equals(newExpr)) {
 			updatePlot(f, newExpr, newColor, DEFAULT_BOUNDS, DEFAULT_STEPSIZE);
 		} else if (newColor != null && !f.getColor().equals(newColor)) {
-			changeColor(f, newColor);
+			functionList.get(functionList.indexOf(f)).setColor(newColor);
 		}
 	}
 }

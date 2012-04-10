@@ -4,8 +4,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-import javax.media.j3d.*;
+import javax.media.j3d.Appearance;
+import javax.media.j3d.BranchGroup;
+import javax.media.j3d.Shape3D;
 import javax.vecmath.Color3f;
+
+import munk.graph.appearance.ColorAppearance;
 
 public abstract class AbstractFunction implements Function{
 	
@@ -70,6 +74,7 @@ public abstract class AbstractFunction implements Function{
 	
 	public void setColor(Color3f color) {
 		this.color = color;
+		shape.setAppearance(new ColorAppearance(color));
 	}
 	
 	public boolean isVisible(){
