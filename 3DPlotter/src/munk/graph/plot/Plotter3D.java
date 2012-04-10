@@ -137,21 +137,19 @@ public class Plotter3D extends JPanel{
 	
 	public void plotImplicit(String expr, float xMin, float xMax, float yMin, float yMax, 
 										  float zMin, float zMax, Color3f color) throws ExpressionParseException {
-//		ImplicitPlotter ip = new ImplicitPlotter(expr, xMin, xMax, yMin, yMax, zMin, zMax, 0.05f);
-//		Shape3D shape = ip.getPlot();
-//		
-//		// TODO What todo if nothing should be plotted ?
-//		if (shape != null) {
-//			String hashString = expr;
-//			postPlot(shape, color, hashString);
-//		}
+
 		
 		float[] bounds = {xMin, xMax, yMin, yMax, zMin, zMax};
 		ImplicitFunction ip = new ImplicitFunction(expr, color, bounds);
-		plots.addChild(ip.getPlot());
 		
-		updateAxes();
-		adjustZoom();
+		BranchGroup bg = ip.getPlot();
+		
+		// TODO What todo if nothing should be plotted ?
+		if (bg != null) {
+			plots.addChild(bg);
+			updateAxes();
+			adjustZoom();
+		}
 	}
 	
 	private void postPlot(Shape3D shape, Color3f color, String hashString) {

@@ -40,9 +40,11 @@ public class ImplicitFunction extends AbstractFunction {
 				bounds[0], bounds[1], bounds[2], bounds[3], bounds[4], bounds[5], 0.05f);
 		Shape3D shape = ip.getPlot();
 		
-		BranchGroup bg = setApperancePackInBranchGroup(getColor(), shape);
-				
-		return bg;
+		if (shape != null) {
+			BranchGroup bg = setApperancePackInBranchGroup(getColor(), shape);
+			return bg;
+		} else 
+			return null;
 	}
 	
 	private static String[] expressionArray(String expr) {
