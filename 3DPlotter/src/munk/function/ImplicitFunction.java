@@ -33,5 +33,4 @@ public class ImplicitFunction extends AbstractFunction {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
-}
+
