@@ -131,8 +131,7 @@ public class ImplicitPlotter {
 					corners[5].x = x + stepsize;
 					corners[5].y = y;
 					corners[5].z = z + stepsize;
-					values[5] = value(corners[5]);
-					upper[j][i+1] = values[5];
+					values[5] = upper[j][i+1];
 					
 					corners[6].x = x + stepsize;
 					corners[6].y = y + stepsize;
@@ -143,8 +142,7 @@ public class ImplicitPlotter {
 					corners[7].x = x;
 					corners[7].y = y + stepsize;
 					corners[7].z = z + stepsize;
-					values[7] = upper[j+1][i];
-									
+					values[7] = upper[j+1][i];					
 					
 					int facets = m.Pologynise(grid, tri, 0);
 					
@@ -234,9 +232,15 @@ public class ImplicitPlotter {
 	private void calcYEdge(float[][] upperValues, float z) {
 		float y = yMin;
 		float x = xMin;
-		for (int j = 0; j < 1; j++) {
-			upperValues[j][1] = value(x, y, z);
+		for (int j = 0; j < upperValues.length; j++) {
+			upperValues[j][0] = value(x, y, z);
 			y += stepsize;
+		}
+		
+		y = yMin;
+		for (int i = 0; i < upperValues[0].length; i++) {
+			upperValues[0][i] = value(x, y, z);
+			x += stepsize;
 		}
 	}
 		

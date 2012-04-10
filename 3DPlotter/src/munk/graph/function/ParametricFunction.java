@@ -1,15 +1,13 @@
 package munk.graph.function;
 
 
-import java.util.*;
-
 import javax.media.j3d.BranchGroup;
 import javax.media.j3d.Shape3D;
 import javax.vecmath.Color3f;
 
 import munk.graph.plot.*;
 
-import com.graphbuilder.math.*;
+import com.graphbuilder.math.ExpressionParseException;
 
 /*
  * Parametric functions; to be evaluated directly by Mesp.
