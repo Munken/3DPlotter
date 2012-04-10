@@ -7,6 +7,7 @@ import javax.media.j3d.Appearance;
 import javax.media.j3d.BranchGroup;
 import javax.media.j3d.Shape3D;
 import javax.vecmath.Color3f;
+import munk.graph.appearance.*;
 
 import com.graphbuilder.math.ExpressionParseException;
 
@@ -73,6 +74,7 @@ public abstract class AbstractFunction implements Function{
 	
 	public void setColor(Color3f color) {
 		this.color = color;
+		shape.setAppearance(new ColorAppearance(color));
 	}
 	
 	public boolean isVisible(){
