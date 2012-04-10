@@ -14,7 +14,7 @@ import com.graphbuilder.math.*;
 
 public class XYZPlotter {
 	
-	private static Pattern PATTERN = Pattern.compile("([xyz]) *=([^=]+)$");
+	private static Pattern PATTERN = Pattern.compile(" *([xyz]) *=([^=]+)$|([^=]+)= *([xyz]) *");
 	private static final Transform3D ROT_Y;
 	private static final Transform3D ROT_X;
 	private Transform3D rotation;
@@ -114,8 +114,8 @@ public class XYZPlotter {
 	private String preParse(String expr) {
 		Matcher m = PATTERN.matcher(expr);
 		if (m.matches()) {
-			String lhs = m.group(1).trim();
-			String rhs = m.group(2).trim();
+			String lhs = (m.group(1) != null) ? m.group(1).trim() : m.group(4);
+			String rhs = (m.group(2) != null) ? m.group(2).trim() : m.group(3);
 			
 			if (lhs.equals("x")) {
 				rotation = ROT_X;

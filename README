@@ -10,8 +10,6 @@
 	- Zoom knap
 	
 - Plotning	
-	- Implicit plotning skal optimeres
-		- Parallelisering ?
 	- Implicit skal smukkeseres :)
 
 
@@ -33,6 +31,8 @@ Done listen:
 - Farveselektor
   - I stil med den i GMail
   - Så skal Color3f blot benyttes
+- Scroll Wheel can now zoom
+
 
 - Function objectet skal gennemtænkes/gentænkes.
   - Skal det samme object håndtere både parameter og normale funktioner ?

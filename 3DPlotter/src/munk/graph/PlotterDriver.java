@@ -9,7 +9,7 @@ import javax.swing.JTextField;
 
 import munk.graph.appearance.Colors;
 import munk.graph.function.ParametricFunction;
-import munk.graph.plot.Plotter3D;
+import munk.graph.gui.Plotter3D;
 
 import com.graphbuilder.math.ExpressionParseException;
 

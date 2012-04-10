@@ -12,13 +12,13 @@ import javax.vecmath.Color3f;
 
 import munk.graph.appearance.ColorAppearance;
 import munk.graph.gui.Plotter3D;
-import munk.graph.plot.*;
 
 import com.graphbuilder.math.*;
 
 public class FunctionUtil {
 
-	private static Pattern PATTERN = Pattern.compile("( *([xyz]) *=([^=]+)$)|(([^=]+)= *([xyz]) *)");
+	private static Pattern LHS_RHS = Pattern.compile("(^.*)=(.*$)");
+	private static Pattern SEPARATION = Pattern.compile("^ *([xyz]) *=(?:(?!(?:(\\1|=))).)*$");
 	
 	public static BranchGroup setApperancePackInBranchGroup(Color3f color, Shape3D shape, Node handle) {
 		shape.setAppearance(new ColorAppearance(color));
@@ -52,13 +52,13 @@ public class FunctionUtil {
 		} 
 		
 		String expr = expressions[0];
-		Matcher m = PATTERN.matcher(expr);
+		
 		
 		Function result = null;
-		if (m.matches()) {
+		if (isXYZExpression(expr)) {
 			result = new XYZFunction(expressions, color, bounds, stepsize);
 		} else {
-			result = new ImplicitFunction(expr, color, bounds, stepsize);
+			result = new ImplicitFunction(expressions, color, bounds, stepsize);
 		}
 		
 		
@@ -71,6 +71,25 @@ public class FunctionUtil {
 		}
 		
 		return result;
+	}
+	
+	private static boolean isXYZExpression(String expr) {
+		Matcher m = SEPARATION.matcher(expr);
+		
+		for (int i = 0; i < 2; i++) {
+			
+			if (m.matches()) {
+				return true;
+			} else if (i == 0){
+				m = LHS_RHS.matcher(expr);
+				if (m.matches()) {
+					String input = m.group(2) + "=" + m.group(1);
+					m = SEPARATION.matcher(input);
+				}
+			}
+		}
+		
+		return false;
 	}
 	
 	public static Function createFunction(String expression, Color3f color, 
