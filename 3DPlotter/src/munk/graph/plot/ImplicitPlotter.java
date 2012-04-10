@@ -35,7 +35,7 @@ public class ImplicitPlotter {
 	
 	
 	public ImplicitPlotter(String expr, float xMin, float xMax, float yMin,
-			float yMax, float zMin, float zMax, float stepsize)  {
+			float yMax, float zMin, float zMax, float stepsize) throws ExpressionParseException {
 		
 		expr = preParse(expr);
 		this.xMin = xMin;

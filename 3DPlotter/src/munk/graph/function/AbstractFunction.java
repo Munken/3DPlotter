@@ -20,18 +20,15 @@ public abstract class AbstractFunction implements Function{
 	private BranchGroup plot;
 	private float[] bounds;
 	private Shape3D shape;
+	private float stepsize;
 
-	public AbstractFunction(String[] expr, Color3f color, float[] bounds, ActionListener a){
-		this(expr, color, bounds);
-		addActionListener(a);
-	}
-	
-	public AbstractFunction(String[] expr, Color3f color, float[] bounds) {
+	public AbstractFunction(String[] expr, Color3f color, float[] bounds, float stepsize) {
 		this.expr = expr;
 		this.visible = true;
 		this.selected = false;
 		this.color = color;
 		this.bounds = bounds;
+		this.stepsize = stepsize;
 		listeners = new ArrayList<ActionListener>();
 	}
 	
@@ -48,6 +45,10 @@ public abstract class AbstractFunction implements Function{
 			plot = plot();
 		}
 		return plot;
+	}
+	
+	public float getStepsize() {
+		return stepsize;
 	}
 	
 	public Appearance getApprearance(){

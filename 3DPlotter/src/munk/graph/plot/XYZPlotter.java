@@ -12,7 +12,7 @@ import javax.vecmath.Point3f;
 
 import com.graphbuilder.math.*;
 
-public class FunctionPlotter {
+public class XYZPlotter {
 	
 	private static Pattern PATTERN = Pattern.compile("([xyz]) *=([^=]+)$");
 	private static final Transform3D ROT_Y;
@@ -38,7 +38,7 @@ public class FunctionPlotter {
 	private Shape3D shape;
 	private TransformGroup plot;
 	
-	public FunctionPlotter(float xMin, float xMax, float yMin, float yMax, String expr) throws ExpressionParseException{
+	public XYZPlotter(String expr, float xMin, float xMax, float yMin, float yMax) throws ExpressionParseException{
 		this.xMin = xMin;
 		this.xMax = xMax;
 		this.yMin = yMin;
@@ -55,8 +55,8 @@ public class FunctionPlotter {
 		fm.loadDefaultFunctions();
 	}
 	
-	public FunctionPlotter(float xMin, float xMax, float yMin, float yMax, String expr, float stepSize) throws ExpressionParseException{
-		this(xMin, xMax, yMin, yMax, expr);
+	public XYZPlotter(String expr, float xMin, float xMax, float yMin, float yMax, float stepSize) throws ExpressionParseException{
+		this(expr, xMin, xMax, yMin, yMax);
 		stepsize = stepSize;
 	}
 	
