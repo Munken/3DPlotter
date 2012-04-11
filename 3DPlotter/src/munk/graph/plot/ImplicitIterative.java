@@ -31,6 +31,7 @@ public class ImplicitIterative extends AbstractImplicit{
 							 float yMin, float yMax, 
 							 float zMin, float zMax, 
 							 float stepsize) throws ExpressionParseException {
+		
 		super(expression, xMin, xMax, yMin, yMax, zMin, zMax, stepsize, stepsize, stepsize);
 		this.stepsize = stepsize;
 		
@@ -38,10 +39,13 @@ public class ImplicitIterative extends AbstractImplicit{
 	}
 	
 	public  Shape3D plot() {
+		long current = System.currentTimeMillis();
 		Point3f startCube =  findStartCube();
-		
-		if (startCube != null)
+		System.out.println(System.currentTimeMillis() - current);
+		if (startCube != null) {
 			marchCubes(startCube);
+			System.out.println(System.currentTimeMillis() - current);
+		}
 		else 
 			return null;
 
@@ -61,29 +65,43 @@ public class ImplicitIterative extends AbstractImplicit{
 		addStartCells(startCell);
 		
 		while (cells.size() > 0) {
+			// Next cell to process
 			MarchCell next = cells.remove(0);
-			System.out.println(next);
 			
-			switch (next.getMarchFace()) {
-				case 0: marchFace0(next); 
-				break;
-				
-				case 1: marchFace1(next); 
-				break;	
-				
-				case 2: marchFace2(next);
-				break;
-				
-				case 3: marchFace3(next);
-				break;
-				
-				case 4: marchFace4(next);
-				break;
-				
-				case 5: marchFace5(next);
-				break;
+			int nTriangles = MARCHER.marchCube(next, newTriangles, ISOLEVEL);
+			if (nTriangles > 0) {
+				addTriangles(nTriangles, newTriangles);
+				marchFace(next);
 			}
-			
+		}
+		visited = null;
+	}
+	
+	private void marchFace(MarchCell next) {
+		float[] values = next.getValues();
+		Point3f[] corners = next.getCorners();
+		int x = next.getX();
+		int y = next.getY();
+		int z = next.getZ();
+		
+		switch (next.getMarchFace()) {
+			case MarchCell.FACE_0: marchFace0(values, corners, x, y, z); 
+			break;
+		
+			case MarchCell.FACE_1: marchFace1(values, corners, x, y, z); 
+			break;	
+
+			case MarchCell.FACE_2: marchFace2(values, corners, x, y, z);
+			break;
+
+			case MarchCell.FACE_3: marchFace3(values, corners, x, y, z);
+			break;
+
+			case MarchCell.FACE_4: marchFace4(values, corners, x, y, z);
+			break;
+
+			case MarchCell.FACE_5: marchFace5(values, corners, x, y, z);
+			break;
 		}
 	}
 	
@@ -94,6 +112,7 @@ public class ImplicitIterative extends AbstractImplicit{
 		int x = startCell.getX();
 		int y = startCell.getY();
 		int z = startCell.getZ();
+		
 		addFace0(values, corners, x, y, z);
 		addFace1(values, corners, x, y, z);
 		addFace2(values, corners, x, y, z);
@@ -146,7 +165,7 @@ public class ImplicitIterative extends AbstractImplicit{
 		corners[7].z = startcube.z + zStepsize;
 		values[7] = value(corners[7]);
 		
-		return new MarchCell(corners, values, startX, startY, startZ);
+		return new MarchCell(corners, values, startX, startY, startZ, MarchCell.STARTING_CELL);
 	}
 	
 	private Point3f findStartCube() {
@@ -205,25 +224,14 @@ public class ImplicitIterative extends AbstractImplicit{
 		
 		return null;
 	}
-	
-	void marchFace0(MarchCell cell) {
-		float[] values = cell.getValues();
-		Point3f[] corners = cell.getCorners();
-		int x = cell.getX();
-		int y = cell.getY();
-		int z = cell.getZ();
-		
-		int nTriangles = MARCHER.marchCube(values, corners, newTriangles, ISOLEVEL);
-		if (nTriangles > 0) {
-			addTriangles(nTriangles, newTriangles);
 
-			//	marchFace0(values, corners, x, y - 1, z);
-			addFace1(values, corners, x, y, z);
-			addFace2(values, corners, x, y, z);
-			addFace3(values, corners, x, y, z);
-			addFace4(values, corners, x, y, z);
-			addFace5(values, corners, x, y, z);
-		}
+	private void marchFace0(float[] values, Point3f[] corners, int x, int y, int z) {
+//		addFace0(values, corners, x, y, z);
+		addFace1(values, corners, x, y, z);
+		addFace2(values, corners, x, y, z);
+		addFace3(values, corners, x, y, z);
+		addFace4(values, corners, x, y, z);
+		addFace5(values, corners, x, y, z);
 	}
 	
 	private void addFace0(float[] prevValues, Point3f[] prevCorners, int x, int y, int z) {
@@ -249,40 +257,33 @@ public class ImplicitIterative extends AbstractImplicit{
 		corner0.y -= yStepsize;
 		corners[0] = corner0;
 		values[0] = value(corner0);
+		
 		Point3f corner1 = new Point3f(corners[2]);
 		corner1.y -= yStepsize;
 		corners[1] = corner1;
 		values[1] = value(corner1);
+		
 		Point3f corner4 = new Point3f(corners[7]);
 		corner4.y -= yStepsize;
 		corners[4] = corner4;
 		values[4] = value(corner4);
+		
 		Point3f corner5 = new Point3f(corners[6]);
 		corner5.y -= yStepsize;
 		corners[5] = corner5;
 		values[5] = value(corner5);
 		
-		cells.add(new MarchCell(corners, values, x, y, z, 0));
+		cells.add(new MarchCell(corners, values, x, y, z, MarchCell.FACE_0));
 	}
 	
-	void marchFace1(MarchCell cell) {
-		float[] values = cell.getValues();
-		Point3f[] corners = cell.getCorners();
-		int x = cell.getX();
-		int y = cell.getY();
-		int z = cell.getZ();
-		
-		int nTriangles = MARCHER.marchCube(values, corners, newTriangles, ISOLEVEL);
-		if (nTriangles > 0) {
-			addTriangles(nTriangles, newTriangles);
+	private void marchFace1(float[] values, Point3f[] corners, int x, int y, int z) {
 
-			addFace0(values, corners, x, y - 1, z);
-//			marchFace1(values, corners, x + 1, y, z);
-			addFace2(values, corners, x, y + 1, z);
-			addFace3(values, corners, x - 1, y, z);
-			addFace4(values, corners, x, y, z + 1);
-			addFace5(values, corners, x, y, z - 1);
-		}
+		addFace0(values, corners, x, y, z);
+//		addFace1(values, corners, x, y, z);
+		addFace2(values, corners, x, y, z);
+		addFace3(values, corners, x, y, z);
+		addFace4(values, corners, x, y, z);
+		addFace5(values, corners, x, y, z);
 	}
 	
 	private void addFace1(float[] prevValues, Point3f[] prevCorners, int x, int y, int z) {
@@ -324,27 +325,17 @@ public class ImplicitIterative extends AbstractImplicit{
 		corners[6] = corner6;
 		values[6] = value(corner6);
 		
-		cells.add(new MarchCell(corners, values, x, y, z, 1));
+		cells.add(new MarchCell(corners, values, x, y, z, MarchCell.FACE_1));
 	}
 	
-	void marchFace2(MarchCell cell) {
-		float[] values = cell.getValues();
-		Point3f[] corners = cell.getCorners();
-		int x = cell.getX();
-		int y = cell.getY();
-		int z = cell.getZ();
-		
-		int nTriangles = MARCHER.marchCube(values, corners, newTriangles, ISOLEVEL);
-		if (nTriangles > 0) {
-			addTriangles(nTriangles, newTriangles);
+	private void marchFace2(float[] values, Point3f[] corners, int x, int y, int z) {
 
-			addFace0(values, corners, x, y - 1, z);
-			addFace1(values, corners, x + 1, y, z);
-//			addFace2(values, corners, x, y + 1, z);
-			addFace3(values, corners, x - 1, y, z);
-			addFace4(values, corners, x, y, z + 1);
-			addFace5(values, corners, x, y, z - 1);
-		}
+		addFace0(values, corners, x, y, z);
+		addFace1(values, corners, x, y, z);
+//		addFace2(values, corners, x, y, z);
+		addFace3(values, corners, x, y, z);
+		addFace4(values, corners, x, y, z);
+		addFace5(values, corners, x, y, z);
 	}
 	
 	private void addFace2(float[] prevValues, Point3f[] prevCorners, int x, int y, int z) {
@@ -386,27 +377,17 @@ public class ImplicitIterative extends AbstractImplicit{
 		corners[7] = corner7;
 		values[7] = value(corner7);
 		
-		cells.add(new MarchCell(corners, values, x, y, z, 2));
+		cells.add(new MarchCell(corners, values, x, y, z, MarchCell.FACE_2));
 	}
 	
-	void marchFace3(MarchCell cell) {
-		float[] values = cell.getValues();
-		Point3f[] corners = cell.getCorners();
-		int x = cell.getX();
-		int y = cell.getY();
-		int z = cell.getZ();
-		
-		int nTriangles = MARCHER.marchCube(values, corners, newTriangles, ISOLEVEL);
-		if (nTriangles > 0) {
-			addTriangles(nTriangles, newTriangles);
+	private void marchFace3(float[] values, Point3f[] corners, int x, int y, int z) {
 
-			addFace0(values, corners, x, y - 1, z);
-			addFace1(values, corners, x + 1, y, z);
-			addFace2(values, corners, x, y + 1, z);
-//			marchFace3(values, corners, x - 1, y, z);
-			addFace4(values, corners, x, y, z + 1);
-			addFace5(values, corners, x, y, z - 1);
-		}
+		addFace0(values, corners, x, y, z);
+		addFace1(values, corners, x, y, z);
+		addFace2(values, corners, x, y, z);
+//		addFace3(values, corners, x, y, z);
+		addFace4(values, corners, x, y, z);
+		addFace5(values, corners, x, y, z);
 	}
 	
 	private void addFace3(float[] prevValues, Point3f[] prevCorners, int x, int y, int z) {
@@ -448,27 +429,17 @@ public class ImplicitIterative extends AbstractImplicit{
 		corners[7] = corner7;
 		values[7] = value(corner7);
 		
-		cells.add(new MarchCell(corners, values, x, y, z, 3));
+		cells.add(new MarchCell(corners, values, x, y, z, MarchCell.FACE_3));
 	}
 	
-	void marchFace4(MarchCell cell) {
-		float[] values = cell.getValues();
-		Point3f[] corners = cell.getCorners();
-		int x = cell.getX();
-		int y = cell.getY();
-		int z = cell.getZ();
-		
-		int nTriangles = MARCHER.marchCube(values, corners, newTriangles, ISOLEVEL);
-		if (nTriangles > 0) {
-			addTriangles(nTriangles, newTriangles);
+	private void marchFace4(float[] values, Point3f[] corners, int x, int y, int z) {
 
-			addFace0(values, corners, x, y - 1, z);
-			addFace1(values, corners, x + 1, y, z);
-			addFace2(values, corners, x, y + 1, z);
-			addFace3(values, corners, x - 1, y, z);
-//			addFace4(values, corners, x, y, z + 1);
-			addFace5(values, corners, x, y, z - 1);
-		}
+		addFace0(values, corners, x, y, z);
+		addFace1(values, corners, x, y, z);
+		addFace2(values, corners, x, y, z);
+		addFace3(values, corners, x, y, z);
+//		addFace4(values, corners, x, y, z);
+		addFace5(values, corners, x, y, z);
 	}
 	
 	private void addFace4(float[] prevValues, Point3f[] prevCorners, int x, int y, int z) {
@@ -510,27 +481,17 @@ public class ImplicitIterative extends AbstractImplicit{
 		corners[7] = corner7;
 		values[7] = value(corner7);
 		
-		cells.add(new MarchCell(corners, values, x, y, z, 4));
+		cells.add(new MarchCell(corners, values, x, y, z, MarchCell.FACE_4));
 	}
 	
-	void marchFace5(MarchCell cell) {
-		float[] values = cell.getValues();
-		Point3f[] corners = cell.getCorners();
-		int x = cell.getX();
-		int y = cell.getY();
-		int z = cell.getZ();
-		
-		int nTriangles = MARCHER.marchCube(values, corners, newTriangles, ISOLEVEL);
-		if (nTriangles > 0) {
-			addTriangles(nTriangles, newTriangles);
+	private void marchFace5(float[] values, Point3f[] corners, int x, int y, int z) {
 
-			addFace0(values, corners, x, y - 1, z);
-			addFace1(values, corners, x + 1, y, z);
-			addFace2(values, corners, x, y + 1, z);
-			addFace3(values, corners, x - 1, y, z);
-			addFace4(values, corners, x, y, z + 1);
-//			addFace5(values, corners, x, y, z - 1);
-		}
+		addFace0(values, corners, x, y, z);
+		addFace1(values, corners, x, y, z);
+		addFace2(values, corners, x, y, z);
+		addFace3(values, corners, x, y, z);
+		addFace4(values, corners, x, y, z);
+//		addFace5(values, corners, x, y, z);
 	}
 	
 	private void addFace5(float[] prevValues, Point3f[] prevCorners, int x, int y, int z) {
@@ -572,7 +533,7 @@ public class ImplicitIterative extends AbstractImplicit{
 		corners[3] = corner3;
 		values[3] = value(corner3);
 		
-		cells.add(new MarchCell(corners, values, x, y, z, 5));
+		cells.add(new MarchCell(corners, values, x, y, z, MarchCell.FACE_5));
 	}
 	
 	private boolean validPosition(int x, int y, int z) {
