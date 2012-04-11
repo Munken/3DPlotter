@@ -33,7 +33,7 @@ public class PlotterDriver {
 //		p.plotFunction(p2);
 		
 		float[] recBound = {-i, i, -i, i, -i, i};
-		RecursiveImplicitFunction rec = new RecursiveImplicitFunction("x", Colors.BLUE, recBound, 0.1f);
+		RecursiveImplicitFunction rec = new RecursiveImplicitFunction("x", Colors.BLUE, recBound, 0.05f);
 		p.plotFunction(rec);
 //		p.plotFunction("z = y", -i, i, -i, i, Colors.MAGENTA);
 //        p.plotFunction(-i, i, -i, i, "z = x", Colors.RED);

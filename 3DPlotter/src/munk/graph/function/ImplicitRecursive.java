@@ -32,7 +32,7 @@ public class ImplicitRecursive {
 	private int startY;
 	private int startZ;
 	
-	private Triangle[] newTriangle;
+	private Triangle[] newTriangles;
 	private List<Point3f> triangles = new ArrayList<Point3f>(3000);
 	private boolean[][][] visited;
 	
@@ -87,7 +87,7 @@ public class ImplicitRecursive {
 	private void marchCubes(Point3f startcube) {
 		Point3f[] corners = initPoint3fArray(8);
 		float[] values = new float[8];
-		newTriangle = initTriangleArray(MarchingCubes.MAX_TRIANGLES_RETURNED);
+		newTriangles = initTriangleArray(MarchingCubes.MAX_TRIANGLES_RETURNED);
 		
 		corners[0].x = startcube.x;
 		corners[0].y = startcube.y;
@@ -129,7 +129,7 @@ public class ImplicitRecursive {
 		corners[7].z = startcube.z + zStepsize;
 		values[7] = value(corners[7]);
 		
-		int nTriangles = MARCHER.marchCube(values, corners, newTriangle, ISOLEVEL);
+		int nTriangles = MARCHER.marchCube(values, corners, newTriangles, ISOLEVEL);
 		if (nTriangles > 0)
 			addTriangles(nTriangles);
 		
@@ -138,8 +138,8 @@ public class ImplicitRecursive {
 		marchFace1(values, corners, startX + 1, startY, startZ);
 		marchFace2(values, corners, startX, startY + 1, startZ);
 		marchFace3(values, corners, startX - 1, startY, startZ);
-		marchFace4(values, corners, startX, startY, startZ + 1);
-		marchFace5(values, corners, startX, startY, startZ - 1);
+//		marchFace4(values, corners, startX, startY, startZ + 1);
+//		marchFace5(values, corners, startX, startY, startZ - 1);
 	}
 	
 	public Point3f findStartCube() {
@@ -231,11 +231,11 @@ public class ImplicitRecursive {
 		corner5.y -= yStepsize;
 		corners[5] = corner5;
 		
-		int nTriangles = MARCHER.marchCube(values, corners, newTriangle, ISOLEVEL);
+		int nTriangles = MARCHER.marchCube(values, corners, newTriangles, ISOLEVEL);
 		if (nTriangles > 0) {
 			addTriangles(nTriangles);
 
-			//	marchFace0(values, corners, x, y - 1, z);
+			//	// marchFace0(values, corners, x, y - 1, z);
 			marchFace1(values, corners, x + 1, y, z);
 			marchFace2(values, corners, x, y + 1, z);
 			marchFace3(values, corners, x - 1, y, z);
@@ -283,11 +283,11 @@ public class ImplicitRecursive {
 		corners[6] = corner6;
 		values[6] = value(corner6);
 		
-		int nTriangles = MARCHER.marchCube(values, corners, newTriangle, ISOLEVEL);
+		int nTriangles = MARCHER.marchCube(values, corners, newTriangles, ISOLEVEL);
 		if (nTriangles > 0) {
 			addTriangles(nTriangles);
 
-			marchFace0(values, corners, x, y - 1, z);
+			// marchFace0(values, corners, x, y - 1, z);
 //			marchFace1(values, corners, x + 1, y, z);
 			marchFace2(values, corners, x, y + 1, z);
 			marchFace3(values, corners, x - 1, y, z);
@@ -304,43 +304,43 @@ public class ImplicitRecursive {
 		
 		markAsVisited(x, y, z);
 		float[] values = new float[8];
-		values[1] = prevValues[2];
 		values[0] = prevValues[3];
+		values[1] = prevValues[2];
 		values[4] = prevValues[7];
 		values[5] = prevValues[6];
 		
 		Point3f[] corners = new Point3f[8];
-		corners[1] = prevCorners[2];
 		corners[0] = prevCorners[3];
+		corners[1] = prevCorners[2];
 		corners[4] = prevCorners[7];
 		corners[5] = prevCorners[6];
 		
 		Point3f corner2 = new Point3f(corners[1]);
-		corner2.y += xStepsize;
+		corner2.y += yStepsize;
 		corners[2] = corner2;
 		values[2] = value(corner2);
 		
 		Point3f corner3 = new Point3f(corners[0]);
-		corner3.y += xStepsize;
+		corner3.y += yStepsize;
 		corners[3] = corner3;
 		values[3] = value(corner3);
 		
 		Point3f corner6 = new Point3f(corners[5]);
-		corner6.y += xStepsize;
+		corner6.y += yStepsize;
 		corners[6] = corner6;
 		values[6] = value(corner6);
 		
 		Point3f corner7 = new Point3f(corners[4]);
-		corner7.y += xStepsize;
+		corner7.y += yStepsize;
 		corners[7] = corner7;
 		values[7] = value(corner7);
 		
 		
-		int nTriangles = MARCHER.marchCube(values, corners, newTriangle, ISOLEVEL);
+		int nTriangles = MARCHER.marchCube(values, corners, newTriangles, ISOLEVEL);
 		if (nTriangles > 0) {
 			addTriangles(nTriangles);
 
-			marchFace0(values, corners, x, y - 1, z);
+			// marchFace0(values, corners, x, y - 1, z);
 			marchFace1(values, corners, x + 1, y, z);
 //			marchFace2(values, corners, x, y + 1, z);
 			marchFace3(values, corners, x - 1, y, z);
@@ -389,11 +389,11 @@ public class ImplicitRecursive {
 		values[7] = value(corner7);
 		
 		
-		int nTriangles = MARCHER.marchCube(values, corners, newTriangle, ISOLEVEL);
+		int nTriangles = MARCHER.marchCube(values, corners, newTriangles, ISOLEVEL);
 		if (nTriangles > 0) {
 			addTriangles(nTriangles);
 
-			marchFace0(values, corners, x, y - 1, z);
+			// marchFace0(values, corners, x, y - 1, z);
 			marchFace1(values, corners, x + 1, y, z);
 			marchFace2(values, corners, x, y + 1, z);
 //			marchFace3(values, corners, x - 1, y, z);
@@ -442,11 +442,11 @@ public class ImplicitRecursive {
 		values[7] = value(corner7);
 		
 		
-		int nTriangles = MARCHER.marchCube(values, corners, newTriangle, ISOLEVEL);
+		int nTriangles = MARCHER.marchCube(values, corners, newTriangles, ISOLEVEL);
 		if (nTriangles > 0) {
 			addTriangles(nTriangles);
 
-			marchFace0(values, corners, x, y - 1, z);
+			// marchFace0(values, corners, x, y - 1, z);
 			marchFace1(values, corners, x + 1, y, z);
 			marchFace2(values, corners, x, y + 1, z);
 			marchFace3(values, corners, x - 1, y, z);
@@ -495,11 +495,11 @@ public class ImplicitRecursive {
 		values[3] = value(corner3);
 		
 		
-		int nTriangles = MARCHER.marchCube(values, corners, newTriangle, ISOLEVEL);
+		int nTriangles = MARCHER.marchCube(values, corners, newTriangles, ISOLEVEL);
 		if (nTriangles > 0) {
 			addTriangles(nTriangles);
 
-			marchFace0(values, corners, x, y - 1, z);
+			// marchFace0(values, corners, x, y - 1, z);
 			marchFace1(values, corners, x + 1, y, z);
 			marchFace2(values, corners, x, y + 1, z);
 			marchFace3(values, corners, x - 1, y, z);
@@ -551,23 +551,9 @@ public class ImplicitRecursive {
 		}
 	}
 	
-	private static int cubeindex(float[] values, float isolevel) {
-		int cubeindex = 0;
-		if (values[0] < isolevel) cubeindex |= 1;
-		if (values[1] < isolevel) cubeindex |= 2;
-		if (values[2] < isolevel) cubeindex |= 4;
-		if (values[3] < isolevel) cubeindex |= 8;
-		if (values[4] < isolevel) cubeindex |= 16;
-		if (values[5] < isolevel) cubeindex |= 32;
-		if (values[6] < isolevel) cubeindex |= 64;
-		if (values[7] < isolevel) cubeindex |= 128;
-		
-		return cubeindex;
-	}
-
-	
 	private float value(float x, float y, float z) {
 		return x*x + y*y + z*z - 1;
+//		return po;
 	}
 	
 	private float value(Point3f point) {
@@ -584,7 +570,7 @@ public class ImplicitRecursive {
 	
 	private void addTriangles(int nFacets) {
 		for (int q = 0; q < nFacets; q++) {
-			addVerticesToList(newTriangle[q], triangles);
+			addVerticesToList(newTriangles[q], triangles);
 		}
 	}
 	
@@ -602,4 +588,5 @@ public class ImplicitRecursive {
 		}
 		return result;
 	}
+	
 }
