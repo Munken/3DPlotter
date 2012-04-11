@@ -74,6 +74,8 @@ public class V2GUI {
 	private JTextField txtYmax;
 	private JTextField txtZmax;
 	
+	private boolean maximized;
+	
 	/**
 	 * Launch the application.
 	 */
@@ -313,22 +315,34 @@ public class V2GUI {
      	
      	// Test Function
      	addPlot("z = x*(cos(y)*cos(x))", Colors.BLUE);
+     	maximized = false;
+     	
+     	frame.pack();
+     	frame.setMinimumSize(frame.getSize());
 	}
 
 	/*
 	 * Resize the plot canvas according to window resize.
 	 */
 	private void canvasResize() {
-		// Minimum window size.
-		if(frame.getWidth() < 500){
-			frame.setSize(500,frame.getHeight());
-		}
-		if(frame.getHeight() < 300){
-			frame.setSize(frame.getWidth(),300);
-		}
-		// Update plotter window.
-		plotter.updateSize(frame.getWidth()- controlsWidth,frame.getHeight()- controlsHeight);
-		frame.pack();
+		frame.addComponentListener(new ComponentAdapter() {
+			public void componentResized(ComponentEvent e) {
+				//plotter.updateSize(frame.getWidth()- controlsWidth,frame.getHeight()- controlsHeight);
+				
+				// Er nedenstående nødvendigt ?
+				// XXX Ja, med mindre du har en bedre løsning. 
+				// Problemet er, at frame.pack() resizer vinduet. 
+				// Dvs. uden dette check opnås et uendeligt loop.
+				if(!e.getSource().equals(frame) || maximized){
+					frame.pack();
+					maximized = false;
+				}
+				if(e.getSource().toString().contains("maximized")){
+					frame.pack();
+					maximized = true;
+				}
+			}
+		});
 	}
 	
 	/*
