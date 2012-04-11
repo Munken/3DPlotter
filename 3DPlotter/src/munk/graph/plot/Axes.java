@@ -53,7 +53,7 @@ public class Axes {
 		result.addChild(yArrow(0, yMax, 0, radius));
 		result.addChild(xArrow(xMax, 0, 0, radius));
 		result.addChild(zArrow(0, 0, zMax, radius));
-		result.addChild(addText(xMax, yMax, zMax, radius));
+//		result.addChild(addText(xMax, yMax, zMax, radius));
 		return result;
 	}
 	

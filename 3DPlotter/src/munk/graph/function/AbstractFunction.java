@@ -74,7 +74,9 @@ public abstract class AbstractFunction implements Function{
 	
 	public void setColor(Color3f color) {
 		this.color = color;
-		shape.setAppearance(new ColorAppearance(color));
+		if (shape != null) {
+			shape.setAppearance(new ColorAppearance(color));
+		}
 	}
 	
 	public boolean isVisible(){

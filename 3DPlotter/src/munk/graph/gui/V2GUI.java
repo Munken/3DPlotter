@@ -306,7 +306,7 @@ public class V2GUI {
      	canvasResize();
 
 		// TEST
-		addPlot("y=x", Colors.BLUE);
+		addPlot("z = x*(cos(y)*cos(x))", Colors.BLUE);
 	}
 
 	/*
@@ -375,7 +375,6 @@ public class V2GUI {
 		// Try evaluating the function.
 		try {
 			Function newFunc = FunctionUtil.createFunction(newExpr, newColor, bounds, stepsize);
-			newFunc.addActionListener(FunctionUtil.createActionListener(plotter));
 			functionList.set(functionList.indexOf(oldFunc),newFunc);
 			plotter.removePlot(oldFunc);
 			plotter.plotFunction(newFunc);
