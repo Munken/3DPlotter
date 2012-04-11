@@ -46,6 +46,7 @@ public class V2GUI {
 	private static final int CANVAS_INITIAL_HEIGTH = 600;
 	private static final float DEFAULT_STEPSIZE = (float) 0.1;
 	private static final float[] DEFAULT_BOUNDS = {-1,1,-1,1,-1,1};
+	private static int colorChosen = 3; //THEIS This is the default first draw color
 	
 	// GUI Variables.
 	private static V2GUI window;
@@ -408,8 +409,8 @@ public class V2GUI {
 //	}
 	
 	private Color3f getNextColor(){
-		// TODO: To be implemented.
-		return Colors.BLUE;
+		return Colors.getColorOfIndex(colorChosen++ % Colors.getNumberOfColors());
+//		return Colors.BLUE;
 	}
 	
 	/*

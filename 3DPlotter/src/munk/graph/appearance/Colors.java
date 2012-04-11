@@ -36,6 +36,15 @@ public class Colors {
 				new ColorIcon(Colors.TURQUISE)};
 	}
 	
+	public static int getNumberOfColors() {
+		return getAllColors().length;
+	}
+	
+	public static Color3f getColorOfIndex(int i) {
+		Icon[] allColors = getAllColors();
+		return((ColorIcon) allColors[i]).getColor();
+	}
+	
 	/*
 	 * Get the color index.
 	 */
