@@ -221,15 +221,19 @@ public class ImplicitRecursive {
 		Point3f corner0 = new Point3f(corners[3]);
 		corner0.y -= yStepsize;
 		corners[0] = corner0;
+		values[0] = value(corner0);
 		Point3f corner1 = new Point3f(corners[2]);
 		corner1.y -= yStepsize;
 		corners[1] = corner1;
+		values[1] = value(corner1);
 		Point3f corner4 = new Point3f(corners[7]);
 		corner4.y -= yStepsize;
 		corners[4] = corner4;
+		values[4] = value(corner4);
 		Point3f corner5 = new Point3f(corners[6]);
 		corner5.y -= yStepsize;
 		corners[5] = corner5;
+		values[5] = value(corner5);
 		
 		int nTriangles = MARCHER.marchCube(values, corners, newTriangle, ISOLEVEL);
 		if (nTriangles > 0) {
