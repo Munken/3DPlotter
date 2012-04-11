@@ -1,8 +1,5 @@
 package munk.graph.plot;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.media.j3d.Shape3D;
 import javax.vecmath.Point3f;
 
@@ -10,8 +7,6 @@ import munk.graph.marching.MarchingCubes;
 import munk.graph.marching.Triangle;
 
 import com.graphbuilder.math.ExpressionParseException;
-import com.sun.j3d.utils.geometry.GeometryInfo;
-import com.sun.j3d.utils.geometry.NormalGenerator;
 
 public class ImplicitSlow extends AbstractImplicit{
 	
@@ -34,7 +29,6 @@ public class ImplicitSlow extends AbstractImplicit{
 		float[][] lower = bottomLayerValues();
 		float[][] upper = new float[yLength][xLength];
 		
-		List<Point3f> triangles = new ArrayList<Point3f>(3000);
 		for (int k = 0; k < zLength - 1; k++) {
 		
 			calcEdges(upper, z+zStepsize);
@@ -104,16 +98,7 @@ public class ImplicitSlow extends AbstractImplicit{
 			z += zStepsize;
 		}
 		
-		// Build geometry from triangles
-		if (triangles.size() >= 3) {
-			GeometryInfo gi = new GeometryInfo(GeometryInfo.TRIANGLE_ARRAY);
-			Point3f[] points = new Point3f[triangles.size()];
-			gi.setCoordinates((Point3f[]) triangles.toArray(points));
-			NormalGenerator ng = new NormalGenerator();
-			ng.generateNormals(gi);
-			return new Shape3D(gi.getGeometryArray());
-		} else 
-			return null;
+		return buildGeomtryFromTriangles();
 	}
 
 

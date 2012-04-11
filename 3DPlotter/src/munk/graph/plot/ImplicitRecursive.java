@@ -12,28 +12,15 @@ import munk.graph.marching.Triangle;
 import com.sun.j3d.utils.geometry.GeometryInfo;
 import com.sun.j3d.utils.geometry.NormalGenerator;
 
-public class ImplicitRecursive {
-	
-	private float xMin;
-	private int xLength;
-	
-	private float yMin;
-	private int yLength;
-	
-	private float zMin;
-	private int zLength;
+public class ImplicitRecursive extends AbstractImplicit{
 	
 	private float stepsize;
-	private float xStepsize;
-	private float yStepsize;
-	private float zStepsize;
 	
 	private int startX;
 	private int startY;
 	private int startZ;
 	
-	private Triangle[] newTriangle;
-	private List<Point3f> triangles = new ArrayList<Point3f>(3000);
+	private Triangle[] newTriangles;
 	private boolean[][][] visited;
 	
 	private static final MarchingCubes MARCHER = new MarchingCubes();
@@ -44,26 +31,10 @@ public class ImplicitRecursive {
 	private boolean debug = false;
 
 	public ImplicitRecursive(String expression, float xMin, float xMax, float yMin, float yMax, float zMin, float zMax, float stepsize) {
-		this.xMin = xMin;
-		this.yMin = yMin;
-		this.zMin = zMin;
+		super(expression, xMin, xMax, yMin, yMax, zMin, zMax, stepsize, stepsize, stepsize);
 		this.stepsize = stepsize;
 		
-		xStepsize = stepsize;
-		yStepsize = stepsize;
-		zStepsize = stepsize;
-		
-		xLength = (int) Math.ceil((xMax - xMin) / stepsize) + 1;
-		yLength = (int) Math.ceil((yMax - yMin) / stepsize) + 1;
-		zLength = (int) Math.ceil((zMax - zMin) / stepsize) + 1;
-		
 		visited = new boolean[zLength][yLength][xLength];
-	}
-	
-	public Shape3D getPlot() {
-		if (plot == null)
-			plot = plot();
-		return plot;
 	}
 	
 	public Shape3D plot() {
@@ -74,22 +45,13 @@ public class ImplicitRecursive {
 			marchCubes(startCube);
 		else return null;
 
-		// Build geometry from triangles
-		if (triangles.size() >= 3) {
-			GeometryInfo gi = new GeometryInfo(GeometryInfo.TRIANGLE_ARRAY);
-			Point3f[] points = new Point3f[triangles.size()];
-			gi.setCoordinates((Point3f[]) triangles.toArray(points));
-			NormalGenerator ng = new NormalGenerator();
-			ng.generateNormals(gi);
-			System.out.println(System.currentTimeMillis() - current);
-			return new Shape3D(gi.getGeometryArray());
-		} else 
-			return null;
+		return buildGeomtryFromTriangles();
 	}
+	
 	private void marchCubes(Point3f startcube) {
 		Point3f[] corners = initPoint3fArray(8);
 		float[] values = new float[8];
-		newTriangle = initTriangleArray(MarchingCubes.MAX_TRIANGLES_RETURNED);
+		newTriangles = initTriangleArray(MarchingCubes.MAX_TRIANGLES_RETURNED);
 		
 		corners[0].x = startcube.x;
 		corners[0].y = startcube.y;
@@ -131,9 +93,9 @@ public class ImplicitRecursive {
 		corners[7].z = startcube.z + zStepsize;
 		values[7] = value(corners[7]);
 		
-		int nTriangles = MARCHER.marchCube(values, corners, newTriangle, ISOLEVEL);
+		int nTriangles = MARCHER.marchCube(values, corners, newTriangles, ISOLEVEL);
 		if (nTriangles > 0)
-			addTriangles(nTriangles);
+			addTriangles(nTriangles, newTriangles);
 		
 		
 		marchFace0(values, corners, startX, startY - 1, startZ);
@@ -237,9 +199,9 @@ public class ImplicitRecursive {
 		corners[5] = corner5;
 		values[5] = value(corner5);
 		
-		int nTriangles = MARCHER.marchCube(values, corners, newTriangle, ISOLEVEL);
+		int nTriangles = MARCHER.marchCube(values, corners, newTriangles, ISOLEVEL);
 		if (nTriangles > 0) {
-			addTriangles(nTriangles);
+			addTriangles(nTriangles, newTriangles);
 
 			//	marchFace0(values, corners, x, y - 1, z);
 			marchFace1(values, corners, x + 1, y, z);
@@ -289,9 +251,9 @@ public class ImplicitRecursive {
 		corners[6] = corner6;
 		values[6] = value(corner6);
 		
-		int nTriangles = MARCHER.marchCube(values, corners, newTriangle, ISOLEVEL);
+		int nTriangles = MARCHER.marchCube(values, corners, newTriangles, ISOLEVEL);
 		if (nTriangles > 0) {
-			addTriangles(nTriangles);
+			addTriangles(nTriangles, newTriangles);
 
 			marchFace0(values, corners, x, y - 1, z);
 //			marchFace1(values, corners, x + 1, y, z);
@@ -342,9 +304,9 @@ public class ImplicitRecursive {
 		values[7] = value(corner7);
 		
 		
-		int nTriangles = MARCHER.marchCube(values, corners, newTriangle, ISOLEVEL);
+		int nTriangles = MARCHER.marchCube(values, corners, newTriangles, ISOLEVEL);
 		if (nTriangles > 0) {
-			addTriangles(nTriangles);
+			addTriangles(nTriangles, newTriangles);
 
 			marchFace0(values, corners, x, y - 1, z);
 			marchFace1(values, corners, x + 1, y, z);
@@ -395,9 +357,9 @@ public class ImplicitRecursive {
 		values[7] = value(corner7);
 		
 		
-		int nTriangles = MARCHER.marchCube(values, corners, newTriangle, ISOLEVEL);
+		int nTriangles = MARCHER.marchCube(values, corners, newTriangles, ISOLEVEL);
 		if (nTriangles > 0) {
-			addTriangles(nTriangles);
+			addTriangles(nTriangles, newTriangles);
 
 			marchFace0(values, corners, x, y - 1, z);
 			marchFace1(values, corners, x + 1, y, z);
@@ -448,9 +410,9 @@ public class ImplicitRecursive {
 		values[7] = value(corner7);
 		
 		
-		int nTriangles = MARCHER.marchCube(values, corners, newTriangle, ISOLEVEL);
+		int nTriangles = MARCHER.marchCube(values, corners, newTriangles, ISOLEVEL);
 		if (nTriangles > 0) {
-			addTriangles(nTriangles);
+			addTriangles(nTriangles, newTriangles);
 
 			marchFace0(values, corners, x, y - 1, z);
 			marchFace1(values, corners, x + 1, y, z);
@@ -501,9 +463,9 @@ public class ImplicitRecursive {
 		values[3] = value(corner3);
 		
 		
-		int nTriangles = MARCHER.marchCube(values, corners, newTriangle, ISOLEVEL);
+		int nTriangles = MARCHER.marchCube(values, corners, newTriangles, ISOLEVEL);
 		if (nTriangles > 0) {
-			addTriangles(nTriangles);
+			addTriangles(nTriangles, newTriangles);
 
 			marchFace0(values, corners, x, y - 1, z);
 			marchFace1(values, corners, x + 1, y, z);
@@ -524,72 +486,6 @@ public class ImplicitRecursive {
 
 	private boolean isVisited(int x, int y, int z) {
 		return visited[z][y][x];
-	}
-	
-	private float[][] bottomLayerValues() {
-		float[][] result = new float[yLength][xLength];
-		
-		float y = yMin;
-		for (int j = 0; j < yLength; j++) {
-			float x = xMin;
-			for (int i = 0; i < xLength; i++) {
-				result[j][i] = value(x, y, zMin);
-				x += stepsize;
-			}
-			y += stepsize;
-		}
-		
-		return result;
-	}
-	
-	private void calcEdges(float[][] upperValues, float z) {
-		float y = yMin;
-		float x = xMin;
-		for (int j = 0; j < upperValues.length; j++) {
-			upperValues[j][0] = value(x, y, z);
-			y += stepsize;
-		}
-		
-		y = yMin;
-		for (int i = 0; i < upperValues[0].length; i++) {
-			upperValues[0][i] = value(x, y, z);
-			x += stepsize;
-		}
-	}
-	
-	private float value(float x, float y, float z) {
-//		return x*x + y*y + z*z - 1;
-		return (float) (z*z - x*(Math.cos(y)*Math.cos(x)));
-	}
-	
-	private float value(Point3f point) {
-		return value(point.x, point.y, point.z);
-	}
-	
-	private Triangle[] initTriangleArray(int N) {
-		Triangle[] result = new Triangle[N];
-		for (int q = 0; q < N; q++) {
-			result[q] = new Triangle();
-		}
-		return result;
-	}
-	
-	private void addTriangles(int nFacets) {
-		for (int q = 0; q < nFacets; q++) {
-			Triangle tri = newTriangle[q];
-			for (Point3f vertex : tri) {
-				Point3f newVertex = (Point3f) vertex.clone();
-				triangles.add(newVertex);
-			}
-		}
-	}
-	
-	private Point3f[] initPoint3fArray(int N) {
-		Point3f[] result = new Point3f[N];
-		for (int q = 0; q < N; q++) {
-			result[q] = new Point3f();
-		}
-		return result;
 	}
 	
 }
