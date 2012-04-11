@@ -1,33 +1,12 @@
 package munk.graph.gui;
-import java.awt.EventQueue;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.*;
+import java.awt.event.*;
 import java.util.ArrayList;
 
-import javax.swing.BoxLayout;
-import javax.swing.Icon;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextField;
-import javax.swing.UIManager;
+import javax.swing.*;
 import javax.vecmath.Color3f;
 
-import munk.graph.appearance.Colors;
-import munk.graph.function.Function;
-import munk.graph.function.FunctionList;
-import munk.graph.function.FunctionUtil;
+import munk.graph.function.*;
 
 import com.graphbuilder.math.ExpressionParseException;
 
@@ -38,7 +17,7 @@ import com.graphbuilder.math.ExpressionParseException;
  *
  */
 public class V2GUI {
-	
+
 	private static final int CANVAS_INITIAL_WIDTH = 600;
 	private static final int CANVAS_INITIAL_HEIGTH = 600;
 	private static final float DEFAULT_STEPSIZE = (float) 0.1;
@@ -60,11 +39,10 @@ public class V2GUI {
 	private FunctionList<Function> functionList; 
 	private FunctionList<Function> paramFunctionList; 
 	private int noOfFunctions;
-	private boolean maximized;
+	private javax.swing.Timer resizeTimer;
+	private ArrayList<Color3f> colorList;
 	
 	// Option variables
-	private static final float STEP_SIZE = (float) 1; 
-	private JScrollPane scrollPane;
 	private JTextField stdFuncInput;
 	private JLabel label_1;
 	private JLabel label_2;
@@ -75,6 +53,8 @@ public class V2GUI {
 	private JTextField txtXmax;
 	private JTextField txtYmax;
 	private JTextField txtZmax;
+	
+	private boolean maximized;
 	
 	/**
 	 * Launch the application.
@@ -103,7 +83,7 @@ public class V2GUI {
 		functionList = new FunctionList<Function>();
 		paramFunctionList = new FunctionList<Function>();
 		noOfFunctions = 0;
-		maximized = false;
+		colorList = ColorUtil.getDefaultColors();
 		initialize();
 	}
 
@@ -169,7 +149,7 @@ public class V2GUI {
      		@Override
      		public void keyReleased(KeyEvent e) {
      			if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-     				addPlot(stdFuncInput.getText(),getNextColor());
+     				addPlot(stdFuncInput.getText(),ColorUtil.getNextAvailableColor(colorList, functionList));
      			}
      		}
      	});
@@ -277,6 +257,9 @@ public class V2GUI {
      						if(e.getID() == 1){
      							spawnEditDialog(source);
      						}
+     						if(e.getID() == 2){
+     							deletePlot(source);
+     						}
      					}
      				}));
      			}
@@ -298,38 +281,26 @@ public class V2GUI {
      	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
      	frame.setVisible(true);
      	frame.pack();
+
+     	// Auto resize frame.
      	controlsWidth = frame.getWidth() - CANVAS_INITIAL_WIDTH;
      	controlsHeight = frame.getHeight() - CANVAS_INITIAL_HEIGTH;
-
-     	// Auto resize.
-     	canvasResize();
-
-		// TEST
-		addPlot("z = x*(cos(y)*cos(x))", Colors.BLUE);
-	}
-
-	/*
-	 * Resize the plot canvas according to window resize.
-	 */
-	private void canvasResize() {
-		frame.addComponentListener(new ComponentAdapter() {
-			public void componentResized(ComponentEvent e) {
-				//plotter.updateSize(frame.getWidth()- controlsWidth,frame.getHeight()- controlsHeight);
-				
-				// Er nedenstående nødvendigt ?
-				// XXX Ja, med mindre du har en bedre løsning. 
-				// Problemet er, at frame.pack() resizer vinduet. 
-				// Dvs. uden dette check opnås et uendeligt loop.
-				if(!e.getSource().equals(frame) || maximized){
-					//frame.pack();
-					maximized = false;
-				}
-				if(e.getSource().toString().contains("maximized")){
-					//frame.pack();
-					maximized = true;
-				}
+     	frame.setMinimumSize(new Dimension(600, 400));
+     	resizeTimer = new javax.swing.Timer(100, new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				plotter.updateSize(frame.getWidth()- controlsWidth,frame.getHeight()- controlsHeight);
+				frame.pack();
 			}
 		});
+     	frame.addComponentListener(new ComponentAdapter() {
+     		public void componentResized(ComponentEvent e) {
+     			resizeTimer.restart();
+     		}
+     	});
+     	
+     	// Test Function
+     	addPlot("z = x*(cos(y)*cos(x))", ColorUtil.getNextAvailableColor(colorList, functionList));
 	}
 	
 	/*
@@ -351,13 +322,6 @@ public class V2GUI {
 			JOptionPane.showMessageDialog(frame,label);
 		}
 	}
-	
-	/*
-	 * Remove a function from the plot.
-	 */
-	private void removePlot(Function function) {
-		plotter.removePlot(function);
-	}
 
 	/*
 	 * Update a function.
@@ -366,6 +330,7 @@ public class V2GUI {
 		// Try evaluating the function.
 		try {
 			Function newFunc = FunctionUtil.createFunction(newExpr, newColor, bounds, stepsize);
+			newFunc.addActionListener(FunctionUtil.createActionListener(plotter));
 			functionList.set(functionList.indexOf(oldFunc),newFunc);
 			plotter.removePlot(oldFunc);
 			plotter.plotFunction(newFunc);
@@ -380,27 +345,16 @@ public class V2GUI {
 		}
 	}
 
-//	/*
-//	 * Delete all selected functions.
-//	 */
-//	private void deleteSelectedFunctions() {
-//		for (int i = 0; i < functionList.size(); i++) {
-//			Function f = functionList.get(i);
-//			if (f.isSelected()) {
-//				noOfFunctions--;
-//				removePlot(f);
-//				functionList.remove(i);
-//				i--;
-//			}
-//		}
-//		frame.pack();
-//	}
-	
-	private Color3f getNextColor(){
-		// TODO: To be implemented.
-		return Colors.BLUE;
+	/*
+	 * Delete a function.
+	 */
+	private void deletePlot(Function f) {
+		noOfFunctions--;
+		plotter.removePlot(f);
+		functionList.remove(f);
+		frame.pack();
 	}
-	
+
 	/*
 	 * Return current bounds (set in GUI).
 	 */
@@ -439,14 +393,14 @@ public class V2GUI {
 		gbc_equation.gridy = 1;
 		inputPanel.add(equation, gbc_equation);
 		
-		JComboBox<Icon> colors = new JComboBox<Icon>(Colors.getAllColors());
+		JComboBox<ColorIcon> colors = new JComboBox<ColorIcon>((ColorUtil.getIconList(colorList)));
 		GridBagConstraints gbc_colors = new GridBagConstraints();
 		gbc_colors.insets = new Insets(0, 0, 0, 5);
 		gbc_colors.anchor = GridBagConstraints.NORTHWEST;
 		gbc_colors.gridx = 2;
 		gbc_colors.gridy = 1;
 		inputPanel.add(colors, gbc_colors);
-		colors.setSelectedIndex(Colors.getIndex(f.getColor()));
+		colors.setSelectedItem(new ColorIcon(f.getColor()));
 
 		JOptionPane.showMessageDialog(frame, inputPanel, "Edit Function", JOptionPane.PLAIN_MESSAGE, null);
 		

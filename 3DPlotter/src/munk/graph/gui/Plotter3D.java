@@ -180,14 +180,6 @@ public class Plotter3D extends JPanel{
 		axes.addChild(currentAxis);
 	}
 	
-	/*
-	 * ADDED BY EMHER
-	 */
-	
-	public void reset(){
-		plots.removeAllChildren();
-	}
-	
 	public void updateSize(int width,int height){
 		canvas.setSize(width, height);
 	}

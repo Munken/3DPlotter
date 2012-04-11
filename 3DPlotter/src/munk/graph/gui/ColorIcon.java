@@ -11,6 +11,9 @@ public class ColorIcon extends ImageIcon {
 	private BufferedImage bI;
 	private Color3f color;
 	
+	/*
+	 * Draw the color icon upon creation.
+	 */
 	public ColorIcon(Color3f color){
 		this.color = color;
 		bI = new BufferedImage(15, 15, BufferedImage.TYPE_INT_RGB);
@@ -21,7 +24,23 @@ public class ColorIcon extends ImageIcon {
 		this.setImage(bI);
 	}
 	
+	/*
+	 * Return the color of the icon.
+	 */
 	public Color3f getColor(){
 		return color;
+	}
+	
+	/*
+	 * Equal if they have the same color.
+	 */
+	public boolean equals(Object other){
+		if(other == null) return false;
+		if(this == other) return true;
+		if(other.getClass().equals(this.getClass())){
+			ColorIcon otherIcon = (ColorIcon) other;
+			if(this.getColor().equals(otherIcon.getColor())) return true; 
+		}
+		return false;
 	}
 }
