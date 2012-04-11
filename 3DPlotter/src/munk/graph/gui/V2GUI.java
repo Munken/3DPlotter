@@ -1,4 +1,5 @@
 package munk.graph.gui;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -312,22 +313,30 @@ public class V2GUI {
 	 * Resize the plot canvas according to window resize.
 	 */
 	private void canvasResize() {
+		// TODO: Experimental!
 		frame.addComponentListener(new ComponentAdapter() {
 			public void componentResized(ComponentEvent e) {
+				// Get new dimensions
+				String newDim = e.getSource().toString().split(",")[3];
+				int newXDim = Integer.parseInt(newDim.split("x")[0]);
+				int newYDim = Integer.parseInt(newDim.split("x")[1]);
+				if(newXDim > 945){
+					if(!e.getSource().equals(frame) || maximized){
+						frame.pack();
+						maximized = false;
+					}
+					if(e.getSource().toString().contains("maximized")){
+						frame.pack();
+						maximized = true;
+					}
+				}
+				
 				//plotter.updateSize(frame.getWidth()- controlsWidth,frame.getHeight()- controlsHeight);
 				
 				// Er nedenstående nødvendigt ?
 				// XXX Ja, med mindre du har en bedre løsning. 
 				// Problemet er, at frame.pack() resizer vinduet. 
 				// Dvs. uden dette check opnås et uendeligt loop.
-				if(!e.getSource().equals(frame) || maximized){
-					//frame.pack();
-					maximized = false;
-				}
-				if(e.getSource().toString().contains("maximized")){
-					//frame.pack();
-					maximized = true;
-				}
 			}
 		});
 	}
@@ -367,6 +376,7 @@ public class V2GUI {
 		try {
 			Function newFunc = FunctionUtil.createFunction(newExpr, newColor, bounds, stepsize);
 			functionList.set(functionList.indexOf(oldFunc),newFunc);
+			newFunc.addActionListener(FunctionUtil.createActionListener(plotter));
 			plotter.removePlot(oldFunc);
 			plotter.plotFunction(newFunc);
 			frame.pack();
