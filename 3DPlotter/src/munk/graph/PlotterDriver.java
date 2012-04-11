@@ -8,7 +8,7 @@ import javax.swing.JFrame;
 import javax.swing.JTextField;
 
 import munk.graph.appearance.Colors;
-import munk.graph.function.ParametricFunction;
+import munk.graph.function.*;
 import munk.graph.gui.Plotter3D;
 
 import com.graphbuilder.math.ExpressionParseException;
@@ -19,17 +19,28 @@ public class PlotterDriver {
 		final JFrame frame = new JFrame("Mega ultra");
 		
 		final Plotter3D p = new Plotter3D();
-		final float i = 2.2f;
+		final float i = 2f;
 		
-		float[] bounds = {0, (float) (2*Math.PI)};
-		ParametricFunction pp = new ParametricFunction("0.5*cos(u)", "0.5*sin(u)", "u/10", Colors.RED, bounds, 0.1f);
-		p.plotFunction(pp);
+//		float[] bounds = {0, (float) (2*Math.PI)};
+//		ParametricFunction pp = new ParametricFunction("0.5*cos(u)", "0.5*sin(u)", "u/10", Colors.RED, bounds, 0.1f);
+//		p.plotFunction(pp);
+//		
+//		bounds = new float[] {0, (float) (2*Math.PI), 0, 6.28f};
+//		ParametricFunction p2 = new ParametricFunction("(3*(1+sin(v)) + 2*(1-cos(v)/2)*cos(u))*cos(v)",
+//				 									   "(4+2*(1-cos(v)/2)*cos(u))*sin(v)", 
+//				 									   "-2*(1-cos(v)/2) * sin(u)", Colors.RED, bounds, 0.1f);
+//		p.plotFunction(p2);
 		
-		bounds = new float[] {0, (float) (2*Math.PI), 0, 6.28f};
-		ParametricFunction p2 = new ParametricFunction("(3*(1+sin(v)) + 2*(1-cos(v)/2)*cos(u))*cos(v)",
-				 									   "(4+2*(1-cos(v)/2)*cos(u))*sin(v)", 
-				 									   "-2*(1-cos(v)/2) * sin(u)", Colors.RED, bounds, 0.1f);
-		p.plotFunction(p2);
+		
+		float[] recBound = {-i, i, -i, i, -i, i};
+		String expr = "z*z - x*(cos(y)*cos(x)) = 0";
+		expr = "x^2+y^2+z^2=1";
+//		expr = "0 = 0";
+//		ImplicitFunction ip = new ImplicitFunction(expr, Colors.RED, recBound, 0.05f);
+//		p.plotFunction(ip);
+		
+		ImplicitRecursiveFunction rec = new ImplicitRecursiveFunction(expr, Colors.BLUE, recBound, 0.05f);
+		p.plotFunction(rec);
 //		p.plotFunction("z = y", -i, i, -i, i, Colors.MAGENTA);
 //        p.plotFunction(-i, i, -i, i, "z = x", Colors.RED);
 //        p.plotFunction(-i, i, -i, i, "x = y", Colors.CYAN);
