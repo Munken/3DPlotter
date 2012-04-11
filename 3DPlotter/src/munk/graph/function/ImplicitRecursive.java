@@ -551,23 +551,9 @@ public class ImplicitRecursive {
 		}
 	}
 	
-	private static int cubeindex(float[] values, float isolevel) {
-		int cubeindex = 0;
-		if (values[0] < isolevel) cubeindex |= 1;
-		if (values[1] < isolevel) cubeindex |= 2;
-		if (values[2] < isolevel) cubeindex |= 4;
-		if (values[3] < isolevel) cubeindex |= 8;
-		if (values[4] < isolevel) cubeindex |= 16;
-		if (values[5] < isolevel) cubeindex |= 32;
-		if (values[6] < isolevel) cubeindex |= 64;
-		if (values[7] < isolevel) cubeindex |= 128;
-		
-		return cubeindex;
-	}
-
-	
 	private float value(float x, float y, float z) {
-		return x*x + y*y + z*z - 1;
+//		return x*x + y*y + z*z - 1;
+		return (float) (z*z - x*(Math.cos(y)*Math.cos(x)));
 	}
 	
 	private float value(Point3f point) {
@@ -583,6 +569,7 @@ public class ImplicitRecursive {
 	}
 	
 	private void addTriangles(int nFacets) {
+		System.out.println(nFacets);
 		for (int q = 0; q < nFacets; q++) {
 			addVerticesToList(newTriangle[q], triangles);
 		}
@@ -602,4 +589,5 @@ public class ImplicitRecursive {
 		}
 		return result;
 	}
+	
 }
