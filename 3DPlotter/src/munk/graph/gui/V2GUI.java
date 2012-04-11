@@ -10,7 +10,6 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
 
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
@@ -19,7 +18,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
@@ -63,11 +61,9 @@ public class V2GUI {
 	private FunctionList<Function> functionList; 
 	private FunctionList<Function> paramFunctionList; 
 	private int noOfFunctions;
-	private boolean maximized;
+	private javax.swing.Timer resizeTimer;
 	
 	// Option variables
-	private static final float STEP_SIZE = (float) 1; 
-	private JScrollPane scrollPane;
 	private JTextField stdFuncInput;
 	private JLabel label_1;
 	private JLabel label_2;
@@ -106,7 +102,6 @@ public class V2GUI {
 		functionList = new FunctionList<Function>();
 		paramFunctionList = new FunctionList<Function>();
 		noOfFunctions = 0;
-		maximized = false;
 		initialize();
 	}
 
@@ -304,43 +299,23 @@ public class V2GUI {
      	controlsWidth = frame.getWidth() - CANVAS_INITIAL_WIDTH;
      	controlsHeight = frame.getHeight() - CANVAS_INITIAL_HEIGTH;
 
-     	// Auto resize.
-     	canvasResize();
-
-		// TEST
-		addPlot("z = x*(cos(y)*cos(x))", Colors.BLUE);
-	}
-
-	/*
-	 * Resize the plot canvas according to window resize.
-	 */
-	private void canvasResize() {
-		// TODO: Experimental!
-		frame.addComponentListener(new ComponentAdapter() {
-			public void componentResized(ComponentEvent e) {
-				// Get new dimensions
-				String newDim = e.getSource().toString().split(",")[3];
-				int newXDim = Integer.parseInt(newDim.split("x")[0]);
-				int newYDim = Integer.parseInt(newDim.split("x")[1]);
-				if(newXDim > 945){
-					if(!e.getSource().equals(frame) || maximized){
-						frame.pack();
-						maximized = false;
-					}
-					if(e.getSource().toString().contains("maximized")){
-						frame.pack();
-						maximized = true;
-					}
-				}
-				
-				//plotter.updateSize(frame.getWidth()- controlsWidth,frame.getHeight()- controlsHeight);
-				
-				// Er nedenstående nødvendigt ?
-				// XXX Ja, med mindre du har en bedre løsning. 
-				// Problemet er, at frame.pack() resizer vinduet. 
-				// Dvs. uden dette check opnås et uendeligt loop.
+     	// Auto resize frame. 	
+     	frame.setMinimumSize(new Dimension(500, 300));    
+     	resizeTimer = new javax.swing.Timer(10, new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				plotter.updateSize(frame.getWidth()- controlsWidth,frame.getHeight()- controlsHeight);
+				frame.pack();
 			}
 		});
+     	frame.addComponentListener(new ComponentAdapter() {
+     		public void componentResized(ComponentEvent e) {
+     			resizeTimer.restart();
+     		}
+     	});
+     	
+     	// Test Function
+     	addPlot("z = x*(cos(y)*cos(x))", Colors.BLUE);
 	}
 	
 	/*
