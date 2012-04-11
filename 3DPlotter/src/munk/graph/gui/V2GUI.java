@@ -305,7 +305,7 @@ public class V2GUI {
      	controlsWidth = frame.getWidth() - CANVAS_INITIAL_WIDTH;
      	controlsHeight = frame.getHeight() - CANVAS_INITIAL_HEIGTH;
      	frame.setMinimumSize(new Dimension(600, 400));
-     	resizeTimer = new javax.swing.Timer(10, new ActionListener() {
+     	resizeTimer = new javax.swing.Timer(100, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				plotter.updateSize(frame.getWidth()- controlsWidth,frame.getHeight()- controlsHeight);
