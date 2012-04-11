@@ -40,6 +40,8 @@ import com.graphbuilder.math.ExpressionParseException;
  */
 public class V2GUI {
 	
+	//THEIS test
+	
 	private static final int CANVAS_INITIAL_WIDTH = 600;
 	private static final int CANVAS_INITIAL_HEIGTH = 600;
 	private static final float DEFAULT_STEPSIZE = (float) 0.1;
@@ -376,7 +378,6 @@ public class V2GUI {
 		try {
 			Function newFunc = FunctionUtil.createFunction(newExpr, newColor, bounds, stepsize);
 			functionList.set(functionList.indexOf(oldFunc),newFunc);
-			newFunc.addActionListener(FunctionUtil.createActionListener(plotter));
 			plotter.removePlot(oldFunc);
 			plotter.plotFunction(newFunc);
 			frame.pack();
