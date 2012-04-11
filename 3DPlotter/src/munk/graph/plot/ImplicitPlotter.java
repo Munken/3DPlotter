@@ -96,7 +96,7 @@ public class ImplicitPlotter {
 		List<Point3f> triangles = new ArrayList<Point3f>(3000);
 		for (int k = 0; k < zLength - 1; k++) {
 		
-			calcYEdge(upper, z+stepsize);
+			calcEdges(upper, z+stepsize);
 			float y = yMin;
 			for (int j = 0; j < yLength - 1; j++) {
 				
@@ -229,7 +229,7 @@ public class ImplicitPlotter {
 		return result;
 	}
 	
-	private void calcYEdge(float[][] upperValues, float z) {
+	private void calcEdges(float[][] upperValues, float z) {
 		float y = yMin;
 		float x = xMin;
 		for (int j = 0; j < upperValues.length; j++) {

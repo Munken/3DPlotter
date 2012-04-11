@@ -5,6 +5,7 @@ import javax.vecmath.Point3f;
 public class MarchingCubes {
 
 	public static final int MAX_TRIANGLES_RETURNED = 5;
+	
 	private static final int[] EDGE_TABLE =  {
 		0x0  , 0x109, 0x203, 0x30a, 0x406, 0x50f, 0x605, 0x70c,
 		0x80c, 0x905, 0xa0f, 0xb06, 0xc0a, 0xd03, 0xe09, 0xf00,
@@ -299,8 +300,11 @@ public class MarchingCubes {
 
 
 	public int Pologynise(GridCell grid, Triangle[] triangles, float isolevel) {
-		int cubeindex = 0;
-		cubeindex = isAtBoundary(grid, isolevel, cubeindex);
+		int cubeindex = cubeindex(grid, isolevel);
+		
+		/* Cube is entirely in/out of the surface */
+		if (EDGE_TABLE[cubeindex] == 0)
+			return 0;
 		
 		Point3f[] vertlist = new Point3f[12]; 
 		if ((EDGE_TABLE[cubeindex] & 1) != 0)
@@ -354,23 +358,23 @@ public class MarchingCubes {
 
 
 
-	private int isAtBoundary(GridCell grid, float isolevel, int cubeindex) {
-		if (grid.values[0] < isolevel) cubeindex |= 1;
-		if (grid.values[1] < isolevel) cubeindex |= 2;
-		if (grid.values[2] < isolevel) cubeindex |= 4;
-		if (grid.values[3] < isolevel) cubeindex |= 8;
-		if (grid.values[4] < isolevel) cubeindex |= 16;
-		if (grid.values[5] < isolevel) cubeindex |= 32;
-		if (grid.values[6] < isolevel) cubeindex |= 64;
-		if (grid.values[7] < isolevel) cubeindex |= 128;
-
-		/* Cube is entirely in/out of the surface */
-		if (EDGE_TABLE[cubeindex] == 0)
-			return 0;
+	private static int cubeindex(GridCell grid, float isolevel) {
+		return cubeindex(grid.values, isolevel);
+	}
+	
+	private static int cubeindex(float[] values, float isolevel) {
+		int cubeindex = 0;
+		if (values[0] < isolevel) cubeindex |= 1;
+		if (values[1] < isolevel) cubeindex |= 2;
+		if (values[2] < isolevel) cubeindex |= 4;
+		if (values[3] < isolevel) cubeindex |= 8;
+		if (values[4] < isolevel) cubeindex |= 16;
+		if (values[5] < isolevel) cubeindex |= 32;
+		if (values[6] < isolevel) cubeindex |= 64;
+		if (values[7] < isolevel) cubeindex |= 128;
+		
 		return cubeindex;
 	}
-
-
 
 	private Point3f VertexInterp(float isolevel, Point3f p1,
 			Point3f p2, float val1, float val2) {
