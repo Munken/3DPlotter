@@ -309,7 +309,7 @@ public class V2GUI {
      	canvasResize();
 
 		// TEST
-		addPlot("z = x*(cos(y)*cos(x))", Colors.BLUE);
+		addPlot("z = x*(cos(y)*cos(x))", getNextColor());
 	}
 
 	/*
