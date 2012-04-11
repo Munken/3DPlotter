@@ -19,7 +19,7 @@ public class PlotterDriver {
 		final JFrame frame = new JFrame("Mega ultra");
 		
 		final Plotter3D p = new Plotter3D();
-		final float i = 3.1f;
+		final float i = 2f;
 		
 //		float[] bounds = {0, (float) (2*Math.PI)};
 //		ParametricFunction pp = new ParametricFunction("0.5*cos(u)", "0.5*sin(u)", "u/10", Colors.RED, bounds, 0.1f);
@@ -34,7 +34,7 @@ public class PlotterDriver {
 		
 		float[] recBound = {-i, i, -i, i, -i, i};
 		String expr = "z*z - x*(cos(y)*cos(x)) = 0";
-		expr = "x^2+y^2+z^2=3";
+		expr = "x^2+y^2+z^2=2";
 //		expr = "0 = 0";
 //		ImplicitFunction ip = new ImplicitFunction(expr, Colors.RED, recBound, 0.05f);
 //		p.plotFunction(ip);

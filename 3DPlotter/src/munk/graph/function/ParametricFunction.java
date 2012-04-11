@@ -5,7 +5,7 @@ import javax.media.j3d.BranchGroup;
 import javax.media.j3d.Shape3D;
 import javax.vecmath.Color3f;
 
-import munk.graph.plot.*;
+import munk.graph.plot.parametric.*;
 
 import com.graphbuilder.math.ExpressionParseException;
 
