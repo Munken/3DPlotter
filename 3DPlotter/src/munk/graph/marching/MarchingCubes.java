@@ -393,6 +393,10 @@ public class MarchingCubes {
 
 		return(p);
 	}
+	
+	public static boolean isInside(float[] values, float isolevel) {
+		return EDGE_TABLE[cubeindex(values, isolevel)] != 0;
+	}
 
 
 }
