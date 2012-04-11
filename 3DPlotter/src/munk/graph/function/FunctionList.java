@@ -27,6 +27,14 @@ public class FunctionList<Function> extends ArrayList<Function> {
 		return source;
 	}
 	
+	public boolean remove(Object f){
+		@SuppressWarnings("unchecked")
+		Function source = (Function) f;
+		int i = indexOf(f);
+		signalAll("REMOVE",i,source);
+		return super.remove(f);
+	}
+	
 	public Function set(int i, Function f){
 		Function source = f;
 		signalAll("SET",i,source);

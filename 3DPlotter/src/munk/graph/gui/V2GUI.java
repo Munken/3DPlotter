@@ -1,13 +1,31 @@
 package munk.graph.gui;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Dimension;
+import java.awt.EventQueue;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
-import javax.swing.*;
+import javax.swing.BoxLayout;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextField;
+import javax.swing.UIManager;
 import javax.vecmath.Color3f;
 
-import munk.graph.appearance.Colors;
-import munk.graph.function.*;
+import munk.graph.function.Function;
+import munk.graph.function.FunctionList;
+import munk.graph.function.FunctionUtil;
 
 import com.graphbuilder.math.ExpressionParseException;
 
@@ -18,9 +36,7 @@ import com.graphbuilder.math.ExpressionParseException;
  *
  */
 public class V2GUI {
-	
-	//THEIS test
-	
+
 	private static final int CANVAS_INITIAL_WIDTH = 600;
 	private static final int CANVAS_INITIAL_HEIGTH = 600;
 	private static final float DEFAULT_STEPSIZE = (float) 0.1;
@@ -260,6 +276,9 @@ public class V2GUI {
      						if(e.getID() == 1){
      							spawnEditDialog(source);
      						}
+     						if(e.getID() == 2){
+     							deletePlot(source);
+     						}
      					}
      				}));
      			}
@@ -286,7 +305,7 @@ public class V2GUI {
      	controlsWidth = frame.getWidth() - CANVAS_INITIAL_WIDTH;
      	controlsHeight = frame.getHeight() - CANVAS_INITIAL_HEIGTH;
      	frame.setMinimumSize(new Dimension(600, 400));
-     	resizeTimer = new javax.swing.Timer(10, new ActionListener() {
+     	resizeTimer = new javax.swing.Timer(100, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				plotter.updateSize(frame.getWidth()- controlsWidth,frame.getHeight()- controlsHeight);
@@ -322,13 +341,6 @@ public class V2GUI {
 			JOptionPane.showMessageDialog(frame,label);
 		}
 	}
-	
-	/*
-	 * Remove a function from the plot.
-	 */
-	private void removePlot(Function function) {
-		plotter.removePlot(function);
-	}
 
 	/*
 	 * Update a function.
@@ -357,7 +369,7 @@ public class V2GUI {
 	 */
 	private void deletePlot(Function f) {
 		noOfFunctions--;
-		removePlot(f);
+		plotter.removePlot(f);
 		functionList.remove(f);
 		frame.pack();
 	}
