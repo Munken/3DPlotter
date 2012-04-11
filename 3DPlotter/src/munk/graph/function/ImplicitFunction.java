@@ -7,7 +7,7 @@ import javax.media.j3d.BranchGroup;
 import javax.media.j3d.Shape3D;
 import javax.vecmath.Color3f;
 
-import munk.graph.plot.ImplicitPlotter;
+import munk.graph.plot.ImplicitSlow;
 
 import com.graphbuilder.math.ExpressionParseException;
 
@@ -16,7 +16,7 @@ import com.graphbuilder.math.ExpressionParseException;
  */
 public class ImplicitFunction extends AbstractFunction {
 
-	private ImplicitPlotter ip;
+	private ImplicitSlow ip;
 	
 	public ImplicitFunction(String expr, Color3f color, float[] bounds, float stepsize) throws ExpressionParseException{
 		this(expressionArray(expr),color,bounds, stepsize);
@@ -26,7 +26,7 @@ public class ImplicitFunction extends AbstractFunction {
 		super(expr,color,bounds, stepsize);
 		
 		String expression = getExpression()[0];
-		ip = new ImplicitPlotter(expression, 
+		ip = new ImplicitSlow(expression, 
 				bounds[0], bounds[1], bounds[2], bounds[3], bounds[4], bounds[5], getStepsize());
 	}
 	

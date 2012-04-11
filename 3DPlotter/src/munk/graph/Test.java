@@ -1,6 +1,6 @@
 package munk.graph;
 
-import munk.graph.function.ImplicitRecursive;
+import munk.graph.plot.ImplicitRecursive;
 
 public class Test  {
 

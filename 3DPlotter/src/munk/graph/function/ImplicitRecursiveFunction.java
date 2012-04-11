@@ -7,22 +7,23 @@ import javax.media.j3d.BranchGroup;
 import javax.media.j3d.Shape3D;
 import javax.vecmath.Color3f;
 
-import munk.graph.plot.ImplicitPlotter;
+import munk.graph.plot.ImplicitSlow;
+import munk.graph.plot.ImplicitRecursive;
 
 import com.graphbuilder.math.ExpressionParseException;
 
 /*
  * Implicit functions; calculated numerically using Marching Cubes algorithm.
  */
-public class RecursiveImplicitFunction extends AbstractFunction {
+public class ImplicitRecursiveFunction extends AbstractFunction {
 
 	private ImplicitRecursive ip;
 	
-	public RecursiveImplicitFunction(String expr, Color3f color, float[] bounds, float stepsize) throws ExpressionParseException{
+	public ImplicitRecursiveFunction(String expr, Color3f color, float[] bounds, float stepsize) throws ExpressionParseException{
 		this(expressionArray(expr),color,bounds, stepsize);
 	}
 	
-	public RecursiveImplicitFunction(String[] expr, Color3f color, float[] bounds, float stepsize) throws ExpressionParseException {
+	public ImplicitRecursiveFunction(String[] expr, Color3f color, float[] bounds, float stepsize) throws ExpressionParseException {
 		super(expr,color,bounds, stepsize);
 		
 		String expression = getExpression()[0];

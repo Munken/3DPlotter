@@ -8,8 +8,7 @@ import javax.swing.JFrame;
 import javax.swing.JTextField;
 
 import munk.graph.appearance.Colors;
-import munk.graph.function.ParametricFunction;
-import munk.graph.function.RecursiveImplicitFunction;
+import munk.graph.function.*;
 import munk.graph.gui.Plotter3D;
 
 import com.graphbuilder.math.ExpressionParseException;
@@ -32,9 +31,12 @@ public class PlotterDriver {
 //				 									   "-2*(1-cos(v)/2) * sin(u)", Colors.RED, bounds, 0.1f);
 //		p.plotFunction(p2);
 		
+		
 		float[] recBound = {-i, i, -i, i, -i, i};
-		RecursiveImplicitFunction rec = new RecursiveImplicitFunction("x", Colors.BLUE, recBound, 0.05f);
+		ImplicitFunction ip = new ImplicitFunction("z*z - x*(cos(y)*cos(x)) = 0", Colors.RED, recBound, 0.05f);
+		ImplicitRecursiveFunction rec = new ImplicitRecursiveFunction("x", Colors.BLUE, recBound, 0.05f);
 		p.plotFunction(rec);
+		p.plotFunction(ip);
 //		p.plotFunction("z = y", -i, i, -i, i, Colors.MAGENTA);
 //        p.plotFunction(-i, i, -i, i, "z = x", Colors.RED);
 //        p.plotFunction(-i, i, -i, i, "x = y", Colors.CYAN);
