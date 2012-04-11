@@ -8,8 +8,7 @@ import java.util.regex.Pattern;
 import javax.media.j3d.Shape3D;
 import javax.vecmath.Point3f;
 
-import munk.graph.marching.MarchingCubes;
-import munk.graph.marching.Triangle;
+import munk.graph.marching.*;
 
 import com.graphbuilder.math.*;
 import com.sun.j3d.utils.geometry.GeometryInfo;
@@ -46,7 +45,7 @@ public abstract class AbstractImplicit {
 							float xMin, float xMax, 
 							float yMin, float yMax, 
 							float zMin, float zMax, 
-							float xStepsize, float yStepsize, float zStepsize) {
+							float xStepsize, float yStepsize, float zStepsize) throws ExpressionParseException {
 		
 		expression = preParse(expression);
 		this.xMin = xMin;
@@ -98,6 +97,10 @@ public abstract class AbstractImplicit {
 	
 	protected int marchCube(float[] values, Point3f[] corners, Triangle[] tri) {
 		return MARCHER.marchCube(values, corners, tri, ISOLEVEL);
+	}
+	
+	protected int marchCube(MarchCell cell, Triangle[] tri) {
+		return MARCHER.marchCube(cell.getValues(), cell.getCorners(), tri, ISOLEVEL);
 	}
 	
 	protected float[][] bottomLayerValues() {

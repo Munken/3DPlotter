@@ -1,10 +1,12 @@
 package munk.graph;
 
+import com.graphbuilder.math.ExpressionParseException;
+
 import munk.graph.plot.ImplicitRecursive;
 
 public class Test  {
 
-  public static void main(String[] args) {
+  public static void main(String[] args) throws ExpressionParseException {
 	ImplicitRecursive im = new ImplicitRecursive("x = 2", 0, 3, 0, 3, 0, 3, 0.1f);
 	
 	long current = System.currentTimeMillis();

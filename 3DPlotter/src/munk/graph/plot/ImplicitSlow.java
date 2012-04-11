@@ -10,8 +10,11 @@ import com.graphbuilder.math.ExpressionParseException;
 
 public class ImplicitSlow extends AbstractImplicit{
 	
-	public ImplicitSlow(String expr, float xMin, float xMax, float yMin,
-			float yMax, float zMin, float zMax, float stepsize) throws ExpressionParseException {
+	public ImplicitSlow(String expr, 
+							float xMin, float xMax, 
+							float yMin,	float yMax, 
+							float zMin, float zMax, 
+							float stepsize) throws ExpressionParseException {
 		super(expr, xMin, xMax, yMin, yMax, zMin, zMax, stepsize, stepsize, stepsize);
 	}
 

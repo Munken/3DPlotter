@@ -35,6 +35,14 @@ public class GridCell {
 		this.points = corners;
 		this.values = values;
 	}
+
+	public Point3f[] getCorners() {
+		return points;
+	}
+
+	public float[] getValues() {
+		return values;
+	}
 	
 }
 
