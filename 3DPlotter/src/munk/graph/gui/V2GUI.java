@@ -40,8 +40,6 @@ import com.graphbuilder.math.ExpressionParseException;
  */
 public class V2GUI {
 	
-	//THEIS test
-	
 	private static final int CANVAS_INITIAL_WIDTH = 600;
 	private static final int CANVAS_INITIAL_HEIGTH = 600;
 	private static final float DEFAULT_STEPSIZE = (float) 0.1;
