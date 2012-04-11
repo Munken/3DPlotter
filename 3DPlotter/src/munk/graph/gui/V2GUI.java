@@ -1,31 +1,12 @@
 package munk.graph.gui;
-import java.awt.EventQueue;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.*;
+import java.awt.event.*;
 
-import javax.swing.BoxLayout;
-import javax.swing.Icon;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextField;
-import javax.swing.UIManager;
+import javax.swing.*;
 import javax.vecmath.Color3f;
 
 import munk.graph.appearance.Colors;
-import munk.graph.function.Function;
-import munk.graph.function.FunctionList;
-import munk.graph.function.FunctionUtil;
+import munk.graph.function.*;
 
 import com.graphbuilder.math.ExpressionParseException;
 
