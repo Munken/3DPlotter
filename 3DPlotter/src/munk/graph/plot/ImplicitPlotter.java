@@ -144,7 +144,7 @@ public class ImplicitPlotter {
 					corners[7].z = z + stepsize;
 					values[7] = upper[j+1][i];					
 					
-					int facets = m.Pologynise(grid, tri, 0);
+					int facets = m.marchCube(grid, tri, 0);
 					
 					if (facets > 0) {
 						for (int q = 0; q < facets; q++) {
