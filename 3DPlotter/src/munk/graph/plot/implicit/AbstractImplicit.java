@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 import javax.media.j3d.Shape3D;
 import javax.vecmath.Point3f;
 
+import munk.graph.function.IllegalEquationException;
 import munk.graph.marching.*;
 
 import com.graphbuilder.math.*;
@@ -45,7 +46,9 @@ public abstract class AbstractImplicit implements ImplicitPlotter {
 							float xMin, float xMax, 
 							float yMin, float yMax, 
 							float zMin, float zMax, 
-							float xStepsize, float yStepsize, float zStepsize) throws ExpressionParseException {
+							float xStepsize, float yStepsize, float zStepsize) 
+									
+									throws ExpressionParseException, IllegalEquationException {
 		
 		expression = preParse(expression);
 		this.xMin = xMin - xStepsize/2;
@@ -175,11 +178,11 @@ public abstract class AbstractImplicit implements ImplicitPlotter {
 		return result;
 	}
 	
-	private String preParse(String expr) {
+	private String preParse(String expr) throws IllegalEquationException {
 		Matcher m = PATTERN.matcher(expr);
 		boolean matches = m.matches();
 		if (!matches)
-			throw new IllegalStateException("The expression must be of the form <Expression> = <Expression>");
+			throw new IllegalEquationException("The expression must be of the form <Expression> = <Expression>");
 		
 		String lhs = m.group(1).trim();
 		String rhs = m.group(2).trim();

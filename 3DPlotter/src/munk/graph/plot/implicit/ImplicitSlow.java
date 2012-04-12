@@ -3,6 +3,7 @@ package munk.graph.plot.implicit;
 import javax.media.j3d.Shape3D;
 import javax.vecmath.Point3f;
 
+import munk.graph.function.IllegalEquationException;
 import munk.graph.marching.MarchingCubes;
 import munk.graph.marching.Triangle;
 
@@ -14,7 +15,7 @@ public class ImplicitSlow extends AbstractImplicit{
 							float xMin, float xMax, 
 							float yMin,	float yMax, 
 							float zMin, float zMax, 
-							float stepsize) throws ExpressionParseException {
+							float stepsize) throws ExpressionParseException, IllegalEquationException {
 		super(expr, xMin, xMax, yMin, yMax, zMin, zMax, stepsize, stepsize, stepsize);
 	}
 

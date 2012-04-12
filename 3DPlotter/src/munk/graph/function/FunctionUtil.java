@@ -41,9 +41,11 @@ public class FunctionUtil {
 	 * @param stepsize
 	 * @return
 	 * @throws ExpressionParseException 
+	 * @throws IllegalEquationException The non-parametric expressions must be of the form \<Expression\> = \<Expression\>
 	 */
 	public static Function createFunction(String[] expressions, Color3f color,
-										float[] bounds, float stepsize) throws ExpressionParseException{
+										float[] bounds, float stepsize) 
+												throws ExpressionParseException, IllegalEquationException{
 		if (expressions.length == 3) {
 			return new ParametricFunction(expressions, color, bounds, stepsize);
 		} 
@@ -90,7 +92,8 @@ public class FunctionUtil {
 	}
 	
 	public static Function createFunction(String expression, Color3f color, 
-										float[] bounds, float stepsize) throws ExpressionParseException {
+										float[] bounds, float stepsize) 
+												throws ExpressionParseException, IllegalEquationException {
 		String[] expressions = {expression};
 		return createFunction(expressions, color, bounds, stepsize);
 	}

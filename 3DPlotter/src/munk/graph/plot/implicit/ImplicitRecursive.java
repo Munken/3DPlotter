@@ -5,6 +5,7 @@ import javax.vecmath.Point3f;
 
 import com.graphbuilder.math.ExpressionParseException;
 
+import munk.graph.function.IllegalEquationException;
 import munk.graph.marching.MarchingCubes;
 import munk.graph.marching.Triangle;
 
@@ -28,7 +29,7 @@ public class ImplicitRecursive extends AbstractImplicit{
 								float xMin, float xMax, 
 								float yMin, float yMax, 
 								float zMin, float zMax, 
-								float stepsize) throws ExpressionParseException {
+								float stepsize) throws ExpressionParseException, IllegalEquationException {
 		super(expression, xMin, xMax, yMin, yMax, zMin, zMax, stepsize, stepsize, stepsize);
 		this.stepsize = stepsize;
 		

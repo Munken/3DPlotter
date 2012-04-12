@@ -15,7 +15,7 @@ import com.graphbuilder.math.ExpressionParseException;
 
 public class PlotterDriver {
 	
-	public static void main(String[] args) throws ExpressionParseException {
+	public static void main(String[] args) throws ExpressionParseException, IllegalEquationException {
 		final JFrame frame = new JFrame("Mega ultra");
 		
 		final Plotter3D p = new Plotter3D();
@@ -85,7 +85,7 @@ public class PlotterDriver {
 								ImplicitIterativeFunction ip = 
 										new ImplicitIterativeFunction(function.getText(), Colors.RED, recBound, 0.1f);
 								p.plotFunction(ip);
-							} catch (ExpressionParseException e1) {
+							} catch (ExpressionParseException | IllegalEquationException e1) {
 								// TODO Auto-generated catch block
 								e1.printStackTrace();
 							}

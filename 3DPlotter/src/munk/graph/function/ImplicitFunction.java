@@ -18,11 +18,13 @@ public class ImplicitFunction extends AbstractFunction {
 
 	private ImplicitSlow ip;
 	
-	public ImplicitFunction(String expr, Color3f color, float[] bounds, float stepsize) throws ExpressionParseException{
+	public ImplicitFunction(String expr, Color3f color, float[] bounds, float stepsize) 
+												throws ExpressionParseException, IllegalEquationException{
 		this(expressionArray(expr),color,bounds, stepsize);
 	}
 	
-	public ImplicitFunction(String[] expr, Color3f color, float[] bounds, float stepsize) throws ExpressionParseException {
+	public ImplicitFunction(String[] expr, Color3f color, float[] bounds, float stepsize) 
+												throws ExpressionParseException, IllegalEquationException {
 		super(expr,color,bounds, stepsize);
 		
 		String expression = getExpression()[0];

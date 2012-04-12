@@ -24,9 +24,7 @@ import javax.swing.UIManager;
 import javax.vecmath.Color3f;
 
 import munk.graph.appearance.Colors;
-import munk.graph.function.Function;
-import munk.graph.function.FunctionList;
-import munk.graph.function.FunctionUtil;
+import munk.graph.function.*;
 
 import com.graphbuilder.math.ExpressionParseException;
 
@@ -286,7 +284,7 @@ public class TestGUI {
 		noOfFunctions++;
 		frame.pack();
 		}
-		catch(ExpressionParseException e){
+		catch(ExpressionParseException | IllegalEquationException e){
 			String message = e.getMessage();
 			JLabel label = new JLabel(message,JLabel.CENTER);
 			JOptionPane.showMessageDialog(frame,label);
@@ -313,7 +311,7 @@ public class TestGUI {
 			frame.pack();
 		} 
 		// Catch error.
-		catch (ExpressionParseException e) {
+		catch (ExpressionParseException | IllegalEquationException e) {
 			// TODO Hvis der trykkes enter fanges den også af plotfeltet.
 			String message = e.getMessage();
 			JLabel label = new JLabel(message,JLabel.CENTER);

@@ -18,11 +18,13 @@ public class ImplicitIterativeFunction extends AbstractFunction {
 
 	private ImplicitIterative ip;
 	
-	public ImplicitIterativeFunction(String expr, Color3f color, float[] bounds, float stepsize) throws ExpressionParseException{
+	public ImplicitIterativeFunction(String expr, Color3f color, float[] bounds, float stepsize) 
+												throws ExpressionParseException, IllegalEquationException{
 		this(expressionArray(expr),color,bounds, stepsize);
 	}
 	
-	public ImplicitIterativeFunction(String[] expr, Color3f color, float[] bounds, float stepsize) throws ExpressionParseException {
+	public ImplicitIterativeFunction(String[] expr, Color3f color, float[] bounds, float stepsize) 
+												throws ExpressionParseException, IllegalEquationException {
 		super(expr,color,bounds, stepsize);
 		
 		String expression = getExpression()[0];

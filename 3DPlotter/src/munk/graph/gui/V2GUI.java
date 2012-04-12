@@ -317,7 +317,7 @@ public class V2GUI {
 		noOfFunctions++;
 		frame.pack();
 		}
-		catch(ExpressionParseException e){
+		catch(ExpressionParseException | IllegalEquationException e){
 			String message = e.getMessage();
 			JLabel label = new JLabel(message,JLabel.CENTER);
 			JOptionPane.showMessageDialog(frame,label);
@@ -338,7 +338,7 @@ public class V2GUI {
 			frame.pack();
 		} 
 		// Catch error.
-		catch (ExpressionParseException e) {
+		catch (ExpressionParseException | IllegalEquationException e) {
 			// TODO Hvis der trykkes enter fanges den også af plotfeltet.
 			String message = e.getMessage();
 			JLabel label = new JLabel(message,JLabel.CENTER);

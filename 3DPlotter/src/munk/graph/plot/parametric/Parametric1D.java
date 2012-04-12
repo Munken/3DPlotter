@@ -4,6 +4,7 @@ import javax.media.j3d.LineArray;
 import javax.media.j3d.Shape3D;
 import javax.vecmath.Point3f;
 
+import munk.graph.function.IllegalEquationException;
 import munk.graph.plot.PlotUtil;
 
 import com.graphbuilder.math.ExpressionParseException;
@@ -19,7 +20,10 @@ public class Parametric1D extends AbstractParametric{
 
 
 	// Mother constructor
-	public Parametric1D(String xExpr, String yExpr, String zExpr, float tMin, float tMax, String varName, float stepSize) throws ExpressionParseException {
+	public Parametric1D(String xExpr, String yExpr, String zExpr, 
+							float tMin, float tMax, 
+							String varName, float stepSize) 
+									throws ExpressionParseException, IllegalEquationException {
 		super(xExpr, yExpr, zExpr, new String[] {varName}, new float[] {tMin}, stepSize);
 		this.tMin = tMin;
 		this.tMax = tMax;
@@ -27,12 +31,15 @@ public class Parametric1D extends AbstractParametric{
 		variable = varName;
 	}
 	
-	public Parametric1D(String xExpr, String yExpr, String zExpr, float tMin, float tMax, float stepSize) throws ExpressionParseException {
+	public Parametric1D(String xExpr, String yExpr, String zExpr, 
+							float tMin, float tMax, float stepSize) 
+									throws ExpressionParseException, IllegalEquationException {
 		this(xExpr, yExpr, zExpr, tMin, tMax, STD_VAR_NAMES, stepSize);
 	}
 	
-	public Parametric1D(String xFunc, String yFunc, String zFunc, float tMin, float tMax) throws ExpressionParseException {
-		this(xFunc, yFunc, zFunc, tMin, tMax, 0.1f);
+	public Parametric1D(String xExpr, String yExpr, String zExpr, float tMin, float tMax) 
+									throws ExpressionParseException, IllegalEquationException {
+		this(xExpr, yExpr, zExpr, tMin, tMax, 0.1f);
 	}
 	
 	public Shape3D getPlot() {

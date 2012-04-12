@@ -18,11 +18,13 @@ public class ImplicitRecursiveFunction extends AbstractFunction {
 
 	private ImplicitRecursive ip;
 	
-	public ImplicitRecursiveFunction(String expr, Color3f color, float[] bounds, float stepsize) throws ExpressionParseException{
+	public ImplicitRecursiveFunction(String expr, Color3f color, float[] bounds, float stepsize) 
+										throws ExpressionParseException, IllegalEquationException{
 		this(expressionArray(expr),color,bounds, stepsize);
 	}
 	
-	public ImplicitRecursiveFunction(String[] expr, Color3f color, float[] bounds, float stepsize) throws ExpressionParseException {
+	public ImplicitRecursiveFunction(String[] expr, Color3f color, float[] bounds, float stepsize) 
+										throws ExpressionParseException, IllegalEquationException {
 		super(expr,color,bounds, stepsize);
 		
 		String expression = getExpression()[0];
