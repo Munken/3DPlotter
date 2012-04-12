@@ -83,8 +83,8 @@ public class XYZPlotter {
 	}
 
 	private TransformGroup plot() {
-		int xSize = (int) ((xMax - xMin) / stepsize);
-		int ySize = (int) ((yMax - yMin) / stepsize);
+		int xSize = (int) ((xMax - xMin) / stepsize) + 1;
+		int ySize = (int) ((yMax - yMin) / stepsize) + 1;
 		
 		float[] xValues = initAxisArray(xMin, xSize, stepsize);
 		float[] yValues = initAxisArray(yMin, ySize, stepsize);
