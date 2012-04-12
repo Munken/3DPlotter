@@ -48,9 +48,9 @@ public abstract class AbstractImplicit implements ImplicitPlotter {
 							float xStepsize, float yStepsize, float zStepsize) throws ExpressionParseException {
 		
 		expression = preParse(expression);
-		this.xMin = xMin - xStepsize;
-		this.yMin = yMin - yStepsize;
-		this.zMin = zMin - zStepsize;
+		this.xMin = xMin - xStepsize/2;
+		this.yMin = yMin - yStepsize/2;
+		this.zMin = zMin - zStepsize/2;
 		
 		this.xStepsize = xStepsize;
 		this.yStepsize = yStepsize;

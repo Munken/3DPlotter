@@ -92,11 +92,17 @@ public class FunctionLabel extends JPanel{
 
 			@Override
 			public void keyReleased(KeyEvent e) {
-				if (!exprField.getText().equals(mother.getExpression()[0])) exprField.setBackground(Color.RED);
-				if(e.getKeyCode() == KeyEvent.VK_ENTER){
+				if (!exprField.getText().equals(mother.getExpression()[0])) {
+					exprField.setBackground(Color.RED);
+					
+					if(e.getKeyCode() == KeyEvent.VK_ENTER){
+						exprField.setBackground(Color.WHITE);
+						listener.actionPerformed(new ActionEvent(mother, 0, exprField.getText()));
+					}
+				} else {
 					exprField.setBackground(Color.WHITE);
-					listener.actionPerformed(new ActionEvent(mother, 0, exprField.getText()));
 				}
+
 			}
 		});
 		

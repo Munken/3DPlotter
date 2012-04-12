@@ -19,7 +19,7 @@ public class PlotterDriver {
 		final JFrame frame = new JFrame("Mega ultra");
 		
 		final Plotter3D p = new Plotter3D();
-		final float i = 4f;
+		final float i = 1f;
 		
 //		float[] bounds = {0, (float) (2*Math.PI)};
 //		ParametricFunction pp = new ParametricFunction("0.5*cos(u)", "0.5*sin(u)", "u/10", Colors.RED, bounds, 0.1f);
@@ -42,8 +42,20 @@ public class PlotterDriver {
 //		ImplicitRecursiveFunction rec = new ImplicitRecursiveFunction(expr, Colors.BLUE, recBound, 0.05f);
 //		p.plotFunction(rec);
 		
-//		ImplicitIterativeFunction it = new ImplicitIterativeFunction(expr, Colors.BLUE, recBound, 0.1f);
-//		p.plotFunction(it);
+		ImplicitIterativeFunction it = new ImplicitIterativeFunction("x = .97", Colors.BLUE, recBound, 0.05f);
+		p.plotFunction(it);
+		it = new ImplicitIterativeFunction("y = 0.97", Colors.BLUE, recBound, 0.05f);
+		p.plotFunction(it);
+		it = new ImplicitIterativeFunction("x = -0.97", Colors.BLUE, recBound, 0.05f);
+		p.plotFunction(it);
+		it = new ImplicitIterativeFunction("y = -0.97", Colors.BLUE, recBound, 0.05f);
+		p.plotFunction(it);
+		it = new ImplicitIterativeFunction("z = -0.97", Colors.BLUE, recBound, 0.05f);
+		p.plotFunction(it);
+		it = new ImplicitIterativeFunction("z = 0.97", Colors.BLUE, recBound, 0.05f);
+		p.plotFunction(it);
+		
+		
 		
 //		p.plotFunction("z = y", -i, i, -i, i, Colors.MAGENTA);
 //        p.plotFunction(-i, i, -i, i, "z = x", Colors.RED);
