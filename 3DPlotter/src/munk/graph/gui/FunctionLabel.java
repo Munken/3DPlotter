@@ -1,22 +1,11 @@
 package munk.graph.gui;
 
-import java.awt.Color;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.*;
+import java.awt.event.*;
 
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JCheckBox;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.*;
 
 import munk.graph.function.Function;
-import javax.swing.JButton;
 
 @SuppressWarnings("serial")
 public class FunctionLabel extends JPanel{
@@ -62,23 +51,7 @@ public class FunctionLabel extends JPanel{
 		gbc_btnEdit.gridy = 0;
 		add(btnEdit, gbc_btnEdit);
 		
-		// Delete function on click.
-		btnDelete.addActionListener(new ActionListener() {
 
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				listener.actionPerformed(new ActionEvent(mother, 2, exprField.getText()));
-			}
-		});
-		
-		// Spawn edit dialog on click.
-		btnEdit.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				listener.actionPerformed(new ActionEvent(mother, 1, exprField.getText()));
-			}
-		});
 		
 		chckbx = new JCheckBox("");
 		GridBagConstraints gbc_chckbxTest = new GridBagConstraints();
@@ -87,6 +60,47 @@ public class FunctionLabel extends JPanel{
 		chckbx.setSelected(true);
 		this.add(chckbx, gbc_chckbxTest);
 
+		addTextChangeListener();
+		
+		addCheckboxListener();
+		
+		addDeleteListener();
+		
+		addEditListener(btnEdit);
+	}
+
+	private void addDeleteListener() {
+		// Delete function on click.
+		btnDelete.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				listener.actionPerformed(new ActionEvent(mother, 2, exprField.getText()));
+			}
+		});
+	}
+
+	private void addEditListener(JButton btnEdit) {
+		// Spawn edit dialog on click.
+		btnEdit.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				listener.actionPerformed(new ActionEvent(mother, 1, exprField.getText()));
+			}
+		});
+	}
+
+	private void addCheckboxListener() {
+		// Update visibility.
+		chckbx.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				mother.setVisible(chckbx.isSelected());
+			}
+		});
+	}
+
+	private void addTextChangeListener() {
 		//If text is updated, color the cell RED. When "enter" is pressed, process the new function, and recolor the cell WHITE.
 		exprField.addKeyListener(new KeyAdapter() {
 
@@ -103,13 +117,6 @@ public class FunctionLabel extends JPanel{
 					exprField.setBackground(Color.WHITE);
 				}
 
-			}
-		});
-		
-		// Update visibility.
-		chckbx.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				mother.setVisible(chckbx.isSelected());
 			}
 		});
 	}
