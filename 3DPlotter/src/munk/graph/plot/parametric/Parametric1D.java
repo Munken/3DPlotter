@@ -1,12 +1,14 @@
-package munk.graph.plot;
+package munk.graph.plot.parametric;
 
 import javax.media.j3d.LineArray;
 import javax.media.j3d.Shape3D;
 import javax.vecmath.Point3f;
 
+import munk.graph.plot.PlotUtil;
+
 import com.graphbuilder.math.ExpressionParseException;
 
-public class Parametric1D extends ParametricPlotter{
+public class Parametric1D extends AbstractParametric{
 	
 	private static final String STD_VAR_NAMES = "t";
 	

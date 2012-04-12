@@ -2,7 +2,7 @@ package munk.graph;
 
 import com.graphbuilder.math.ExpressionParseException;
 
-import munk.graph.plot.ImplicitRecursive;
+import munk.graph.plot.implicit.ImplicitRecursive;
 
 public class Test  {
 

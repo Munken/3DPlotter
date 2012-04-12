@@ -7,7 +7,7 @@ import javax.media.j3d.BranchGroup;
 import javax.media.j3d.Shape3D;
 import javax.vecmath.Color3f;
 
-import munk.graph.plot.ImplicitSlow;
+import munk.graph.plot.implicit.ImplicitSlow;
 
 import com.graphbuilder.math.ExpressionParseException;
 
