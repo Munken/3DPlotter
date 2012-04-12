@@ -280,7 +280,7 @@ public class TestGUI {
 		// Create the function.
 		try{
 		Function newFunc = FunctionUtil.createFunction(expr,color,DEFAULT_BOUNDS,DEFAULT_STEPSIZE);
-		newFunc.addActionListener(FunctionUtil.createActionListener(plotter));
+		newFunc.addActionListener(createVisibilityListener(plotter));
 		functionList.add(newFunc);
 		plotter.plotFunction(newFunc);
 		noOfFunctions++;
@@ -381,5 +381,14 @@ public class TestGUI {
 		} else if (newColor != null && !f.getColor().equals(newColor)) {
 			functionList.get(functionList.indexOf(f)).setColor(newColor);
 		}
+	}
+	
+	private ActionListener createVisibilityListener(final Plotter3D plotter){
+		return new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Function source = (Function) e.getSource();
+				plotter.showPlot(source);
+			}
+		};
 	}
 }
