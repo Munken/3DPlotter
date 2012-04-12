@@ -316,8 +316,12 @@ public class V2GUI {
 		plotter.plotFunction(newFunc);
 		noOfFunctions++;
 		frame.pack();
-		}
-		catch(ExpressionParseException | IllegalEquationException e){
+		} catch (ExpressionParseException e) {
+			String message = e.getMessage();
+			JLabel label = new JLabel(message,JLabel.CENTER);
+			JOptionPane.showMessageDialog(frame,label);
+		} catch (IllegalEquationException e) {
+			// TODO: We need a yellow field
 			String message = e.getMessage();
 			JLabel label = new JLabel(message,JLabel.CENTER);
 			JOptionPane.showMessageDialog(frame,label);
@@ -338,8 +342,13 @@ public class V2GUI {
 			frame.pack();
 		} 
 		// Catch error.
-		catch (ExpressionParseException | IllegalEquationException e) {
+		catch (ExpressionParseException e) {
 			// TODO Hvis der trykkes enter fanges den også af plotfeltet.
+			String message = e.getMessage();
+			JLabel label = new JLabel(message,JLabel.CENTER);
+			JOptionPane.showMessageDialog(frame,label);
+		} catch (IllegalEquationException e) {
+			// TODO: We need a yellow field
 			String message = e.getMessage();
 			JLabel label = new JLabel(message,JLabel.CENTER);
 			JOptionPane.showMessageDialog(frame,label);
