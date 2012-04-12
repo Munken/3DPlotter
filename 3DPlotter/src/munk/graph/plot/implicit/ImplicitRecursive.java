@@ -200,9 +200,9 @@ public class ImplicitRecursive extends AbstractImplicit{
 		if (nTriangles > 0) {
 			addTriangles(nTriangles, newTriangles);
 
-			//	marchFace0(values, corners, x, y - 1, z);
+		    marchFace0(values, corners, x, y - 1, z);
 			marchFace1(values, corners, x + 1, y, z);
-			marchFace2(values, corners, x, y + 1, z);
+//			marchFace2(values, corners, x, y + 1, z);
 			marchFace3(values, corners, x - 1, y, z);
 			marchFace4(values, corners, x, y, z + 1);
 			marchFace5(values, corners, x, y, z - 1);
@@ -253,9 +253,9 @@ public class ImplicitRecursive extends AbstractImplicit{
 			addTriangles(nTriangles, newTriangles);
 
 			marchFace0(values, corners, x, y - 1, z);
-//			marchFace1(values, corners, x + 1, y, z);
+			marchFace1(values, corners, x + 1, y, z);
 			marchFace2(values, corners, x, y + 1, z);
-			marchFace3(values, corners, x - 1, y, z);
+//			marchFace3(values, corners, x - 1, y, z);
 			marchFace4(values, corners, x, y, z + 1);
 			marchFace5(values, corners, x, y, z - 1);
 		}
@@ -305,9 +305,9 @@ public class ImplicitRecursive extends AbstractImplicit{
 		if (nTriangles > 0) {
 			addTriangles(nTriangles, newTriangles);
 
-			marchFace0(values, corners, x, y - 1, z);
+//			marchFace0(values, corners, x, y - 1, z);
 			marchFace1(values, corners, x + 1, y, z);
-//			marchFace2(values, corners, x, y + 1, z);
+			marchFace2(values, corners, x, y + 1, z);
 			marchFace3(values, corners, x - 1, y, z);
 			marchFace4(values, corners, x, y, z + 1);
 			marchFace5(values, corners, x, y, z - 1);
@@ -359,9 +359,9 @@ public class ImplicitRecursive extends AbstractImplicit{
 			addTriangles(nTriangles, newTriangles);
 
 			marchFace0(values, corners, x, y - 1, z);
-			marchFace1(values, corners, x + 1, y, z);
+//			marchFace1(values, corners, x + 1, y, z);
 			marchFace2(values, corners, x, y + 1, z);
-//			marchFace3(values, corners, x - 1, y, z);
+			marchFace3(values, corners, x - 1, y, z);
 			marchFace4(values, corners, x, y, z + 1);
 			marchFace5(values, corners, x, y, z - 1);
 		}
@@ -415,8 +415,8 @@ public class ImplicitRecursive extends AbstractImplicit{
 			marchFace1(values, corners, x + 1, y, z);
 			marchFace2(values, corners, x, y + 1, z);
 			marchFace3(values, corners, x - 1, y, z);
-//			marchFace4(values, corners, x, y, z + 1);
-			marchFace5(values, corners, x, y, z - 1);
+			marchFace4(values, corners, x, y, z + 1);
+//			marchFace5(values, corners, x, y, z - 1);
 		}
 	}
 	
@@ -468,8 +468,8 @@ public class ImplicitRecursive extends AbstractImplicit{
 			marchFace1(values, corners, x + 1, y, z);
 			marchFace2(values, corners, x, y + 1, z);
 			marchFace3(values, corners, x - 1, y, z);
-			marchFace4(values, corners, x, y, z + 1);
-//			marchFace5(values, corners, x, y, z - 1);
+//			marchFace4(values, corners, x, y, z + 1);
+			marchFace5(values, corners, x, y, z - 1);
 		}
 	}
 	

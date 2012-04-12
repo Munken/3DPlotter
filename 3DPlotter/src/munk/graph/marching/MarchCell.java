@@ -43,7 +43,7 @@ public class MarchCell extends GridCell {
 	
 	@Override
 	public String toString() {
-		return marchFace + "[" + x + ", " + y + ", " + z + "]"; 
+		return marchFace + ": [" + x + ", " + y + ", " + z + "]"; 
 	}
 	
 

@@ -48,9 +48,9 @@ public abstract class AbstractImplicit implements ImplicitPlotter {
 							float xStepsize, float yStepsize, float zStepsize) throws ExpressionParseException {
 		
 		expression = preParse(expression);
-		this.xMin = xMin;
-		this.yMin = yMin;
-		this.zMin = zMin;
+		this.xMin = xMin - xStepsize;
+		this.yMin = yMin - yStepsize;
+		this.zMin = zMin - zStepsize;
 		
 		this.xStepsize = xStepsize;
 		this.yStepsize = yStepsize;
@@ -72,10 +72,8 @@ public abstract class AbstractImplicit implements ImplicitPlotter {
 	
 	public Shape3D getPlot() {
 		if (plot == null) {
-			long current = System.currentTimeMillis();
 			triangles = new ArrayList<Point3f>(3000);
 			plot = plot();
-			System.out.println(System.currentTimeMillis() - current);
 			triangles = null;
 		}
 		
@@ -86,16 +84,13 @@ public abstract class AbstractImplicit implements ImplicitPlotter {
 	
 	protected Shape3D buildGeomtryFromTriangles() {
 		// Build geometry from triangles
-		long current = System.currentTimeMillis();
 		if (triangles.size() >= 3) {
 			GeometryInfo gi = new GeometryInfo(GeometryInfo.TRIANGLE_ARRAY);
 			Point3f[] points = new Point3f[triangles.size()];
 			gi.setCoordinates((Point3f[]) triangles.toArray(points));
-			System.out.println("Build geo: " + (System.currentTimeMillis() - current));
-			current = System.currentTimeMillis();
+			
 			NormalGenerator ng = new NormalGenerator();
 			ng.generateNormals(gi);
-			System.out.println("Build normals: " + (System.currentTimeMillis() - current) + " to " + triangles.size() + " triangles");
 					
 			return new Shape3D(gi.getGeometryArray());
 		} else 

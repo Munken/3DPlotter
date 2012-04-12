@@ -6,9 +6,9 @@ import java.util.List;
 import javax.media.j3d.Shape3D;
 import javax.vecmath.Point3f;
 
-import com.graphbuilder.math.ExpressionParseException;
-
 import munk.graph.marching.*;
+
+import com.graphbuilder.math.ExpressionParseException;
 
 public class ImplicitIterative extends AbstractImplicit{
 	
@@ -39,21 +39,15 @@ public class ImplicitIterative extends AbstractImplicit{
 	}
 	
 	public  Shape3D plot() {
-		long current = System.currentTimeMillis();
-		Point3f startCube =  findStartCube();
-		System.out.println("Find: " + (System.currentTimeMillis() - current));
-		current = System.currentTimeMillis();
+		Point3f startCube =  findStartCube(xStepsize, yStepsize, zStepsize);
+		
 		if (startCube != null) {
-			System.out.println(startCube);
 			marchCubes(startCube);
-			System.out.println("march: " + (System.currentTimeMillis() - current));
 		}
 		else 
 			return null;
 		
-		current = System.currentTimeMillis();
 		Shape3D shape = buildGeomtryFromTriangles();
-		System.out.println("geo: " + (System.currentTimeMillis() - current));
 		
 		return shape;
 	}
@@ -73,7 +67,7 @@ public class ImplicitIterative extends AbstractImplicit{
 		while (cells.size() > 0) {
 			// Next cell to process
 			MarchCell next = cells.remove(0);
-			
+
 			// How many triangles do we need for this cell
 			int nTriangles = MARCHER.marchCube(next, newTriangles, ISOLEVEL);
 			
@@ -85,6 +79,7 @@ public class ImplicitIterative extends AbstractImplicit{
 			}
 		}
 		visited = null;
+		
 	}
 	
 	private void marchNext(MarchCell next) {
@@ -178,7 +173,7 @@ public class ImplicitIterative extends AbstractImplicit{
 		return new MarchCell(corners, values, startX, startY, startZ, MarchCell.STARTING_CELL);
 	}
 	
-	private Point3f findStartCube() {
+	private Point3f findStartCube(float xStepsize, float yStepsize, float zStepsize) {
 		float[] values = new float[8];
 		float z = zMin;
 		
@@ -187,7 +182,7 @@ public class ImplicitIterative extends AbstractImplicit{
 		
 		for (int k = 0; k < zLength - 1; k++) {
 		
-			calcEdges(upper, z+stepsize);
+			calcEdges(upper, z + zStepsize);
 			float y = yMin;
 			for (int j = 0; j < yLength - 1; j++) {
 				
@@ -205,7 +200,7 @@ public class ImplicitIterative extends AbstractImplicit{
 					
 					values[5] = upper[j][i+1];
 					
-					values[6] = value(x + stepsize, y + stepsize, z + stepsize);
+					values[6] = value(x + xStepsize, y + yStepsize, z + zStepsize);
 					
 					values[7] = upper[j+1][i];	
 					
@@ -236,9 +231,9 @@ public class ImplicitIterative extends AbstractImplicit{
 	}
 
 	private void marchFace0(float[] values, Point3f[] corners, int x, int y, int z) {
-//		addFace0(values, corners, x, y, z);
+		addFace0(values, corners, x, y, z);
 		addFace1(values, corners, x, y, z);
-		addFace2(values, corners, x, y, z);
+//		addFace2(values, corners, x, y, z);
 		addFace3(values, corners, x, y, z);
 		addFace4(values, corners, x, y, z);
 		addFace5(values, corners, x, y, z);
@@ -289,9 +284,9 @@ public class ImplicitIterative extends AbstractImplicit{
 	private void marchFace1(float[] values, Point3f[] corners, int x, int y, int z) {
 
 		addFace0(values, corners, x, y, z);
-//		addFace1(values, corners, x, y, z);
+		addFace1(values, corners, x, y, z);
 		addFace2(values, corners, x, y, z);
-		addFace3(values, corners, x, y, z);
+//		addFace3(values, corners, x, y, z);
 		addFace4(values, corners, x, y, z);
 		addFace5(values, corners, x, y, z);
 	}
@@ -340,9 +335,9 @@ public class ImplicitIterative extends AbstractImplicit{
 	
 	private void marchFace2(float[] values, Point3f[] corners, int x, int y, int z) {
 
-		addFace0(values, corners, x, y, z);
+//		addFace0(values, corners, x, y, z);
 		addFace1(values, corners, x, y, z);
-//		addFace2(values, corners, x, y, z);
+		addFace2(values, corners, x, y, z);
 		addFace3(values, corners, x, y, z);
 		addFace4(values, corners, x, y, z);
 		addFace5(values, corners, x, y, z);
@@ -393,9 +388,9 @@ public class ImplicitIterative extends AbstractImplicit{
 	private void marchFace3(float[] values, Point3f[] corners, int x, int y, int z) {
 
 		addFace0(values, corners, x, y, z);
-		addFace1(values, corners, x, y, z);
+//		addFace1(values, corners, x, y, z);
 		addFace2(values, corners, x, y, z);
-//		addFace3(values, corners, x, y, z);
+		addFace3(values, corners, x, y, z);
 		addFace4(values, corners, x, y, z);
 		addFace5(values, corners, x, y, z);
 	}
@@ -448,8 +443,8 @@ public class ImplicitIterative extends AbstractImplicit{
 		addFace1(values, corners, x, y, z);
 		addFace2(values, corners, x, y, z);
 		addFace3(values, corners, x, y, z);
-//		addFace4(values, corners, x, y, z);
-		addFace5(values, corners, x, y, z);
+		addFace4(values, corners, x, y, z);
+//		addFace5(values, corners, x, y, z);
 	}
 	
 	private void addFace4(float[] prevValues, Point3f[] prevCorners, int x, int y, int z) {
@@ -500,8 +495,8 @@ public class ImplicitIterative extends AbstractImplicit{
 		addFace1(values, corners, x, y, z);
 		addFace2(values, corners, x, y, z);
 		addFace3(values, corners, x, y, z);
-		addFace4(values, corners, x, y, z);
-//		addFace5(values, corners, x, y, z);
+//		addFace4(values, corners, x, y, z);
+		addFace5(values, corners, x, y, z);
 	}
 	
 	private void addFace5(float[] prevValues, Point3f[] prevCorners, int x, int y, int z) {
