@@ -22,43 +22,27 @@ public class Colors {
 	/*
 	 * Render an array of icons of all available colors.
 	 */
-	public static Icon[] getColorIcons(){
-		Color3f[] colorList = getAllColors();
-		ColorIcon[] iconList = new ColorIcon[colorList.length];
-		for (int i = 0; i < colorList.length ; i++) {
-			iconList[i] = new ColorIcon(colorList[i]);
-		}
-		return iconList;
+	public static Icon[] getAllColors(){
+		return new Icon[]{new ColorIcon(Colors.RED),
+				new ColorIcon(Colors.YELLOW),
+				new ColorIcon(Colors.ORANGE),
+				new ColorIcon(Colors.SKYBLUE),
+				new ColorIcon(Colors.INDIGO),
+				new ColorIcon(Colors.GREEN),
+				new ColorIcon(Colors.CYAN),
+				new ColorIcon(Colors.BLUE),
+				new ColorIcon(Colors.MAGENTA),
+				new ColorIcon(Colors.PINK),
+				new ColorIcon(Colors.TURQUISE)};
 	}
 	
-	public static int getNumberOfColors() {
-		return getAllColors().length;
-	}
-	
-	public static Color3f getColorOfIndex(int i) {
-		Color3f[] allColors = getAllColors();
-		return allColors[i];
-	}
-	
-	public static Color3f[] getAllColors() {
-		return new Color3f[]{
-				Colors.RED,
-				Colors.YELLOW,
-				Colors.ORANGE,
-				Colors.SKYBLUE,
-				Colors.INDIGO,
-				Colors.GREEN,
-				Colors.CYAN,
-				Colors.BLUE,
-				Colors.MAGENTA,
-				Colors.PINK,
-				Colors.TURQUISE};
-	}
-
+	/*
+	 * Get the color index.
+	 */
 	public static int getIndex(Color3f color){
-		Color3f[] allColors = getAllColors();
+		Icon[] allColors = getAllColors();
 		for(int i = 0; i < allColors.length ; i++){
-			if(allColors[i].equals(color)) return i;
+			if(((ColorIcon) allColors[i]).getColor().equals(color)) return i;
 		}
 		return -1;
 	}
