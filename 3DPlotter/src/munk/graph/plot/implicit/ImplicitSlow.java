@@ -1,4 +1,4 @@
-package munk.graph.plot;
+package munk.graph.plot.implicit;
 
 import javax.media.j3d.Shape3D;
 import javax.vecmath.Point3f;

@@ -1,4 +1,4 @@
-package munk.graph.plot;
+package munk.graph.plot.implicit;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +14,7 @@ import com.graphbuilder.math.*;
 import com.sun.j3d.utils.geometry.GeometryInfo;
 import com.sun.j3d.utils.geometry.NormalGenerator;
 
-public abstract class AbstractImplicit {
+public abstract class AbstractImplicit implements ImplicitPlotter {
 	
 	private static Pattern PATTERN = Pattern.compile("([^=]+)=([^=]+)$");
 	protected float xMin;
@@ -72,8 +72,10 @@ public abstract class AbstractImplicit {
 	
 	public Shape3D getPlot() {
 		if (plot == null) {
+			long current = System.currentTimeMillis();
 			triangles = new ArrayList<Point3f>(3000);
 			plot = plot();
+			System.out.println(System.currentTimeMillis() - current);
 			triangles = null;
 		}
 		
@@ -84,12 +86,17 @@ public abstract class AbstractImplicit {
 	
 	protected Shape3D buildGeomtryFromTriangles() {
 		// Build geometry from triangles
+		long current = System.currentTimeMillis();
 		if (triangles.size() >= 3) {
 			GeometryInfo gi = new GeometryInfo(GeometryInfo.TRIANGLE_ARRAY);
 			Point3f[] points = new Point3f[triangles.size()];
 			gi.setCoordinates((Point3f[]) triangles.toArray(points));
+			System.out.println("Build geo: " + (System.currentTimeMillis() - current));
+			current = System.currentTimeMillis();
 			NormalGenerator ng = new NormalGenerator();
 			ng.generateNormals(gi);
+			System.out.println("Build normals: " + (System.currentTimeMillis() - current) + " to " + triangles.size() + " triangles");
+					
 			return new Shape3D(gi.getGeometryArray());
 		} else 
 			return null;
@@ -185,39 +192,39 @@ public abstract class AbstractImplicit {
 		return lhs + "-(" + rhs + ")";
 	}
 
-	public float getxMin() {
+	protected float getxMin() {
 		return xMin;
 	}
 
-	public int getxLength() {
+	protected int getxLength() {
 		return xLength;
 	}
 
-	public float getyMin() {
+	protected float getyMin() {
 		return yMin;
 	}
 
-	public int getyLength() {
+	protected int getyLength() {
 		return yLength;
 	}
 
-	public float getzMin() {
+	protected float getzMin() {
 		return zMin;
 	}
 
-	public int getzLength() {
+	protected int getzLength() {
 		return zLength;
 	}
 
-	public float getxStepsize() {
+	protected float getxStepsize() {
 		return xStepsize;
 	}
 
-	public float getyStepsize() {
+	protected float getyStepsize() {
 		return yStepsize;
 	}
 
-	public float getzStepsize() {
+	protected float getzStepsize() {
 		return zStepsize;
 	}
 

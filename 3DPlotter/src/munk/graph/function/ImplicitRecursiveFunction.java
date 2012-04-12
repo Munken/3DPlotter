@@ -7,7 +7,7 @@ import javax.media.j3d.BranchGroup;
 import javax.media.j3d.Shape3D;
 import javax.vecmath.Color3f;
 
-import munk.graph.plot.ImplicitRecursive;
+import munk.graph.plot.implicit.ImplicitRecursive;
 
 import com.graphbuilder.math.ExpressionParseException;
 

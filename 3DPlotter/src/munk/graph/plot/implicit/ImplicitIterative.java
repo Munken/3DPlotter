@@ -1,4 +1,4 @@
-package munk.graph.plot;
+package munk.graph.plot.implicit;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -41,15 +41,21 @@ public class ImplicitIterative extends AbstractImplicit{
 	public  Shape3D plot() {
 		long current = System.currentTimeMillis();
 		Point3f startCube =  findStartCube();
-		System.out.println(System.currentTimeMillis() - current);
+		System.out.println("Find: " + (System.currentTimeMillis() - current));
+		current = System.currentTimeMillis();
 		if (startCube != null) {
+			System.out.println(startCube);
 			marchCubes(startCube);
-			System.out.println(System.currentTimeMillis() - current);
+			System.out.println("march: " + (System.currentTimeMillis() - current));
 		}
 		else 
 			return null;
-
-		return buildGeomtryFromTriangles();
+		
+		current = System.currentTimeMillis();
+		Shape3D shape = buildGeomtryFromTriangles();
+		System.out.println("geo: " + (System.currentTimeMillis() - current));
+		
+		return shape;
 	}
 	
 	private void marchCubes(Point3f startcube) {
@@ -68,16 +74,20 @@ public class ImplicitIterative extends AbstractImplicit{
 			// Next cell to process
 			MarchCell next = cells.remove(0);
 			
+			// How many triangles do we need for this cell
 			int nTriangles = MARCHER.marchCube(next, newTriangles, ISOLEVEL);
+			
 			if (nTriangles > 0) {
 				addTriangles(nTriangles, newTriangles);
-				marchFace(next);
+				
+				// Add the triangles from this cell and add neighbours
+				marchNext(next);
 			}
 		}
 		visited = null;
 	}
 	
-	private void marchFace(MarchCell next) {
+	private void marchNext(MarchCell next) {
 		float[] values = next.getValues();
 		Point3f[] corners = next.getCorners();
 		int x = next.getX();
