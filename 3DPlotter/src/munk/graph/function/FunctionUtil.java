@@ -98,7 +98,7 @@ public class FunctionUtil {
 		return createFunction(expressions, color, bounds, stepsize);
 	}
 
-	public static String[] variableNames (String[] expressions) {
+	public static String[] variableNames (String[] expressions) throws ExpressionParseException {
 		Set<String> variables = new HashSet<String>();
 		
 		for (String ex : expressions) {
