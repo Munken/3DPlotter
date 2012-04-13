@@ -22,51 +22,46 @@ public class FunctionLabel extends JPanel{
 		
 		// GUI representation
 		GridBagLayout gbl_fLabel = new GridBagLayout();
-		gbl_fLabel.columnWidths = new int[]{15, 150, 0, 15, 0};
+		gbl_fLabel.columnWidths = new int[]{20, 150, 30, 20, 0};
 		gbl_fLabel.rowHeights = new int[]{0, 0};
 		gbl_fLabel.columnWeights = new double[]{0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE};
 		gbl_fLabel.rowWeights = new double[]{0.0, Double.MIN_VALUE};
 		this.setLayout(gbl_fLabel);
+				
+				chckbx = new JCheckBox("");
+				GridBagConstraints gbc_chckbxTest = new GridBagConstraints();
+				gbc_chckbxTest.insets = new Insets(0, 0, 0, 5);
+				gbc_chckbxTest.gridx = 0;
+				gbc_chckbxTest.gridy = 0;
+				chckbx.setSelected(true);
+				this.add(chckbx, gbc_chckbxTest);
 		
-		btnDelete = new JButton(new ImageIcon("delete.png"));
-		GridBagConstraints gbc_btnDelete = new GridBagConstraints();
-		gbc_btnDelete.insets = new Insets(0, 0, 0, 5);
-		gbc_btnDelete.gridx = 0;
-		gbc_btnDelete.gridy = 0;
-		add(btnDelete, gbc_btnDelete);
-
-		exprField = new JTextField(mother.getExpression()[0]);
-		GridBagConstraints gbc_list = new GridBagConstraints();
-		gbc_list.insets = new Insets(0, 0, 0, 5);
-		gbc_list.fill = GridBagConstraints.HORIZONTAL;
-		gbc_list.gridx = 1;
-		gbc_list.gridy = 0;
-		this.add(exprField, gbc_list);
-		exprField.setEditable(true);
+				exprField = new JTextField(mother.getExpression()[0]);
+				GridBagConstraints gbc_list = new GridBagConstraints();
+				gbc_list.insets = new Insets(0, 0, 0, 5);
+				gbc_list.fill = GridBagConstraints.HORIZONTAL;
+				gbc_list.gridx = 1;
+				gbc_list.gridy = 0;
+				this.add(exprField, gbc_list);
+				exprField.setEditable(true);
 		
-		JButton btnEdit = new JButton(new ImageIcon("edit.png"));
+		JButton btnEdit = new JButton(new ImageIcon("Icons/edit.png"));
 		GridBagConstraints gbc_btnEdit = new GridBagConstraints();
 		gbc_btnEdit.insets = new Insets(0, 0, 0, 5);
 		gbc_btnEdit.gridx = 2;
 		gbc_btnEdit.gridy = 0;
 		add(btnEdit, gbc_btnEdit);
 		
-
-		
-		chckbx = new JCheckBox("");
-		GridBagConstraints gbc_chckbxTest = new GridBagConstraints();
-		gbc_chckbxTest.gridx = 3;
-		gbc_chckbxTest.gridy = 0;
-		chckbx.setSelected(true);
-		this.add(chckbx, gbc_chckbxTest);
-
-		addTextChangeListener();
-		
-		addCheckboxListener();
-		
-		addDeleteListener();
-		
 		addEditListener(btnEdit);
+		
+		btnDelete = new JButton(new ImageIcon("Icons/delete.png"));
+		GridBagConstraints gbc_btnDelete = new GridBagConstraints();
+		gbc_btnDelete.gridx = 3;
+		gbc_btnDelete.gridy = 0;
+		add(btnDelete, gbc_btnDelete);
+		addTextChangeListener();
+		addCheckboxListener();	
+		addDeleteListener();
 	}
 
 	private void addDeleteListener() {
