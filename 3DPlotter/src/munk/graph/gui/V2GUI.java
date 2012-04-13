@@ -1,12 +1,39 @@
 package munk.graph.gui;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Desktop;
+import java.awt.Dimension;
+import java.awt.EventQueue;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.io.File;
 import java.util.ArrayList;
 
-import javax.swing.*;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextField;
+import javax.swing.UIManager;
 import javax.vecmath.Color3f;
 
-import munk.graph.function.*;
+import munk.graph.function.Function;
+import munk.graph.function.FunctionList;
+import munk.graph.function.FunctionUtil;
+import munk.graph.function.IllegalEquationException;
 
 import com.graphbuilder.math.ExpressionParseException;
 import com.graphbuilder.math.UndefinedVariableException;
@@ -41,7 +68,6 @@ public class V2GUI {
 	private int controlsHeight;
 	private FunctionList<Function> functionList; 
 	private FunctionList<Function> paramFunctionList; 
-	private int noOfFunctions;
 	private javax.swing.Timer resizeTimer;
 	private ArrayList<Color3f> colorList;
 	
@@ -96,7 +122,6 @@ public class V2GUI {
 		// Initialize variables.
 		functionList = new FunctionList<Function>();
 		paramFunctionList = new FunctionList<Function>();
-		noOfFunctions = 0;
 		colorList = ColorUtil.getDefaultColors();
 		
 		initialize();
@@ -144,28 +169,61 @@ public class V2GUI {
 		mnFile = new JMenu("File");
 		menuBar.add(mnFile);
 		
+		// TODO: Implement save-/load project (serialize current functions).
 		mntmSaveProject = new JMenuItem("Save Project", new ImageIcon("Icons/save.png"));
 		mnFile.add(mntmSaveProject);
 		
 		mntmLoadProject = new JMenuItem("Load project", new ImageIcon("Icons/file.png"));
 		mnFile.add(mntmLoadProject);
 		
+		// Close application on click.
 		mntmExit = new JMenuItem("Exit", new ImageIcon("Icons/exit.png"));
+		mntmExit.addActionListener(new ActionListener(
+				) {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				System.exit(0);
+			}
+		});
 		mnFile.add(mntmExit);
 		
 		mnOptions = new JMenu("Options");
 		menuBar.add(mnOptions);
 		
+		// TODO: Implement color chooser and import/export color functionality.
 		mntmColorOptions = new JMenuItem("Color options", new ImageIcon("Icons/settings.png"));
 		mnOptions.add(mntmColorOptions);
 		
 		mnHelp = new JMenu("Help");
 		menuBar.add(mnHelp);
 		
+		// Open the documentation PDF.
 		mntmDocumentation = new JMenuItem("Documentation", new ImageIcon("Icons/pdf.png"));
+		mntmDocumentation.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				try {
+					Desktop.getDesktop().open(new File("Files/3DPlotter.pdf"));
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+		});
 		mnHelp.add(mntmDocumentation);
-		
+
+		// Open about pop up on click.
 		mntmAbout = new JMenuItem("About", new ImageIcon("Icons/info.png"));
+		mntmAbout.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String message = "<html> 3DPlotter is a free simple 3D graphing tool. It is currently being developed as a spare time <br> project by Michael Munk, Emil Haldrup Eriksen and Kristoffer Theis Skalmstang. Please email <br> bugs, suggestions and generel feedback to <br> <br> <center> emil.h.eriksen@gmail.com </center> </html>";
+				JLabel label = new JLabel(message);
+				JOptionPane.showMessageDialog(frame,label,"About",JOptionPane.PLAIN_MESSAGE,null);
+			}
+		});
 		mnHelp.add(mntmAbout);
 	}
 	
@@ -423,14 +481,12 @@ public class V2GUI {
 		Function newFunc = FunctionUtil.createFunction(expr,color,getBounds(),DEFAULT_STEPSIZE);
 		functionList.add(newFunc);
 		plotter.plotFunction(newFunc);
-		noOfFunctions++;
 		frame.pack();
 		} catch (ExpressionParseException e) {
 			String message = e.getMessage();
 			JLabel label = new JLabel(message,JLabel.CENTER);
 			JOptionPane.showMessageDialog(frame,label);
 		} catch (IllegalEquationException e) {
-			// TODO: We need a yellow field
 			String message = e.getMessage();
 			JLabel label = new JLabel(message,JLabel.CENTER);
 			JOptionPane.showMessageDialog(frame,label);
@@ -455,7 +511,6 @@ public class V2GUI {
 		} 
 		// Catch error.
 		catch (ExpressionParseException e) {
-			// TODO Hvis der trykkes enter fanges den også af plotfeltet.
 			String message = e.getMessage();
 			JLabel label = new JLabel(message,JLabel.CENTER);
 			JOptionPane.showMessageDialog(frame,label);
@@ -474,7 +529,6 @@ public class V2GUI {
 	 * Delete a function.
 	 */
 	private void deletePlot(Function f) {
-		noOfFunctions--;
 		plotter.removePlot(f);
 		functionList.remove(f);
 		frame.pack();
@@ -498,6 +552,7 @@ public class V2GUI {
 	 * Spawn an edit dialog and process the input.
 	 */
 	private void spawnEditDialog(Function f) {
+		// TODO: Reimplement edit dialog using a completely custom dialog (including new features).
 		String curExpr = f.getExpression()[0];
 		
 		// Set up dialog.
@@ -533,7 +588,6 @@ public class V2GUI {
 		ColorIcon selectedIcon = (ColorIcon) colors.getSelectedItem();
 		String newExpr = equation.getText();
 		Color3f newColor = selectedIcon.getColor();
-		// TODO: Implement the option to change bounds and stepsize.
 		if (!curExpr.equals(newExpr)) {
 			updatePlot(f, newExpr, newColor, getBounds(), DEFAULT_STEPSIZE);
 		} else if (newColor != null && !f.getColor().equals(newColor)) {
