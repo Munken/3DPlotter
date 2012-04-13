@@ -15,6 +15,7 @@ public class FunctionLabel extends JPanel{
 	Function mother;
 	ActionListener listener;
 	private JButton btnDelete;
+	private static final Color WARNING_COLOR = new Color(255, 215, 0); 
 
 	public FunctionLabel (Function function, ActionListener a){
 		this.mother = function;
@@ -102,7 +103,7 @@ public class FunctionLabel extends JPanel{
 			@Override
 			public void keyReleased(KeyEvent e) {
 				if (!exprField.getText().equals(mother.getExpression()[0])) {
-					exprField.setBackground(Color.RED);
+					exprField.setBackground(WARNING_COLOR);
 					
 					if(e.getKeyCode() == KeyEvent.VK_ENTER){
 						exprField.setBackground(Color.WHITE);
