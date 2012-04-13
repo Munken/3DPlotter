@@ -38,7 +38,8 @@ public class XYZPlotter {
 	private Shape3D shape;
 	private TransformGroup plot;
 	
-	public XYZPlotter(String expr, float xMin, float xMax, float yMin, float yMax) throws ExpressionParseException{
+	public XYZPlotter(String expr, float xMin, float xMax, float yMin, float yMax) 
+							throws ExpressionParseException, UndefinedVariableException{
 		this.xMin = xMin;
 		this.xMax = xMax;
 		this.yMin = yMin;
@@ -53,9 +54,12 @@ public class XYZPlotter {
 		
 		fm = new FuncMap();
 		fm.loadDefaultFunctions();
+		
+		expression.ensureVariablesDefined(vm);
 	}
 	
-	public XYZPlotter(String expr, float xMin, float xMax, float yMin, float yMax, float stepSize) throws ExpressionParseException{
+	public XYZPlotter(String expr, float xMin, float xMax, float yMin, float yMax, float stepSize) 
+							throws ExpressionParseException, UndefinedVariableException{
 		this(expr, xMin, xMax, yMin, yMax);
 		stepsize = stepSize;
 	}

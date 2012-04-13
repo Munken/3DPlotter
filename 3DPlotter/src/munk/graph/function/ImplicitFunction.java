@@ -10,6 +10,7 @@ import javax.vecmath.Color3f;
 import munk.graph.plot.implicit.ImplicitSlow;
 
 import com.graphbuilder.math.ExpressionParseException;
+import com.graphbuilder.math.UndefinedVariableException;
 
 /*
  * Implicit functions; calculated numerically using Marching Cubes algorithm.
@@ -19,12 +20,12 @@ public class ImplicitFunction extends AbstractFunction {
 	private ImplicitSlow ip;
 	
 	public ImplicitFunction(String expr, Color3f color, float[] bounds, float stepsize) 
-												throws ExpressionParseException, IllegalEquationException{
+												throws ExpressionParseException, IllegalEquationException, UndefinedVariableException{
 		this(expressionArray(expr),color,bounds, stepsize);
 	}
 	
 	public ImplicitFunction(String[] expr, Color3f color, float[] bounds, float stepsize) 
-												throws ExpressionParseException, IllegalEquationException {
+												throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
 		super(expr,color,bounds, stepsize);
 		
 		String expression = getExpression()[0];

@@ -8,6 +8,7 @@ import javax.vecmath.Color3f;
 import munk.graph.plot.parametric.*;
 
 import com.graphbuilder.math.ExpressionParseException;
+import com.graphbuilder.math.UndefinedVariableException;
 
 /*
  * Parametric functions; to be evaluated directly by Mesp.
@@ -17,7 +18,8 @@ public class ParametricFunction extends AbstractFunction {
 	private ParametricPlotter pp;
 	private String[] varNames;
 
-	public ParametricFunction(String xExpr, String yExpr, String zExpr, Color3f color, float[] bounds, float stepsize) throws ExpressionParseException, IllegalEquationException{
+	public ParametricFunction(String xExpr, String yExpr, String zExpr, Color3f color, float[] bounds, float stepsize) 
+								throws ExpressionParseException, IllegalEquationException, UndefinedVariableException{
 		this(expressionArray(xExpr, yExpr, zExpr), color, bounds, stepsize);
 	}
 	
@@ -29,8 +31,9 @@ public class ParametricFunction extends AbstractFunction {
 	 * @param stepsize
 	 * @throws ExpressionParseException If you math sucks
 	 * @throws IllegalEquationException 
+	 * @throws UndefinedVariableException 
 	 */
-	public ParametricFunction(String[] expressions, Color3f color, float[] bounds, float stepsize) throws ExpressionParseException, IllegalEquationException {
+	public ParametricFunction(String[] expressions, Color3f color, float[] bounds, float stepsize) throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
 		super(expressions, color, bounds, stepsize);
 		
 		varNames = FunctionUtil.variableNames(expressions);

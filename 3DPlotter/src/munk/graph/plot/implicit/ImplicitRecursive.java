@@ -4,6 +4,7 @@ import javax.media.j3d.Shape3D;
 import javax.vecmath.Point3f;
 
 import com.graphbuilder.math.ExpressionParseException;
+import com.graphbuilder.math.UndefinedVariableException;
 
 import munk.graph.function.IllegalEquationException;
 import munk.graph.marching.MarchingCubes;
@@ -29,7 +30,7 @@ public class ImplicitRecursive extends AbstractImplicit{
 								float xMin, float xMax, 
 								float yMin, float yMax, 
 								float zMin, float zMax, 
-								float stepsize) throws ExpressionParseException, IllegalEquationException {
+								float stepsize) throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
 		super(expression, xMin, xMax, yMin, yMax, zMin, zMax, stepsize, stepsize, stepsize);
 		this.stepsize = stepsize;
 		

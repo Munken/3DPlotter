@@ -48,7 +48,7 @@ public abstract class AbstractImplicit implements ImplicitPlotter {
 							float zMin, float zMax, 
 							float xStepsize, float yStepsize, float zStepsize) 
 									
-									throws ExpressionParseException, IllegalEquationException {
+									throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
 		
 		expression = preParse(expression);
 		this.xMin = xMin - xStepsize/2;
@@ -71,6 +71,8 @@ public abstract class AbstractImplicit implements ImplicitPlotter {
 		
 		fm = new FuncMap();
 		fm.loadDefaultFunctions();
+		
+		ex.ensureVariablesDefined(vm);
 	}
 	
 	public Shape3D getPlot() {

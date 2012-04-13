@@ -12,10 +12,11 @@ import munk.graph.function.*;
 import munk.graph.gui.Plotter3D;
 
 import com.graphbuilder.math.ExpressionParseException;
+import com.graphbuilder.math.UndefinedVariableException;
 
 public class PlotterDriver {
 	
-	public static void main(String[] args) throws ExpressionParseException, IllegalEquationException {
+	public static void main(String[] args) throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
 		final JFrame frame = new JFrame("Mega ultra");
 		
 		final Plotter3D p = new Plotter3D();
@@ -85,7 +86,7 @@ public class PlotterDriver {
 								ImplicitIterativeFunction ip = 
 										new ImplicitIterativeFunction(function.getText(), Colors.RED, recBound, 0.1f);
 								p.plotFunction(ip);
-							} catch (ExpressionParseException | IllegalEquationException e1) {
+							} catch (ExpressionParseException | IllegalEquationException | UndefinedVariableException e1) {
 								// TODO Auto-generated catch block
 								e1.printStackTrace();
 							}

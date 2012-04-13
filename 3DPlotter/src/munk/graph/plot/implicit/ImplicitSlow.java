@@ -8,6 +8,7 @@ import munk.graph.marching.MarchingCubes;
 import munk.graph.marching.Triangle;
 
 import com.graphbuilder.math.ExpressionParseException;
+import com.graphbuilder.math.UndefinedVariableException;
 
 public class ImplicitSlow extends AbstractImplicit{
 	
@@ -15,7 +16,7 @@ public class ImplicitSlow extends AbstractImplicit{
 							float xMin, float xMax, 
 							float yMin,	float yMax, 
 							float zMin, float zMax, 
-							float stepsize) throws ExpressionParseException, IllegalEquationException {
+							float stepsize) throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
 		super(expr, xMin, xMax, yMin, yMax, zMin, zMax, stepsize, stepsize, stepsize);
 	}
 

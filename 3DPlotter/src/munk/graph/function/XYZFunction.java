@@ -9,6 +9,7 @@ import javax.vecmath.Color3f;
 import munk.graph.plot.XYZPlotter;
 
 import com.graphbuilder.math.ExpressionParseException;
+import com.graphbuilder.math.UndefinedVariableException;
 
 /*
  * XYZ functions; to be evaluated directly by Mesp.
@@ -17,11 +18,13 @@ public class XYZFunction extends AbstractFunction {
 
 	private XYZPlotter fp;
 
-	public XYZFunction(String expr, Color3f color, float[] bounds, float stepsize) throws ExpressionParseException{
+	public XYZFunction(String expr, Color3f color, float[] bounds, float stepsize) 
+							throws ExpressionParseException, UndefinedVariableException{
 		this(expressionArray(expr),color,bounds, stepsize);
 	}
 	
-	public XYZFunction(String[] expr, Color3f color, float[] bounds, float stepsize) throws ExpressionParseException{
+	public XYZFunction(String[] expr, Color3f color, float[] bounds, float stepsize) 
+							throws ExpressionParseException, UndefinedVariableException{
 		super(expr,color,bounds, stepsize);
 		String expression = expr[0];
 		fp = new XYZPlotter(expression, bounds[0], bounds[1], bounds[2], bounds[3], stepsize);

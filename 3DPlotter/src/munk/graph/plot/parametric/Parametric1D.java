@@ -8,6 +8,7 @@ import munk.graph.function.IllegalEquationException;
 import munk.graph.plot.PlotUtil;
 
 import com.graphbuilder.math.ExpressionParseException;
+import com.graphbuilder.math.UndefinedVariableException;
 
 public class Parametric1D extends AbstractParametric{
 	
@@ -23,7 +24,7 @@ public class Parametric1D extends AbstractParametric{
 	public Parametric1D(String xExpr, String yExpr, String zExpr, 
 							float tMin, float tMax, 
 							String varName, float stepSize) 
-									throws ExpressionParseException, IllegalEquationException {
+									throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
 		super(xExpr, yExpr, zExpr, new String[] {varName}, new float[] {tMin}, stepSize);
 		this.tMin = tMin;
 		this.tMax = tMax;
@@ -33,12 +34,12 @@ public class Parametric1D extends AbstractParametric{
 	
 	public Parametric1D(String xExpr, String yExpr, String zExpr, 
 							float tMin, float tMax, float stepSize) 
-									throws ExpressionParseException, IllegalEquationException {
+									throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
 		this(xExpr, yExpr, zExpr, tMin, tMax, STD_VAR_NAMES, stepSize);
 	}
 	
 	public Parametric1D(String xExpr, String yExpr, String zExpr, float tMin, float tMax) 
-									throws ExpressionParseException, IllegalEquationException {
+									throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
 		this(xExpr, yExpr, zExpr, tMin, tMax, 0.1f);
 	}
 	

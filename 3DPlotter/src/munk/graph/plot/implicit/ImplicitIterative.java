@@ -10,6 +10,7 @@ import munk.graph.function.IllegalEquationException;
 import munk.graph.marching.*;
 
 import com.graphbuilder.math.ExpressionParseException;
+import com.graphbuilder.math.UndefinedVariableException;
 
 public class ImplicitIterative extends AbstractImplicit{
 	
@@ -31,7 +32,7 @@ public class ImplicitIterative extends AbstractImplicit{
 							 float xMin, float xMax, 
 							 float yMin, float yMax, 
 							 float zMin, float zMax, 
-							 float stepsize) throws ExpressionParseException, IllegalEquationException {
+							 float stepsize) throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
 		
 		super(expression, xMin, xMax, yMin, yMax, zMin, zMax, stepsize, stepsize, stepsize);
 		this.stepsize = stepsize;

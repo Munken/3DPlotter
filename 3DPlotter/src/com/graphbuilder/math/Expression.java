@@ -159,4 +159,12 @@ public abstract class Expression {
 			sb.append(((ValNode) x).val);
 		}
 	}
+	
+	public void ensureVariablesDefined(VarMap map) throws UndefinedVariableException{
+		String[] variables = getVariableNames();
+		for (String var : variables) {
+			if (!map.isDefined(var))
+				throw new RuntimeException("Variable is undefined: " + var);
+		}
+	}
 }

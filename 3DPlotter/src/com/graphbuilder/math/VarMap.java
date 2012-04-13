@@ -36,6 +36,7 @@ public class VarMap {
 
 		throw new RuntimeException("variable value has not been set: " + varName);
 	}
+	
 
 	/**
 	Assigns the value to the specified variable name.
@@ -102,6 +103,7 @@ public class VarMap {
 
 		return arr;
 	}
+	
 
 	/**
 	Removes the variable-name from the map. Does nothing if the variable-name is not found.
@@ -119,5 +121,22 @@ public class VarMap {
 				break;
 			}
 		}
+	}
+	
+	public boolean isDefined(String varName) {
+		for (int i = 0; i < numVars; i++) {
+			if (caseSensitive && name[i].equals(varName) || !caseSensitive && name[i].equalsIgnoreCase(varName))
+				return true;
+		}
+		
+		return false;
+	}
+	
+	public boolean isVariablesDefined(String[] variableNames) {
+		for (String var : variableNames) {
+			if (!isDefined(var))
+				return false;
+		}
+		return true;
 	}
 }

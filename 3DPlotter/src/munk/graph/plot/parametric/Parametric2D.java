@@ -8,6 +8,7 @@ import munk.graph.function.IllegalEquationException;
 import munk.graph.plot.PlotUtil;
 
 import com.graphbuilder.math.ExpressionParseException;
+import com.graphbuilder.math.UndefinedVariableException;
 
 public class Parametric2D extends AbstractParametric{
 	
@@ -26,7 +27,8 @@ public class Parametric2D extends AbstractParametric{
 	// The mother of all constructors !
 	public Parametric2D(String xExpr, String yExpr, String zExpr, 
 						float tMin, float tMax, float uMin, float uMax, 
-						String[] varNames, float stepSize) throws ExpressionParseException, IllegalEquationException {
+						String[] varNames, float stepSize) 
+								throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
 		
 		super(xExpr, yExpr, zExpr, varNames, new float[] {tMin, uMin});
 		
@@ -45,13 +47,13 @@ public class Parametric2D extends AbstractParametric{
 	
 	public Parametric2D(String xExpr, String yExpr, String zExpr, 
 			float tMin, float tMax, float uMin, float uMax, float stepSize) 
-					throws ExpressionParseException, IllegalEquationException  {
+					throws ExpressionParseException, IllegalEquationException, UndefinedVariableException  {
 		this(xExpr, yExpr, zExpr, tMin, tMax, uMin, uMax, STD_VAR_NAMES, stepSize);
 	}
 	
 	public Parametric2D(String xExpr, String yExpr, String zExpr, 
 			float tMin, float tMax, float uMin, float uMax) 
-					throws ExpressionParseException, IllegalEquationException {
+					throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
 		this(xExpr, yExpr, zExpr, tMin, tMax, uMin, uMax, 0.1f);
 	}
 

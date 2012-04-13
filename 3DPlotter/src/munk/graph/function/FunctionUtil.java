@@ -42,10 +42,11 @@ public class FunctionUtil {
 	 * @return
 	 * @throws ExpressionParseException 
 	 * @throws IllegalEquationException The non-parametric expressions must be of the form \<Expression\> = \<Expression\>
+	 * @throws UndefinedVariableException 
 	 */
 	public static Function createFunction(String[] expressions, Color3f color,
 										float[] bounds, float stepsize) 
-												throws ExpressionParseException, IllegalEquationException{
+												throws ExpressionParseException, IllegalEquationException, UndefinedVariableException{
 		if (expressions.length == 3) {
 			return new ParametricFunction(expressions, color, bounds, stepsize);
 		} 
@@ -93,12 +94,12 @@ public class FunctionUtil {
 	
 	public static Function createFunction(String expression, Color3f color, 
 										float[] bounds, float stepsize) 
-												throws ExpressionParseException, IllegalEquationException {
+												throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
 		String[] expressions = {expression};
 		return createFunction(expressions, color, bounds, stepsize);
 	}
 
-	public static String[] variableNames (String[] expressions) {
+	public static String[] variableNames (String[] expressions) throws ExpressionParseException {
 		Set<String> variables = new HashSet<String>();
 		
 		for (String ex : expressions) {

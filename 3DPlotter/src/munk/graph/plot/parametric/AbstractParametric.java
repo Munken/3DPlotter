@@ -16,7 +16,7 @@ public abstract class AbstractParametric implements ParametricPlotter{
 	
 	public AbstractParametric(String xExpr, String yExpr, String zExpr, 
 									String[] variables, float[] startValues, float stepSize) 
-											throws ExpressionParseException, IllegalEquationException {
+											throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
 		if (variables.length != startValues.length) {
 			throw new IllegalEquationException("There must be an equal amount of startvalues and variables");
 		}
@@ -33,11 +33,15 @@ public abstract class AbstractParametric implements ParametricPlotter{
 		
 		fm = new FuncMap();
 		fm.loadDefaultFunctions();
+		
+		xNode.ensureVariablesDefined(vm);
+		yNode.ensureVariablesDefined(vm);
+		zNode.ensureVariablesDefined(vm);
 	}
 	
 	public AbstractParametric(String xExpr, String yExpr, String zExpr,
 									String[] variables, float[] startValues) 
-											throws ExpressionParseException, IllegalEquationException {
+											throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
 		this(xExpr, yExpr, zExpr, variables, startValues, 0.1f);
 	}
 	
