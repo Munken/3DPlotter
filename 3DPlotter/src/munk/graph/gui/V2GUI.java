@@ -54,8 +54,6 @@ public class V2GUI {
 	private JTextField txtYmax;
 	private JTextField txtZmax;
 	
-	private boolean maximized;
-	
 	/**
 	 * Launch the application.
 	 */
