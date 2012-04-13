@@ -1,9 +1,5 @@
 package munk.graph.function;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-
 import javax.media.j3d.Appearance;
 import javax.media.j3d.BranchGroup;
 import javax.media.j3d.Shape3D;
@@ -17,7 +13,6 @@ public abstract class AbstractFunction implements Function{
 	private Color3f color;
 	private Boolean selected;
 	private Boolean visible; 
-	private ArrayList<ActionListener> listeners;
 	private BranchGroup plot;
 	private float[] bounds;
 	private Shape3D shape;
@@ -30,7 +25,6 @@ public abstract class AbstractFunction implements Function{
 		this.color = color;
 		this.bounds = bounds;
 		this.stepsize = stepsize;
-		listeners = new ArrayList<ActionListener>();
 	}
 	
 	/*
@@ -85,7 +79,6 @@ public abstract class AbstractFunction implements Function{
 	
 	public void setVisible(boolean b){
 		visible = b;
-		signallAll(new ActionEvent(this, 0, "Visibility Changed"));
 	}
 	
 	public boolean isSelected(){
@@ -94,16 +87,6 @@ public abstract class AbstractFunction implements Function{
 	
 	public void setSelected(boolean b){
 		selected = b;
-	}
-	
-	public void addActionListener(ActionListener a){
-		listeners.add(a);
-	}
-	
-	private void signallAll(ActionEvent event){
-		for(ActionListener a : listeners){
-			a.actionPerformed(event);
-		}
 	}
 
 	public float[] getBounds() {

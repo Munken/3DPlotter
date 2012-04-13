@@ -21,7 +21,7 @@ public class V2GUI {
 
 	private static final int CANVAS_INITIAL_WIDTH = 600;
 	private static final int CANVAS_INITIAL_HEIGTH = 600;
-	private static final float DEFAULT_STEPSIZE = (float) 0.1;
+	private static final float DEFAULT_STEPSIZE = (float) 0.05;
 	private static final float[] DEFAULT_BOUNDS = {-1,1,-1,1,-1,1};
 	
 	// GUI Variables.
@@ -93,9 +93,51 @@ public class V2GUI {
 	 * Create the application.
 	 */
 	public V2GUI() {
-		frame = new JFrame("Ultra Mega Epic Xtreme Plotter 3D");
+		// Initialize variables.
+		functionList = new FunctionList<Function>();
+		paramFunctionList = new FunctionList<Function>();
+		noOfFunctions = 0;
+		colorList = ColorUtil.getDefaultColors();
 		
-		// Set up menu bar
+		initialize();
+	}
+
+	/**
+	 * Initialize;
+	 */
+	private void initialize(){
+		// Initialize GUI components.
+		initFrame();
+		initMenuBar();
+		initTabbedPane();
+		init3Dplotter();
+     	initStdFunctionTab();
+     	initParamFunctionTab();
+		initOptionPanel();
+		
+     	// Finish up.
+     	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+     	frame.setVisible(true);
+     	frame.pack();
+     	
+     	// Test Function
+     	addPlot("y = sin(x*5)*cos(z*5)", ColorUtil.getNextAvailableColor(colorList, functionList));
+     	
+     	autoResize();
+	}
+	
+	private void initFrame(){
+		frame = new JFrame("Ultra Mega Epic Xtreme Plotter 3D");
+		frame.setBounds(100, 100, 1000, 1000);
+     	GridBagLayout gbl = new GridBagLayout();
+     	gbl.columnWidths = new int[]{10, 0, 330, 0, 0, 2, 0, 0};
+     	gbl.rowHeights = new int[]{2, 0, 0, 0, 0, 0};
+     	gbl.columnWeights = new double[]{0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+     	gbl.rowWeights = new double[]{0.0, 2.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
+     	frame.getContentPane().setLayout(gbl);
+	}
+	
+	private void initMenuBar(){
 		menuBar = new JMenuBar();
 		frame.setJMenuBar(menuBar);
 		
@@ -125,30 +167,9 @@ public class V2GUI {
 		
 		mntmAbout = new JMenuItem("About", new ImageIcon("Icons/info.png"));
 		mnHelp.add(mntmAbout);
-		
-		// Init
-		functionList = new FunctionList<Function>();
-		paramFunctionList = new FunctionList<Function>();
-		noOfFunctions = 0;
-		colorList = ColorUtil.getDefaultColors();
-		initialize();
 	}
-
-	/**
-	 * Initialize;
-	 */
-	private void initialize(){
-		
-		// Layout definition.
-		frame.setBounds(100, 100, 1000, 1000);
-     	GridBagLayout gbl = new GridBagLayout();
-     	gbl.columnWidths = new int[]{10, 0, 330, 0, 0, 2, 0, 0};
-     	gbl.rowHeights = new int[]{2, 0, 0, 0, 0, 0};
-     	gbl.columnWeights = new double[]{0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
-     	gbl.rowWeights = new double[]{0.0, 2.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
-     	frame.getContentPane().setLayout(gbl);
-     	
-     	// The tab pane containing the functions.
+	
+	private void initTabbedPane(){
      	tabbedPane = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
      	GridBagConstraints gbc_tabbedPane = new GridBagConstraints();
      	gbc_tabbedPane.insets = new Insets(0, 0, 5, 5);
@@ -156,8 +177,9 @@ public class V2GUI {
      	gbc_tabbedPane.gridx = 2;
      	gbc_tabbedPane.gridy = 1;
      	frame.getContentPane().add(tabbedPane, gbc_tabbedPane);
-     	
-		// The 3D plotter.
+	}
+	
+	private void init3Dplotter(){
      	plotter = new Plotter3D();
     	GridBagConstraints gbc_plotter = new GridBagConstraints();
     	gbc_plotter.gridheight = 3;
@@ -171,8 +193,10 @@ public class V2GUI {
      	gbc_list.fill = GridBagConstraints.HORIZONTAL;
      	gbc_list.gridx = 1;
      	gbc_list.gridy = 2;
-     	
-     	// The standard function tab.
+	}
+	
+	private void initStdFunctionTab(){
+		// The standard function tab.
      	stdFuncTab = new JPanel();
      	tabbedPane.addTab("Standard equations", stdFuncTab);
      	GridBagLayout gbl_functionPanel = new GridBagLayout();
@@ -197,8 +221,8 @@ public class V2GUI {
      		// Plot the graph.
      		
      		@Override
-     		public void keyReleased(KeyEvent e) {
-     			if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+     		public void keyPressed(KeyEvent e) {
+     			if (e.getKeyCode() == KeyEvent.VK_ENTER && stdFuncInput.isFocusOwner()) {
      				addPlot(stdFuncInput.getText(),ColorUtil.getNextAvailableColor(colorList, functionList));
      			}
      		}
@@ -252,6 +276,9 @@ public class V2GUI {
      						if(e.getID() == 2){
      							deletePlot(source);
      						}
+     						if(e.getID() == 3){
+     							plotter.showPlot(source);
+     						}
      					}
      				}));
      			}
@@ -264,12 +291,16 @@ public class V2GUI {
      			}
      		}
      	});
-
+	}
+	
+	private void initParamFunctionTab(){
      	// The parametric function tab.
      	paramFuncTab = new JPanel();
      	tabbedPane.addTab("Parametric equations", new JLabel("To be implemented"));
-     	
-     	optionPanelWrapper = new JScrollPane();
+	}
+	
+	private void initOptionPanel(){
+		optionPanelWrapper = new JScrollPane();
      	GridBagConstraints gbc_scrollPane = new GridBagConstraints();
      	gbc_scrollPane.insets = new Insets(0, 0, 5, 5);
      	gbc_scrollPane.fill = GridBagConstraints.BOTH;
@@ -361,34 +392,28 @@ public class V2GUI {
      	optionPanel.add(txtZmax, gbc_txtZmax);
      	txtZmax.setText("" + DEFAULT_BOUNDS[5]);
      	txtZmax.setColumns(10);
+	}
 
-     	// Finish up.
-     	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-     	frame.setVisible(true);
-     	frame.pack();
-     	
-     	// Test Function
-     	addPlot("z = x*(cos(y)*cos(x))", ColorUtil.getNextAvailableColor(colorList, functionList));
-     	tabbedPane.setPreferredSize(new Dimension(tabbedPane.getWidth(),tabbedPane.getHeight()));
-     	
-     	// Auto resize frame.
-     	controlsWidth = frame.getWidth() - CANVAS_INITIAL_WIDTH;
-     	controlsHeight = frame.getHeight() - CANVAS_INITIAL_HEIGTH;
-     	frame.setMinimumSize(new Dimension(600, 400));
-     	resizeTimer = new javax.swing.Timer(100, new ActionListener() {
+	private void autoResize(){
+		controlsWidth = frame.getWidth() - CANVAS_INITIAL_WIDTH;
+		controlsHeight = frame.getHeight() - CANVAS_INITIAL_HEIGTH;
+		tabbedPane.setPreferredSize(new Dimension(tabbedPane.getWidth(),tabbedPane.getHeight()));
+		frame.setMinimumSize(new Dimension(600, 400));
+		// Auto resize frame.
+		resizeTimer = new javax.swing.Timer(100, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				plotter.updateSize(frame.getWidth()- controlsWidth,frame.getHeight()- controlsHeight);
 				frame.pack();
 			}
 		});
-     	frame.addComponentListener(new ComponentAdapter() {
-     		public void componentResized(ComponentEvent e) {
-     			resizeTimer.restart();
-     		}
-     	});
+		frame.addComponentListener(new ComponentAdapter() {
+			public void componentResized(ComponentEvent e) {
+				resizeTimer.restart();
+			}
+		});
 	}
-	
+
 	/*
 	 * Add new plot.
 	 */
@@ -396,7 +421,6 @@ public class V2GUI {
 		// Create the function.
 		try{
 		Function newFunc = FunctionUtil.createFunction(expr,color,getBounds(),DEFAULT_STEPSIZE);
-		newFunc.addActionListener(createVisibilityListener(plotter));
 		functionList.add(newFunc);
 		plotter.plotFunction(newFunc);
 		noOfFunctions++;
@@ -424,7 +448,6 @@ public class V2GUI {
 		// Try evaluating the function.
 		try {
 			Function newFunc = FunctionUtil.createFunction(newExpr, newColor, bounds, stepsize);
-			newFunc.addActionListener(createVisibilityListener(plotter));
 			functionList.set(functionList.indexOf(oldFunc),newFunc);
 			plotter.removePlot(oldFunc);
 			plotter.plotFunction(newFunc);
@@ -437,7 +460,6 @@ public class V2GUI {
 			JLabel label = new JLabel(message,JLabel.CENTER);
 			JOptionPane.showMessageDialog(frame,label);
 		} catch (IllegalEquationException e) {
-			// TODO: We need a yellow field
 			String message = e.getMessage();
 			JLabel label = new JLabel(message,JLabel.CENTER);
 			JOptionPane.showMessageDialog(frame,label);
@@ -517,14 +539,5 @@ public class V2GUI {
 		} else if (newColor != null && !f.getColor().equals(newColor)) {
 			functionList.get(functionList.indexOf(f)).setColor(newColor);
 		}
-	}
-
-	private ActionListener createVisibilityListener(final Plotter3D plotter){
-		return new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				Function source = (Function) e.getSource();
-				plotter.showPlot(source);
-			}
-		};
 	}
 }
