@@ -140,7 +140,7 @@ public class V2GUI {
 		// Layout definition.
 		frame.setBounds(100, 100, 1000, 1000);
      	GridBagLayout gbl = new GridBagLayout();
-     	gbl.columnWidths = new int[]{10, 0, 300, 0, 0, 2, 0, 0};
+     	gbl.columnWidths = new int[]{10, 0, 330, 0, 0, 2, 0, 0};
      	gbl.rowHeights = new int[]{2, 0, 0, 0, 0, 0};
      	gbl.columnWeights = new double[]{0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
      	gbl.rowWeights = new double[]{0.0, 2.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
@@ -205,10 +205,13 @@ public class V2GUI {
      	// The standard function list
      	stdFuncPanel = new JPanel();
      	stdFuncPanelWrapper = new JScrollPane(stdFuncPanel);
+     	stdFuncPanelWrapper.setBorder(null);
+     	stdFuncPanelWrapper.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
      	stdFuncPanel.setLayout(new BoxLayout(stdFuncPanel, BoxLayout.Y_AXIS));
      	GridBagConstraints gbc_stdFuncPanel = new GridBagConstraints();
-     	gbc_stdFuncPanel.gridwidth = 5;
      	gbc_stdFuncPanel.anchor = GridBagConstraints.NORTH;
+     	gbc_stdFuncPanel.fill = GridBagConstraints.HORIZONTAL;
+     	gbc_stdFuncPanel.gridwidth = 5;
      	gbc_stdFuncPanel.insets = new Insets(0, 0, 5, 5);
      	gbc_stdFuncPanel.gridx = 1;
      	gbc_stdFuncPanel.gridy = 6;
@@ -351,8 +354,7 @@ public class V2GUI {
      	
      	// Test Function
      	addPlot("z = x*(cos(y)*cos(x))", ColorUtil.getNextAvailableColor(colorList, functionList));
-     	stdFuncPanel.setMaximumSize(stdFuncPanel.getSize());
-     	//stdFuncPanelWrapper.setMaximumSize(new Dimension(stdFuncPanelWrapper.getSize()));
+     	tabbedPane.setPreferredSize(new Dimension(tabbedPane.getWidth(),tabbedPane.getHeight()));
      	
      	// Auto resize frame.
      	controlsWidth = frame.getWidth() - CANVAS_INITIAL_WIDTH;
@@ -363,6 +365,7 @@ public class V2GUI {
 			public void actionPerformed(ActionEvent e) {
 				plotter.updateSize(frame.getWidth()- controlsWidth,frame.getHeight()- controlsHeight);
 				frame.pack();
+				stdFuncPanelWrapper.setPreferredSize(new Dimension(controlsWidth,controlsHeight));
 			}
 		});
      	frame.addComponentListener(new ComponentAdapter() {

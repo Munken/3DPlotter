@@ -45,6 +45,8 @@ public class FunctionLabel extends JPanel{
 				gbc_list.gridy = 0;
 				this.add(exprField, gbc_list);
 				exprField.setEditable(true);
+				// Don't fuck up layout, when text string becomes too long.
+				exprField.setPreferredSize(new Dimension(100,20));
 		
 		JButton btnEdit = new JButton(new ImageIcon("Icons/edit.png"));
 		GridBagConstraints gbc_btnEdit = new GridBagConstraints();
