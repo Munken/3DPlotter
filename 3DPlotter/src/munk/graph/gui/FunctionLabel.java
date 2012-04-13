@@ -28,7 +28,7 @@ public class FunctionLabel extends JPanel{
 		gbl_fLabel.rowWeights = new double[]{0.0, Double.MIN_VALUE};
 		this.setLayout(gbl_fLabel);
 		
-		btnDelete = new JButton(new ImageIcon("delete.png"));
+		btnDelete = new JButton(new ImageIcon("Icons/delete.png"));
 		GridBagConstraints gbc_btnDelete = new GridBagConstraints();
 		gbc_btnDelete.insets = new Insets(0, 0, 0, 5);
 		gbc_btnDelete.gridx = 0;
@@ -44,7 +44,7 @@ public class FunctionLabel extends JPanel{
 		this.add(exprField, gbc_list);
 		exprField.setEditable(true);
 		
-		JButton btnEdit = new JButton(new ImageIcon("edit.png"));
+		JButton btnEdit = new JButton(new ImageIcon("Icons/edit.png"));
 		GridBagConstraints gbc_btnEdit = new GridBagConstraints();
 		gbc_btnEdit.insets = new Insets(0, 0, 0, 5);
 		gbc_btnEdit.gridx = 2;

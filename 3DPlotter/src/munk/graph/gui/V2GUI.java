@@ -28,7 +28,9 @@ public class V2GUI {
 	private JFrame frame;
 	private JPanel stdFuncTab;
 	private JPanel stdFuncPanel;
+	private JScrollPane stdFuncPanelWrapper;
 	private JPanel paramFuncTab; 
+	private JScrollPane paramFuncPanelWrapper;
 	private JPanel paramFuncPanel;
 	JTabbedPane tabbedPane;
 
@@ -53,6 +55,16 @@ public class V2GUI {
 	private JTextField txtXmax;
 	private JTextField txtYmax;
 	private JTextField txtZmax;
+	private JMenuBar menuBar;
+	private JMenu mnFile;
+	private JMenuItem mntmSaveProject;
+	private JMenuItem mntmLoadProject;
+	private JMenuItem mntmExit;
+	private JMenu mnOptions;
+	private JMenuItem mntmColorOptions;
+	private JMenu mnHelp;
+	private JMenuItem mntmDocumentation;
+	private JMenuItem mntmAbout;
 	
 	/**
 	 * Launch the application.
@@ -78,6 +90,39 @@ public class V2GUI {
 	 */
 	public V2GUI() {
 		frame = new JFrame("Ultra Mega Epic Xtreme Plotter 3D");
+		
+		// Set up menu bar
+		menuBar = new JMenuBar();
+		frame.setJMenuBar(menuBar);
+		
+		mnFile = new JMenu("File");
+		menuBar.add(mnFile);
+		
+		mntmSaveProject = new JMenuItem("Save Project", new ImageIcon("Icons/save.png"));
+		mnFile.add(mntmSaveProject);
+		
+		mntmLoadProject = new JMenuItem("Load project", new ImageIcon("Icons/file.png"));
+		mnFile.add(mntmLoadProject);
+		
+		mntmExit = new JMenuItem("Exit", new ImageIcon("Icons/exit.png"));
+		mnFile.add(mntmExit);
+		
+		mnOptions = new JMenu("Options");
+		menuBar.add(mnOptions);
+		
+		mntmColorOptions = new JMenuItem("Color options", new ImageIcon("Icons/settings.png"));
+		mnOptions.add(mntmColorOptions);
+		
+		mnHelp = new JMenu("Help");
+		menuBar.add(mnHelp);
+		
+		mntmDocumentation = new JMenuItem("Documentation", new ImageIcon("Icons/pdf.png"));
+		mnHelp.add(mntmDocumentation);
+		
+		mntmAbout = new JMenuItem("About", new ImageIcon("Icons/info.png"));
+		mnHelp.add(mntmAbout);
+		
+		// Init
 		functionList = new FunctionList<Function>();
 		paramFunctionList = new FunctionList<Function>();
 		noOfFunctions = 0;
@@ -89,6 +134,7 @@ public class V2GUI {
 	 * Initialize;
 	 */
 	private void initialize(){
+		
 		// Layout definition.
 		frame.setBounds(100, 100, 1000, 1000);
      	GridBagLayout gbl = new GridBagLayout();
@@ -231,6 +277,7 @@ public class V2GUI {
      	
      	// The standard function list
      	stdFuncPanel = new JPanel();
+     	stdFuncPanelWrapper = new JScrollPane(stdFuncPanel);
      	stdFuncPanel.setLayout(new BoxLayout(stdFuncPanel, BoxLayout.Y_AXIS));
      	GridBagConstraints gbc_stdFuncPanel = new GridBagConstraints();
      	gbc_stdFuncPanel.gridwidth = 5;
@@ -238,7 +285,7 @@ public class V2GUI {
      	gbc_stdFuncPanel.insets = new Insets(0, 0, 5, 5);
      	gbc_stdFuncPanel.gridx = 1;
      	gbc_stdFuncPanel.gridy = 6;
-     	stdFuncTab.add(stdFuncPanel, gbc_stdFuncPanel);
+     	stdFuncTab.add(stdFuncPanelWrapper, gbc_stdFuncPanel);
 
      	// Auto update List according to the function list.
      	functionList.addActionListener(new ActionListener() {
