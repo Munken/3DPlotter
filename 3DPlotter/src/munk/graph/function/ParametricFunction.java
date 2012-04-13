@@ -5,7 +5,7 @@ import javax.media.j3d.BranchGroup;
 import javax.media.j3d.Shape3D;
 import javax.vecmath.Color3f;
 
-import munk.graph.plot.*;
+import munk.graph.plot.parametric.*;
 
 import com.graphbuilder.math.ExpressionParseException;
 
@@ -17,7 +17,7 @@ public class ParametricFunction extends AbstractFunction {
 	private ParametricPlotter pp;
 	private String[] varNames;
 
-	public ParametricFunction(String xExpr, String yExpr, String zExpr, Color3f color, float[] bounds, float stepsize) throws ExpressionParseException{
+	public ParametricFunction(String xExpr, String yExpr, String zExpr, Color3f color, float[] bounds, float stepsize) throws ExpressionParseException, IllegalEquationException{
 		this(expressionArray(xExpr, yExpr, zExpr), color, bounds, stepsize);
 	}
 	
@@ -28,8 +28,9 @@ public class ParametricFunction extends AbstractFunction {
 	 * @param bounds The bounds for the variables [v1Min, v1Max, v2Min, v2Max] or [v1Min, v1Max].
 	 * @param stepsize
 	 * @throws ExpressionParseException If you math sucks
+	 * @throws IllegalEquationException 
 	 */
-	public ParametricFunction(String[] expressions, Color3f color, float[] bounds, float stepsize) throws ExpressionParseException {
+	public ParametricFunction(String[] expressions, Color3f color, float[] bounds, float stepsize) throws ExpressionParseException, IllegalEquationException {
 		super(expressions, color, bounds, stepsize);
 		
 		varNames = FunctionUtil.variableNames(expressions);

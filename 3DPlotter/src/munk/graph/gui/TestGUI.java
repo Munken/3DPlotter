@@ -24,9 +24,7 @@ import javax.swing.UIManager;
 import javax.vecmath.Color3f;
 
 import munk.graph.appearance.Colors;
-import munk.graph.function.Function;
-import munk.graph.function.FunctionList;
-import munk.graph.function.FunctionUtil;
+import munk.graph.function.*;
 
 import com.graphbuilder.math.ExpressionParseException;
 
@@ -280,13 +278,13 @@ public class TestGUI {
 		// Create the function.
 		try{
 		Function newFunc = FunctionUtil.createFunction(expr,color,DEFAULT_BOUNDS,DEFAULT_STEPSIZE);
-		newFunc.addActionListener(FunctionUtil.createActionListener(plotter));
+		newFunc.addActionListener(createVisibilityListener(plotter));
 		functionList.add(newFunc);
 		plotter.plotFunction(newFunc);
 		noOfFunctions++;
 		frame.pack();
 		}
-		catch(ExpressionParseException e){
+		catch(ExpressionParseException | IllegalEquationException e){
 			String message = e.getMessage();
 			JLabel label = new JLabel(message,JLabel.CENTER);
 			JOptionPane.showMessageDialog(frame,label);
@@ -313,7 +311,7 @@ public class TestGUI {
 			frame.pack();
 		} 
 		// Catch error.
-		catch (ExpressionParseException e) {
+		catch (ExpressionParseException | IllegalEquationException e) {
 			// TODO Hvis der trykkes enter fanges den også af plotfeltet.
 			String message = e.getMessage();
 			JLabel label = new JLabel(message,JLabel.CENTER);
@@ -381,5 +379,14 @@ public class TestGUI {
 		} else if (newColor != null && !f.getColor().equals(newColor)) {
 			functionList.get(functionList.indexOf(f)).setColor(newColor);
 		}
+	}
+	
+	private ActionListener createVisibilityListener(final Plotter3D plotter){
+		return new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Function source = (Function) e.getSource();
+				plotter.showPlot(source);
+			}
+		};
 	}
 }

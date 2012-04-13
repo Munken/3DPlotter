@@ -1,31 +1,12 @@
 package munk.graph.gui;
-import java.awt.Dimension;
-import java.awt.EventQueue;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.*;
+import java.awt.event.*;
 import java.util.ArrayList;
 
-import javax.swing.BoxLayout;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextField;
-import javax.swing.UIManager;
+import javax.swing.*;
 import javax.vecmath.Color3f;
 
-import munk.graph.function.Function;
-import munk.graph.function.FunctionList;
-import munk.graph.function.FunctionUtil;
+import munk.graph.function.*;
 
 import com.graphbuilder.math.ExpressionParseException;
 
@@ -72,8 +53,6 @@ public class V2GUI {
 	private JTextField txtXmax;
 	private JTextField txtYmax;
 	private JTextField txtZmax;
-	
-	private boolean maximized;
 	
 	/**
 	 * Launch the application.
@@ -165,6 +144,7 @@ public class V2GUI {
      	stdFuncInput.setColumns(10);
      	stdFuncInput.addKeyListener(new KeyAdapter() {
      		// Plot the graph.
+     		
      		@Override
      		public void keyReleased(KeyEvent e) {
      			if (e.getKeyCode() == KeyEvent.VK_ENTER) {
@@ -329,13 +309,17 @@ public class V2GUI {
 		// Create the function.
 		try{
 		Function newFunc = FunctionUtil.createFunction(expr,color,getBounds(),DEFAULT_STEPSIZE);
-		newFunc.addActionListener(FunctionUtil.createActionListener(plotter));
+		newFunc.addActionListener(createVisibilityListener(plotter));
 		functionList.add(newFunc);
 		plotter.plotFunction(newFunc);
 		noOfFunctions++;
 		frame.pack();
-		}
-		catch(ExpressionParseException e){
+		} catch (ExpressionParseException e) {
+			String message = e.getMessage();
+			JLabel label = new JLabel(message,JLabel.CENTER);
+			JOptionPane.showMessageDialog(frame,label);
+		} catch (IllegalEquationException e) {
+			// TODO: We need a yellow field
 			String message = e.getMessage();
 			JLabel label = new JLabel(message,JLabel.CENTER);
 			JOptionPane.showMessageDialog(frame,label);
@@ -349,7 +333,7 @@ public class V2GUI {
 		// Try evaluating the function.
 		try {
 			Function newFunc = FunctionUtil.createFunction(newExpr, newColor, bounds, stepsize);
-			newFunc.addActionListener(FunctionUtil.createActionListener(plotter));
+			newFunc.addActionListener(createVisibilityListener(plotter));
 			functionList.set(functionList.indexOf(oldFunc),newFunc);
 			plotter.removePlot(oldFunc);
 			plotter.plotFunction(newFunc);
@@ -358,6 +342,11 @@ public class V2GUI {
 		// Catch error.
 		catch (ExpressionParseException e) {
 			// TODO Hvis der trykkes enter fanges den også af plotfeltet.
+			String message = e.getMessage();
+			JLabel label = new JLabel(message,JLabel.CENTER);
+			JOptionPane.showMessageDialog(frame,label);
+		} catch (IllegalEquationException e) {
+			// TODO: We need a yellow field
 			String message = e.getMessage();
 			JLabel label = new JLabel(message,JLabel.CENTER);
 			JOptionPane.showMessageDialog(frame,label);
@@ -433,5 +422,14 @@ public class V2GUI {
 		} else if (newColor != null && !f.getColor().equals(newColor)) {
 			functionList.get(functionList.indexOf(f)).setColor(newColor);
 		}
+	}
+
+	private ActionListener createVisibilityListener(final Plotter3D plotter){
+		return new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Function source = (Function) e.getSource();
+				plotter.showPlot(source);
+			}
+		};
 	}
 }

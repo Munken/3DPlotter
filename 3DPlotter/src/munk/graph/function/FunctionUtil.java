@@ -1,7 +1,5 @@
 package munk.graph.function;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -11,7 +9,6 @@ import javax.media.j3d.*;
 import javax.vecmath.Color3f;
 
 import munk.graph.appearance.ColorAppearance;
-import munk.graph.gui.Plotter3D;
 
 import com.graphbuilder.math.*;
 
@@ -44,9 +41,11 @@ public class FunctionUtil {
 	 * @param stepsize
 	 * @return
 	 * @throws ExpressionParseException 
+	 * @throws IllegalEquationException The non-parametric expressions must be of the form \<Expression\> = \<Expression\>
 	 */
 	public static Function createFunction(String[] expressions, Color3f color,
-										float[] bounds, float stepsize) throws ExpressionParseException{
+										float[] bounds, float stepsize) 
+												throws ExpressionParseException, IllegalEquationException{
 		if (expressions.length == 3) {
 			return new ParametricFunction(expressions, color, bounds, stepsize);
 		} 
@@ -58,7 +57,7 @@ public class FunctionUtil {
 		if (isXYZExpression(expr)) {
 			result = new XYZFunction(expressions, color, bounds, stepsize);
 		} else {
-			result = new ImplicitFunction(expressions, color, bounds, stepsize);
+			result = new ImplicitIterativeFunction(expressions, color, bounds, stepsize);
 		}
 		
 		
@@ -93,7 +92,8 @@ public class FunctionUtil {
 	}
 	
 	public static Function createFunction(String expression, Color3f color, 
-										float[] bounds, float stepsize) throws ExpressionParseException {
+										float[] bounds, float stepsize) 
+												throws ExpressionParseException, IllegalEquationException {
 		String[] expressions = {expression};
 		return createFunction(expressions, color, bounds, stepsize);
 	}
@@ -113,14 +113,5 @@ public class FunctionUtil {
 		String[] varNames = new String[variables.size()];
 		variables.toArray(varNames);
 		return varNames;
-	}
-	
-	public static ActionListener createActionListener(final Plotter3D plotter){
-		return new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				Function source = (Function) e.getSource();
-				plotter.showPlot(source);
-			}
-		};
 	}
 }

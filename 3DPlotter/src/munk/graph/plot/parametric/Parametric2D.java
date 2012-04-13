@@ -1,12 +1,15 @@
-package munk.graph.plot;
+package munk.graph.plot.parametric;
 
 import javax.media.j3d.GeometryArray;
 import javax.media.j3d.Shape3D;
 import javax.vecmath.Point3f;
 
+import munk.graph.function.IllegalEquationException;
+import munk.graph.plot.PlotUtil;
+
 import com.graphbuilder.math.ExpressionParseException;
 
-public class Parametric2D extends ParametricPlotter{
+public class Parametric2D extends AbstractParametric{
 	
 	private static final String[] STD_VAR_NAMES = {"t", "u"};
 	
@@ -23,7 +26,7 @@ public class Parametric2D extends ParametricPlotter{
 	// The mother of all constructors !
 	public Parametric2D(String xExpr, String yExpr, String zExpr, 
 						float tMin, float tMax, float uMin, float uMax, 
-						String[] varNames, float stepSize) throws ExpressionParseException {
+						String[] varNames, float stepSize) throws ExpressionParseException, IllegalEquationException {
 		
 		super(xExpr, yExpr, zExpr, varNames, new float[] {tMin, uMin});
 		
@@ -41,12 +44,14 @@ public class Parametric2D extends ParametricPlotter{
 	}
 	
 	public Parametric2D(String xExpr, String yExpr, String zExpr, 
-			float tMin, float tMax, float uMin, float uMax, float stepSize) throws ExpressionParseException  {
+			float tMin, float tMax, float uMin, float uMax, float stepSize) 
+					throws ExpressionParseException, IllegalEquationException  {
 		this(xExpr, yExpr, zExpr, tMin, tMax, uMin, uMax, STD_VAR_NAMES, stepSize);
 	}
 	
 	public Parametric2D(String xExpr, String yExpr, String zExpr, 
-			float tMin, float tMax, float uMin, float uMax) throws ExpressionParseException {
+			float tMin, float tMax, float uMin, float uMax) 
+					throws ExpressionParseException, IllegalEquationException {
 		this(xExpr, yExpr, zExpr, tMin, tMax, uMin, uMax, 0.1f);
 	}
 
