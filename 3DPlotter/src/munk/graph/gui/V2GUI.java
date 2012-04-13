@@ -16,7 +16,9 @@ import java.util.ArrayList;
 
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
+import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -28,6 +30,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.vecmath.Color3f;
 
 import munk.graph.function.Function;
@@ -60,7 +64,8 @@ public class V2GUI {
 	private JPanel paramFuncTab; 
 	private JScrollPane paramFuncPanelWrapper;
 	private JPanel paramFuncPanel;
-	JTabbedPane tabbedPane;
+	private JDialog colorDialog;
+	private JTabbedPane tabbedPane;
 
 	// Non-GUI variables.
 	private Plotter3D plotter;
@@ -87,14 +92,16 @@ public class V2GUI {
 	private JMenuItem mntmSaveProject;
 	private JMenuItem mntmLoadProject;
 	private JMenuItem mntmExit;
-	private JMenu mnOptions;
-	private JMenuItem mntmColorOptions;
+	private JMenu mnColorOptions;
+	private JMenuItem mntmAddCustomColor;
 	private JMenu mnHelp;
 	private JMenuItem mntmDocumentation;
 	private JMenuItem mntmAbout;
 	private JScrollPane optionPanelWrapper;
 	private JPanel optionPanel;
 	private JPanel stdFuncInnerPanel;
+	private JMenuItem mntmImportColors;
+	private JMenuItem mntmExportColors;
 	
 	/**
 	 * Launch the application.
@@ -188,12 +195,25 @@ public class V2GUI {
 		});
 		mnFile.add(mntmExit);
 		
-		mnOptions = new JMenu("Options");
-		menuBar.add(mnOptions);
+		mnColorOptions = new JMenu("Color Options");
+		menuBar.add(mnColorOptions);
 		
 		// TODO: Implement color chooser and import/export color functionality.
-		mntmColorOptions = new JMenuItem("Color options", new ImageIcon("Icons/settings.png"));
-		mnOptions.add(mntmColorOptions);
+		mntmAddCustomColor = new JMenuItem("Add custom color", new ImageIcon("Icons/settings.png"));
+		mntmAddCustomColor.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				spawnColorChooser();
+			}
+		});
+		
+		mntmExportColors = new JMenuItem("Export colors", new ImageIcon("Icons/save.png"));
+		mnColorOptions.add(mntmExportColors);
+		
+		mntmImportColors = new JMenuItem("Import colors", new ImageIcon("Icons/file.png"));
+		mnColorOptions.add(mntmImportColors);
+		mnColorOptions.add(mntmAddCustomColor);
 		
 		mnHelp = new JMenu("Help");
 		menuBar.add(mnHelp);
@@ -583,7 +603,7 @@ public class V2GUI {
 		colors.setSelectedItem(new ColorIcon(f.getColor()));
 
 		JOptionPane.showMessageDialog(frame, inputPanel, "Edit Function", JOptionPane.PLAIN_MESSAGE, null);
-		
+
 		// Update function in case of changes.
 		ColorIcon selectedIcon = (ColorIcon) colors.getSelectedItem();
 		String newExpr = equation.getText();
@@ -593,5 +613,31 @@ public class V2GUI {
 		} else if (newColor != null && !f.getColor().equals(newColor)) {
 			functionList.get(functionList.indexOf(f)).setColor(newColor);
 		}
+	}
+
+	/*
+	 * Spawn simple color chooser.
+	 */
+	private void spawnColorChooser(){
+		if(colorDialog == null){
+		colorDialog = new JDialog();
+		colorDialog.setLocation(frame.getLocationOnScreen());
+		ColorOptionPanel colorOptionPanel = new ColorOptionPanel();
+		colorOptionPanel.addChangeListener(new ChangeListener() {
+			
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				if(e.getSource().equals("CLOSE")){
+					colorDialog.setVisible(false);
+				}
+				else if(!colorList.contains(e.getSource())){
+					colorList.add((Color3f) e.getSource());
+				}
+			}
+		});
+		colorDialog.getContentPane().add(colorOptionPanel);
+		colorDialog.pack();
+		}
+		colorDialog.setVisible(true);
 	}
 }
