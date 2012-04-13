@@ -140,7 +140,7 @@ public class V2GUI {
 		// Layout definition.
 		frame.setBounds(100, 100, 1000, 1000);
      	GridBagLayout gbl = new GridBagLayout();
-     	gbl.columnWidths = new int[]{10, 0, 350, 0, 0, 2, 0, 0};
+     	gbl.columnWidths = new int[]{10, 0, 300, 0, 0, 2, 0, 0};
      	gbl.rowHeights = new int[]{2, 0, 0, 0, 0, 0};
      	gbl.columnWeights = new double[]{0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
      	gbl.rowWeights = new double[]{0.0, 2.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
@@ -347,7 +347,13 @@ public class V2GUI {
      	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
      	frame.setVisible(true);
      	frame.pack();
-
+     	
+     	
+     	// Test Function
+     	addPlot("z = x*(cos(y)*cos(x))", ColorUtil.getNextAvailableColor(colorList, functionList));
+     	stdFuncPanel.setMaximumSize(stdFuncPanel.getSize());
+     	//stdFuncPanelWrapper.setMaximumSize(new Dimension(stdFuncPanelWrapper.getSize()));
+     	
      	// Auto resize frame.
      	controlsWidth = frame.getWidth() - CANVAS_INITIAL_WIDTH;
      	controlsHeight = frame.getHeight() - CANVAS_INITIAL_HEIGTH;
@@ -364,9 +370,6 @@ public class V2GUI {
      			resizeTimer.restart();
      		}
      	});
-     	
-     	// Test Function
-     	addPlot("z = x*(cos(y)*cos(x))", ColorUtil.getNextAvailableColor(colorList, functionList));
 	}
 	
 	/*
