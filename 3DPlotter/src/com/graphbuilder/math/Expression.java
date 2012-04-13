@@ -164,7 +164,7 @@ public abstract class Expression {
 		String[] variables = getVariableNames();
 		for (String var : variables) {
 			if (!map.isDefined(var))
-				throw new RuntimeException("Variable is undefined: " + var);
+				throw new UndefinedVariableException("Variable is undefined: " + var);
 		}
 	}
 }

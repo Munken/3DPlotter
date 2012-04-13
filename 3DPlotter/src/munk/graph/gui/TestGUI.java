@@ -27,6 +27,7 @@ import munk.graph.appearance.Colors;
 import munk.graph.function.*;
 
 import com.graphbuilder.math.ExpressionParseException;
+import com.graphbuilder.math.UndefinedVariableException;
 
 
 /**
@@ -284,7 +285,7 @@ public class TestGUI {
 		noOfFunctions++;
 		frame.pack();
 		}
-		catch(ExpressionParseException | IllegalEquationException e){
+		catch(ExpressionParseException | IllegalEquationException | UndefinedVariableException e){
 			String message = e.getMessage();
 			JLabel label = new JLabel(message,JLabel.CENTER);
 			JOptionPane.showMessageDialog(frame,label);
@@ -311,7 +312,7 @@ public class TestGUI {
 			frame.pack();
 		} 
 		// Catch error.
-		catch (ExpressionParseException | IllegalEquationException e) {
+		catch (ExpressionParseException | IllegalEquationException | UndefinedVariableException e) {
 			// TODO Hvis der trykkes enter fanges den også af plotfeltet.
 			String message = e.getMessage();
 			JLabel label = new JLabel(message,JLabel.CENTER);

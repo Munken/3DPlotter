@@ -9,6 +9,7 @@ import javax.vecmath.Color3f;
 import munk.graph.function.*;
 
 import com.graphbuilder.math.ExpressionParseException;
+import com.graphbuilder.math.UndefinedVariableException;
 
 
 /**
@@ -27,7 +28,7 @@ public class V2GUI {
 	private static V2GUI window;
 	private JFrame frame;
 	private JPanel stdFuncTab;
-	private JPanel stdFuncPanel;
+	private JPanel stdFuncOuterPanel;
 	private JScrollPane stdFuncPanelWrapper;
 	private JPanel paramFuncTab; 
 	private JScrollPane paramFuncPanelWrapper;
@@ -67,6 +68,7 @@ public class V2GUI {
 	private JMenuItem mntmAbout;
 	private JScrollPane optionPanelWrapper;
 	private JPanel optionPanel;
+	private JPanel stdFuncInnerPanel;
 	
 	/**
 	 * Launch the application.
@@ -203,19 +205,33 @@ public class V2GUI {
      	});
      	
      	// The standard function list
-     	stdFuncPanel = new JPanel();
-     	stdFuncPanelWrapper = new JScrollPane(stdFuncPanel);
+     	stdFuncOuterPanel = new JPanel();
+     	stdFuncPanelWrapper = new JScrollPane(stdFuncOuterPanel);
      	stdFuncPanelWrapper.setBorder(null);
      	stdFuncPanelWrapper.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-     	stdFuncPanel.setLayout(new BoxLayout(stdFuncPanel, BoxLayout.Y_AXIS));
      	GridBagConstraints gbc_stdFuncPanel = new GridBagConstraints();
-     	gbc_stdFuncPanel.anchor = GridBagConstraints.NORTH;
-     	gbc_stdFuncPanel.fill = GridBagConstraints.HORIZONTAL;
+     	gbc_stdFuncPanel.fill = GridBagConstraints.BOTH;
      	gbc_stdFuncPanel.gridwidth = 5;
      	gbc_stdFuncPanel.insets = new Insets(0, 0, 5, 5);
      	gbc_stdFuncPanel.gridx = 1;
      	gbc_stdFuncPanel.gridy = 6;
      	stdFuncTab.add(stdFuncPanelWrapper, gbc_stdFuncPanel);
+     	GridBagLayout gbl_stdFuncPanel = new GridBagLayout();
+     	gbl_stdFuncPanel.columnWidths = new int[]{0, 0};
+     	gbl_stdFuncPanel.rowHeights = new int[]{0, 0};
+     	gbl_stdFuncPanel.columnWeights = new double[]{1.0, Double.MIN_VALUE};
+     	gbl_stdFuncPanel.rowWeights = new double[]{1.0, Double.MIN_VALUE};
+     	stdFuncOuterPanel.setLayout(gbl_stdFuncPanel);
+     	
+     	stdFuncInnerPanel = new JPanel();
+     	GridBagConstraints gbc_panel = new GridBagConstraints();
+     	gbc_panel.anchor = GridBagConstraints.NORTH;
+     	gbc_panel.fill = GridBagConstraints.HORIZONTAL;
+     	gbc_panel.gridx = 0;
+     	gbc_panel.gridy = 0;
+     	stdFuncOuterPanel.add(stdFuncInnerPanel, gbc_panel);
+     	stdFuncInnerPanel.setLayout(new BoxLayout(stdFuncInnerPanel, BoxLayout.Y_AXIS));
+
 
      	// Auto update List according to the function list.
      	functionList.addActionListener(new ActionListener() {
@@ -223,7 +239,7 @@ public class V2GUI {
      		@Override
      		public void actionPerformed(ActionEvent e) {
      			if(e.getActionCommand().equals("ADD")){
-     				stdFuncPanel.add(new FunctionLabel((Function) e.getSource(), new ActionListener() {
+     				stdFuncInnerPanel.add(new FunctionLabel((Function) e.getSource(), new ActionListener() {
      					public void actionPerformed(ActionEvent e) {
      						Function source = (Function) e.getSource();
      						if(e.getID() == 0){
@@ -240,10 +256,10 @@ public class V2GUI {
      				}));
      			}
      			else if(e.getActionCommand().equals("REMOVE")){
-     				stdFuncPanel.remove(e.getID());
+     				stdFuncInnerPanel.remove(e.getID());
      			}
      			else if(e.getActionCommand().equals("SET")){
-     				FunctionLabel label = (FunctionLabel) stdFuncPanel.getComponent(e.getID());
+     				FunctionLabel label = (FunctionLabel) stdFuncInnerPanel.getComponent(e.getID());
      				label.setMother((Function) e.getSource());
      			}
      		}
@@ -351,7 +367,6 @@ public class V2GUI {
      	frame.setVisible(true);
      	frame.pack();
      	
-     	
      	// Test Function
      	addPlot("z = x*(cos(y)*cos(x))", ColorUtil.getNextAvailableColor(colorList, functionList));
      	tabbedPane.setPreferredSize(new Dimension(tabbedPane.getWidth(),tabbedPane.getHeight()));
@@ -365,7 +380,6 @@ public class V2GUI {
 			public void actionPerformed(ActionEvent e) {
 				plotter.updateSize(frame.getWidth()- controlsWidth,frame.getHeight()- controlsHeight);
 				frame.pack();
-				stdFuncPanelWrapper.setPreferredSize(new Dimension(controlsWidth,controlsHeight));
 			}
 		});
      	frame.addComponentListener(new ComponentAdapter() {
@@ -396,6 +410,10 @@ public class V2GUI {
 			String message = e.getMessage();
 			JLabel label = new JLabel(message,JLabel.CENTER);
 			JOptionPane.showMessageDialog(frame,label);
+		} catch (UndefinedVariableException e) {
+			String message = e.getMessage();
+			JLabel label = new JLabel(message,JLabel.CENTER);
+			JOptionPane.showMessageDialog(frame,label);
 		}
 	}
 
@@ -420,6 +438,10 @@ public class V2GUI {
 			JOptionPane.showMessageDialog(frame,label);
 		} catch (IllegalEquationException e) {
 			// TODO: We need a yellow field
+			String message = e.getMessage();
+			JLabel label = new JLabel(message,JLabel.CENTER);
+			JOptionPane.showMessageDialog(frame,label);
+		} catch (UndefinedVariableException e) {
 			String message = e.getMessage();
 			JLabel label = new JLabel(message,JLabel.CENTER);
 			JOptionPane.showMessageDialog(frame,label);
