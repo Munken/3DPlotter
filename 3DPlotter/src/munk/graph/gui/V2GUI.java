@@ -669,15 +669,16 @@ public class V2GUI {
 		JFileChooser fc = new JFileChooser(new File(filePath));
 		fc.showOpenDialog(frame);
 		inputFile = fc.getSelectedFile();
-		try{
-			filePath=inputFile.getPath().replace(inputFile.getName(), "");
-			colorList = (ColorList) ObjectReader.ObjectFromFile(inputFile);
-		}
-		catch(NullPointerException e){
-			e.printStackTrace();
-		}
-		catch(ClassCastException e){
-			e.printStackTrace();
+		
+		if (inputFile != null) {
+
+			try{
+				filePath=inputFile.getPath().replace(inputFile.getName(), "");
+				colorList = (ColorList) ObjectReader.ObjectFromFile(inputFile);
+			}
+			catch(ClassCastException e){
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -692,12 +693,11 @@ public class V2GUI {
 		JFileChooser fc = new JFileChooser(new File(filePath));
 		fc.showSaveDialog(frame);
 		inputFile = fc.getSelectedFile();
-		try{
-			filePath=inputFile.getPath().replace(inputFile.getName(), "");
-			ObjectWriter.ObjectToFile(inputFile, o);
-		}
-		catch(NullPointerException e){
-			e.printStackTrace();
+
+		if (inputFile != null) {
+
+		filePath=inputFile.getPath().replace(inputFile.getName(), "");
+		ObjectWriter.ObjectToFile(inputFile, o);
 		}
 	}
 }

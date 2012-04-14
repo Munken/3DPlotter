@@ -19,10 +19,10 @@ public class ColorList extends ArrayList<Color3f> {
 	 */
 	public ColorList(){
 		try{
-			this.addAll((ColorList) ObjectReader.ObjectFromFile(new File("config.color")));
+			this.addAll((ColorList) ObjectReader.ObjectFromFile(new File("Files/config.color")));
 		}
 		catch(Exception e){
-			System.out.println("Loading default colors.");
+			System.out.println("Color config file not found. Loading default colors.");
 			add(new Color3f(1, 0, 0)); 			//RED
 			add(new Color3f(0, .0749f, 1)); 	//SKYBLUE
 			add(new Color3f(0, 1, 0)); 			//GREEN
@@ -38,7 +38,6 @@ public class ColorList extends ArrayList<Color3f> {
 		for(Color3f c : this){
 			iconList[i] = new ColorIcon(c);
 			i++;
-			System.out.println(c);
 		}
 		return iconList;
 	}
@@ -65,7 +64,7 @@ public class ColorList extends ArrayList<Color3f> {
 	 */
 	public boolean add(Color3f color){
 		Boolean returnBoolean = super.add(color);
-		ObjectWriter.ObjectToFile(new File("config.color"), this);
+		ObjectWriter.ObjectToFile(new File("Files/config.color"), this);
 		return returnBoolean;
 	}
 }
