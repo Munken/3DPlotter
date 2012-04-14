@@ -12,13 +12,12 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.util.ArrayList;
 
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
-import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -34,6 +33,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.vecmath.Color3f;
 
+import munk.graph.IO.ObjectReader;
+import munk.graph.IO.ObjectWriter;
 import munk.graph.function.Function;
 import munk.graph.function.FunctionList;
 import munk.graph.function.FunctionUtil;
@@ -74,7 +75,10 @@ public class V2GUI {
 	private FunctionList<Function> functionList; 
 	private FunctionList<Function> paramFunctionList; 
 	private javax.swing.Timer resizeTimer;
-	private ArrayList<Color3f> colorList;
+	private ColorList colorList;
+	private String filePath;
+	private File inputFile;
+	private File outputFile;
 	
 	// Option variables
 	private JTextField stdFuncInput;
@@ -129,7 +133,7 @@ public class V2GUI {
 		// Initialize variables.
 		functionList = new FunctionList<Function>();
 		paramFunctionList = new FunctionList<Function>();
-		colorList = ColorUtil.getDefaultColors();
+		colorList = new ColorList();
 		
 		initialize();
 	}
@@ -153,7 +157,7 @@ public class V2GUI {
      	frame.pack();
      	
      	// Test Function
-     	addPlot("y = sin(x*5)*cos(z*5)", ColorUtil.getNextAvailableColor(colorList, functionList));
+     	addPlot("y = sin(x*5)*cos(z*5)", colorList.getNextAvailableColor(functionList));
      	
      	autoResize();
 	}
@@ -198,7 +202,26 @@ public class V2GUI {
 		mnColorOptions = new JMenu("Color Options");
 		menuBar.add(mnColorOptions);
 		
-		// TODO: Implement color chooser and import/export color functionality.
+		mntmExportColors = new JMenuItem("Export colors", new ImageIcon("Icons/save.png"));
+		mntmExportColors.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				spawnExportDialog(colorList);
+			}
+		});
+		mnColorOptions.add(mntmExportColors);
+		
+		mntmImportColors = new JMenuItem("Import colors", new ImageIcon("Icons/file.png"));
+		mntmImportColors.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				spawnImportDialog();
+			}
+		});
+		mnColorOptions.add(mntmImportColors);
+		
 		mntmAddCustomColor = new JMenuItem("Add custom color", new ImageIcon("Icons/settings.png"));
 		mntmAddCustomColor.addActionListener(new ActionListener() {
 			
@@ -207,12 +230,6 @@ public class V2GUI {
 				spawnColorChooser();
 			}
 		});
-		
-		mntmExportColors = new JMenuItem("Export colors", new ImageIcon("Icons/save.png"));
-		mnColorOptions.add(mntmExportColors);
-		
-		mntmImportColors = new JMenuItem("Import colors", new ImageIcon("Icons/file.png"));
-		mnColorOptions.add(mntmImportColors);
 		mnColorOptions.add(mntmAddCustomColor);
 		
 		mnHelp = new JMenu("Help");
@@ -301,7 +318,7 @@ public class V2GUI {
      		@Override
      		public void keyPressed(KeyEvent e) {
      			if (e.getKeyCode() == KeyEvent.VK_ENTER && stdFuncInput.isFocusOwner()) {
-     				addPlot(stdFuncInput.getText(),ColorUtil.getNextAvailableColor(colorList, functionList));
+     				addPlot(stdFuncInput.getText(),colorList.getNextAvailableColor(functionList));
      			}
      		}
      	});
@@ -593,7 +610,7 @@ public class V2GUI {
 		gbc_equation.gridy = 1;
 		inputPanel.add(equation, gbc_equation);
 		
-		JComboBox<ColorIcon> colors = new JComboBox<ColorIcon>((ColorUtil.getIconList(colorList)));
+		JComboBox<ColorIcon> colors = new JComboBox<ColorIcon>((colorList.getIconList()));
 		GridBagConstraints gbc_colors = new GridBagConstraints();
 		gbc_colors.insets = new Insets(0, 0, 0, 5);
 		gbc_colors.anchor = GridBagConstraints.NORTHWEST;
@@ -639,5 +656,48 @@ public class V2GUI {
 		colorDialog.pack();
 		}
 		colorDialog.setVisible(true);
+	}
+	
+	/*
+	 * Spawn simple import dialog.
+	 */
+	private void spawnImportDialog(){
+		JFrame frame = new JFrame();
+		if(filePath == null){
+			filePath = File.separator+"tmp";
+		}
+		JFileChooser fc = new JFileChooser(new File(filePath));
+		fc.showOpenDialog(frame);
+		inputFile = fc.getSelectedFile();
+		try{
+			filePath=inputFile.getPath().replace(inputFile.getName(), "");
+			colorList = (ColorList) ObjectReader.ObjectFromFile(inputFile);
+		}
+		catch(NullPointerException e){
+			e.printStackTrace();
+		}
+		catch(ClassCastException e){
+			e.printStackTrace();
+		}
+	}
+	
+	/*
+	 * Spawn simple export dialog.
+	 */
+	private void spawnExportDialog(Object o){
+		JFrame frame = new JFrame();
+		if(filePath == null){
+			filePath = File.separator+"tmp";
+		}
+		JFileChooser fc = new JFileChooser(new File(filePath));
+		fc.showSaveDialog(frame);
+		inputFile = fc.getSelectedFile();
+		try{
+			filePath=inputFile.getPath().replace(inputFile.getName(), "");
+			ObjectWriter.ObjectToFile(inputFile, o);
+		}
+		catch(NullPointerException e){
+			e.printStackTrace();
+		}
 	}
 }
