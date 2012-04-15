@@ -11,11 +11,11 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.File;
 
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
-import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -39,6 +39,7 @@ import munk.graph.function.Function;
 import munk.graph.function.FunctionList;
 import munk.graph.function.FunctionUtil;
 import munk.graph.function.IllegalEquationException;
+import munk.graph.function.ParametricFunction;
 
 import com.graphbuilder.math.ExpressionParseException;
 import com.graphbuilder.math.UndefinedVariableException;
@@ -59,20 +60,21 @@ public class V2GUI {
 	// GUI Variables.
 	private static V2GUI window;
 	private JFrame frame;
-	private JPanel stdFuncTab;
-	private JPanel stdFuncOuterPanel;
+	private JPanel stdFuncTab, stdFuncOuterPanel, stdFuncInnerPanel;
 	private JScrollPane stdFuncPanelWrapper;
-	private JPanel paramFuncTab; 
+	private JPanel paramFuncTab, paramFuncOuterPanel, paramFuncInnerPanel;
 	private JScrollPane paramFuncPanelWrapper;
-	private JPanel paramFuncPanel;
-	private JDialog colorDialog;
+	private JPanel optionPanel;
+	private JScrollPane optionPanelWrapper;
 	private JTabbedPane tabbedPane;
+	private JDialog colorDialog;
+	private JDialog editDialog;
 
 	// Non-GUI variables.
 	private Plotter3D plotter;
 	private int controlsWidth;
 	private int controlsHeight;
-	private FunctionList<Function> functionList; 
+	private FunctionList<Function> stdFunctionList; 
 	private FunctionList<Function> paramFunctionList; 
 	private javax.swing.Timer resizeTimer;
 	private ColorList colorList;
@@ -82,30 +84,17 @@ public class V2GUI {
 	
 	// Option variables
 	private JTextField stdFuncInput;
-	private JLabel label_1;
-	private JLabel label_2;
-	private JLabel label_3;
-	private JTextField txtXmin;
-	private JTextField txtYmin;
-	private JTextField txtZmin;
-	private JTextField txtXmax;
-	private JTextField txtYmax;
-	private JTextField txtZmax;
+	private JLabel label_1, label_2, label_3;
+	private JTextField txtXmin, txtYmin, txtZmin, txtXmax, txtYmax,  txtZmax;
 	private JMenuBar menuBar;
 	private JMenu mnFile;
-	private JMenuItem mntmSaveProject;
-	private JMenuItem mntmLoadProject;
-	private JMenuItem mntmExit;
+	private JMenuItem mntmSaveProject, mntmLoadProject, mntmExit;
 	private JMenu mnColorOptions;
-	private JMenuItem mntmAddCustomColor;
 	private JMenu mnHelp;
-	private JMenuItem mntmDocumentation;
-	private JMenuItem mntmAbout;
-	private JScrollPane optionPanelWrapper;
-	private JPanel optionPanel;
-	private JPanel stdFuncInnerPanel;
-	private JMenuItem mntmImportColors;
-	private JMenuItem mntmExportColors;
+	private JMenuItem mntmDocumentation, mntmAbout;
+	private JMenuItem mntmImportColors, mntmExportColors, mntmAddCustomColor;
+	private JTextField inputX, inputY, inputZ;
+	private JLabel lblX, lblY, lblZ;
 	
 	/**
 	 * Launch the application.
@@ -131,7 +120,7 @@ public class V2GUI {
 	 */
 	public V2GUI() {
 		// Initialize variables.
-		functionList = new FunctionList<Function>();
+		stdFunctionList = new FunctionList<Function>();
 		paramFunctionList = new FunctionList<Function>();
 		colorList = new ColorList();
 		
@@ -157,7 +146,7 @@ public class V2GUI {
      	frame.pack();
      	
      	// Test Function
-     	addPlot("y = sin(x*5)*cos(z*5)", colorList.getNextAvailableColor(functionList));
+     	addPlot(new String[]{"y = sin(x*5)*cos(z*5)"}, colorList.getNextAvailableColor(stdFunctionList));
      	
      	autoResize();
 	}
@@ -318,7 +307,7 @@ public class V2GUI {
      		@Override
      		public void keyPressed(KeyEvent e) {
      			if (e.getKeyCode() == KeyEvent.VK_ENTER && stdFuncInput.isFocusOwner()) {
-     				addPlot(stdFuncInput.getText(),colorList.getNextAvailableColor(functionList));
+     				addPlot(new String[]{stdFuncInput.getText()},colorList.getNextAvailableColor(stdFunctionList));
      			}
      		}
      	});
@@ -353,7 +342,7 @@ public class V2GUI {
 
 
      	// Auto update List according to the function list.
-     	functionList.addActionListener(new ActionListener() {
+     	stdFunctionList.addActionListener(new ActionListener() {
 
      		@Override
      		public void actionPerformed(ActionEvent e) {
@@ -363,7 +352,7 @@ public class V2GUI {
      						Function source = (Function) e.getSource();
      						if(e.getID() == 0){
      							String newExpr = e.getActionCommand();
-     							updatePlot(source, newExpr, source.getColor(), source.getBounds(), source.getStepsize());
+     							updatePlot(source, new String[]{newExpr}, source.getColor(), source.getBounds(), source.getStepsize());
      						}
      						if(e.getID() == 1){
      							spawnEditDialog(source);
@@ -389,11 +378,156 @@ public class V2GUI {
 	}
 	
 	private void initParamFunctionTab(){
-     	// The parametric function tab.
+		// The parametric function tab.
      	paramFuncTab = new JPanel();
-     	tabbedPane.addTab("Parametric equations", new JLabel("To be implemented"));
+     	tabbedPane.addTab("Parametric equations", paramFuncTab);
+     	GridBagLayout gbl_paramFunctionPanel = new GridBagLayout();
+     	gbl_paramFunctionPanel.columnWidths = new int[]{5, 25, 50, 50, 50, 25, 5, 0};
+     	gbl_paramFunctionPanel.rowHeights = new int[]{5, 0, 0, 0, 0, 10, 5, 5, 0};
+     	gbl_paramFunctionPanel.columnWeights = new double[]{0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+     	gbl_paramFunctionPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
+     	paramFuncTab.setLayout(gbl_paramFunctionPanel);
+     	
+     	lblX = new JLabel("x =");
+     	GridBagConstraints gbc_lblX = new GridBagConstraints();
+     	gbc_lblX.insets = new Insets(0, 0, 5, 5);
+     	gbc_lblX.anchor = GridBagConstraints.EAST;
+     	gbc_lblX.gridx = 1;
+     	gbc_lblX.gridy = 1;
+     	paramFuncTab.add(lblX, gbc_lblX);
+     	
+     	// Parametric function input fields.
+     	inputX = new JTextField();
+     	GridBagConstraints gbc_paramFuncInput = new GridBagConstraints();
+     	gbc_paramFuncInput.gridwidth = 4;
+     	gbc_paramFuncInput.insets = new Insets(0, 0, 5, 5);
+     	gbc_paramFuncInput.fill = GridBagConstraints.HORIZONTAL;
+     	gbc_paramFuncInput.anchor = GridBagConstraints.NORTH;
+     	gbc_paramFuncInput.gridx = 2;
+     	gbc_paramFuncInput.gridy = 1;
+     	paramFuncTab.add(inputX, gbc_paramFuncInput);
+     	inputX.setColumns(10);
+     	
+     	lblY = new JLabel("y =");
+     	GridBagConstraints gbc_lblY = new GridBagConstraints();
+     	gbc_lblY.insets = new Insets(0, 0, 5, 5);
+     	gbc_lblY.anchor = GridBagConstraints.EAST;
+     	gbc_lblY.gridx = 1;
+     	gbc_lblY.gridy = 2;
+     	paramFuncTab.add(lblY, gbc_lblY);
+     	
+     	inputY = new JTextField();
+     	inputY.setColumns(10);
+     	GridBagConstraints gbc_textField = new GridBagConstraints();
+     	gbc_textField.gridwidth = 4;
+     	gbc_textField.insets = new Insets(0, 0, 5, 5);
+     	gbc_textField.fill = GridBagConstraints.HORIZONTAL;
+     	gbc_textField.gridx = 2;
+     	gbc_textField.gridy = 2;
+     	paramFuncTab.add(inputY, gbc_textField);
+     	
+     	lblZ = new JLabel("z =");
+     	GridBagConstraints gbc_lblZ = new GridBagConstraints();
+     	gbc_lblZ.insets = new Insets(0, 0, 5, 5);
+     	gbc_lblZ.gridx = 1;
+     	gbc_lblZ.gridy = 3;
+     	paramFuncTab.add(lblZ, gbc_lblZ);
+     	
+     	inputZ = new JTextField();
+     	inputZ.setColumns(10);
+     	GridBagConstraints gbc_textField_1 = new GridBagConstraints();
+     	gbc_textField_1.gridwidth = 4;
+     	gbc_textField_1.insets = new Insets(0, 0, 5, 5);
+     	gbc_textField_1.fill = GridBagConstraints.HORIZONTAL;
+     	gbc_textField_1.gridx = 2;
+     	gbc_textField_1.gridy = 3;
+     	paramFuncTab.add(inputZ, gbc_textField_1);
+     	
+     	// Input detection
+     	KeyListener inputListener = new KeyAdapter() {
+     		// Plot the graph.
+     		
+     		@Override
+     		public void keyPressed(KeyEvent e) {
+     			String[] paramExpr = new String[]{inputX.getText(),inputY.getText(),inputZ.getText()};
+     			if (e.getKeyCode() == KeyEvent.VK_ENTER && (inputX.isFocusOwner() || inputY.isFocusOwner() || inputZ.isFocusOwner())) {
+     				addPlot(paramExpr,colorList.getNextAvailableColor(stdFunctionList));
+     			}
+     		}
+     	};
+     	inputX.addKeyListener(inputListener);
+     	inputY.addKeyListener(inputListener);
+     	inputZ.addKeyListener(inputListener);
+     	
+     	// The parametric function list
+     	paramFuncOuterPanel = new JPanel();
+     	paramFuncPanelWrapper = new JScrollPane(paramFuncOuterPanel);
+     	paramFuncPanelWrapper.setBorder(null);
+     	paramFuncPanelWrapper.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+     	GridBagConstraints gbc_paramFuncPanel = new GridBagConstraints();
+     	gbc_paramFuncPanel.fill = GridBagConstraints.BOTH;
+     	gbc_paramFuncPanel.gridwidth = 5;
+     	gbc_paramFuncPanel.insets = new Insets(0, 0, 5, 5);
+     	gbc_paramFuncPanel.gridx = 1;
+     	gbc_paramFuncPanel.gridy = 6;
+     	paramFuncTab.add(paramFuncPanelWrapper, gbc_paramFuncPanel);
+     	GridBagLayout gbl_paramFuncPanel = new GridBagLayout();
+     	gbl_paramFuncPanel.columnWidths = new int[]{0, 0};
+     	gbl_paramFuncPanel.rowHeights = new int[]{0, 0};
+     	gbl_paramFuncPanel.columnWeights = new double[]{1.0, Double.MIN_VALUE};
+     	gbl_paramFuncPanel.rowWeights = new double[]{1.0, Double.MIN_VALUE};
+     	paramFuncOuterPanel.setLayout(gbl_paramFuncPanel);
+     	
+     	paramFuncInnerPanel = new JPanel();
+     	GridBagConstraints gbc_panel = new GridBagConstraints();
+     	gbc_panel.anchor = GridBagConstraints.NORTH;
+     	gbc_panel.fill = GridBagConstraints.HORIZONTAL;
+     	gbc_panel.gridx = 0;
+     	gbc_panel.gridy = 0;
+     	paramFuncOuterPanel.add(paramFuncInnerPanel, gbc_panel);
+     	paramFuncInnerPanel.setLayout(new BoxLayout(paramFuncInnerPanel, BoxLayout.Y_AXIS));
+
+     	// Auto update List according to the function list.
+     	paramFunctionList.addActionListener(new ActionListener() {
+
+     		@Override
+     		public void actionPerformed(ActionEvent e) {
+     			if(e.getActionCommand().equals("ADD")){
+     				paramFuncInnerPanel.add(new ParametricFunctionLabel((Function) e.getSource(), new ActionListener() {
+     					public void actionPerformed(ActionEvent e) {
+     						Function source = (Function) e.getSource();
+     						if(e.getID() == 0){
+     							String newExpr = e.getActionCommand();
+     							System.out.println(newExpr);
+     							updatePlot(source, newExpr.split(","), source.getColor(), source.getBounds(), source.getStepsize());
+     						}
+     						if(e.getID() == 1){
+     							spawnEditDialog(source);
+     						}
+     						if(e.getID() == 2){
+     							deletePlot(source);
+     						}
+     						if(e.getID() == 3){
+     							plotter.showPlot(source);
+     						}
+     					}
+     				}));
+     			}
+     			else if(e.getActionCommand().equals("REMOVE")){
+     				paramFuncInnerPanel.remove(e.getID());
+     			}
+     			else if(e.getActionCommand().equals("SET")){
+     				ParametricFunctionLabel label = (ParametricFunctionLabel) paramFuncInnerPanel.getComponent(e.getID());
+     				label.setMother((Function) e.getSource());
+     			}
+     		}
+     	});
 	}
 	
+	// TODO: Think the design through! Current thoughts:
+		//			- Step size should be a bar from "min" to "max" ensure no errors (e.g. OutOfMemoryError), where min/max depends on the x, y, z limits.
+		//			- I guess faster implicit should be an option here - or should it be controlled by a menu bar item?
+		//			- How should variable limits be handled in the parametric case?
 	private void initOptionPanel(){
 		optionPanelWrapper = new JScrollPane();
      	GridBagConstraints gbc_scrollPane = new GridBagConstraints();
@@ -512,11 +646,16 @@ public class V2GUI {
 	/*
 	 * Add new plot.
 	 */
-	private void addPlot(String expr, Color3f color) {
+	private void addPlot(String[] expr, Color3f color) {
 		// Create the function.
 		try{
 		Function newFunc = FunctionUtil.createFunction(expr,color,getBounds(),DEFAULT_STEPSIZE);
-		functionList.add(newFunc);
+		if(newFunc.getClass().equals(ParametricFunction.class)){
+			paramFunctionList.add(newFunc);
+		}
+		else{
+			stdFunctionList.add(newFunc);
+		}
 		plotter.plotFunction(newFunc);
 		frame.pack();
 		} catch (ExpressionParseException e) {
@@ -537,11 +676,16 @@ public class V2GUI {
 	/*
 	 * Update a function.
 	 */
-	private void updatePlot(Function oldFunc, String newExpr, Color3f newColor, float[] bounds, float stepsize) {
+	private void updatePlot(Function oldFunc, String newExpr[], Color3f newColor, float[] bounds, float stepsize) {
 		// Try evaluating the function.
 		try {
 			Function newFunc = FunctionUtil.createFunction(newExpr, newColor, bounds, stepsize);
-			functionList.set(functionList.indexOf(oldFunc),newFunc);
+			if(newFunc.getClass().equals(ParametricFunction.class)){
+				paramFunctionList.set(paramFunctionList.indexOf(oldFunc),newFunc);
+			}
+			else{
+				stdFunctionList.set(stdFunctionList.indexOf(oldFunc),newFunc);
+			}
 			plotter.removePlot(oldFunc);
 			plotter.plotFunction(newFunc);
 			frame.pack();
@@ -567,7 +711,12 @@ public class V2GUI {
 	 */
 	private void deletePlot(Function f) {
 		plotter.removePlot(f);
-		functionList.remove(f);
+		if(f.getClass().equals(ParametricFunction.class)){
+			paramFunctionList.remove(f);
+		}
+		else{
+			stdFunctionList.remove(f);
+		}
 		frame.pack();
 	}
 
@@ -588,48 +737,36 @@ public class V2GUI {
 	/*
 	 * Spawn an edit dialog and process the input.
 	 */
-	private void spawnEditDialog(Function f) {
-		// TODO: Reimplement edit dialog using a completely custom dialog (including new features).
-		String curExpr = f.getExpression()[0];
-		
-		// Set up dialog.
-		JPanel inputPanel = new JPanel();
-		GridBagLayout gbl_inputPanel = new GridBagLayout();
-		gbl_inputPanel.columnWidths = new int[]{5, 193, 20, 5, 0};
-		gbl_inputPanel.rowHeights = new int[]{5, 20, 0};
-		gbl_inputPanel.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
-		gbl_inputPanel.rowWeights = new double[]{0.0, 0.0, Double.MIN_VALUE};
-		inputPanel.setLayout(gbl_inputPanel);
-		
-		JTextField equation = new JTextField(curExpr);
-		GridBagConstraints gbc_equation = new GridBagConstraints();
-		gbc_equation.fill = GridBagConstraints.HORIZONTAL;
-		gbc_equation.anchor = GridBagConstraints.NORTH;
-		gbc_equation.insets = new Insets(0, 0, 0, 5);
-		gbc_equation.gridx = 1;
-		gbc_equation.gridy = 1;
-		inputPanel.add(equation, gbc_equation);
-		
-		JComboBox<ColorIcon> colors = new JComboBox<ColorIcon>((colorList.getIconList()));
-		GridBagConstraints gbc_colors = new GridBagConstraints();
-		gbc_colors.insets = new Insets(0, 0, 0, 5);
-		gbc_colors.anchor = GridBagConstraints.NORTHWEST;
-		gbc_colors.gridx = 2;
-		gbc_colors.gridy = 1;
-		inputPanel.add(colors, gbc_colors);
-		colors.setSelectedItem(new ColorIcon(f.getColor()));
+	// TODO: Think the design through! Current thoughts:
+	//			- Step size should be a bar from "min" to "max" ensure no errors (e.g. OutOfMemoryError), where min/max depends on the x, y, z limits.
+	//			- Maybe faster implicit should be a function dependent property?
+	//			- XMin, XMax and ZMax should be added; but how should this be handled in the parametric case?
+	private void spawnEditDialog(final Function f) {
+		editDialog = new JDialog();
+		editDialog.setLocation(frame.getLocationOnScreen());
+		EditOptionPanel editOptionPanel = new EditOptionPanel(colorList, f);
+		editOptionPanel.addActionListener(new ActionListener() {
 
-		JOptionPane.showMessageDialog(frame, inputPanel, "Edit Function", JOptionPane.PLAIN_MESSAGE, null);
-
-		// Update function in case of changes.
-		ColorIcon selectedIcon = (ColorIcon) colors.getSelectedItem();
-		String newExpr = equation.getText();
-		Color3f newColor = selectedIcon.getColor();
-		if (!curExpr.equals(newExpr)) {
-			updatePlot(f, newExpr, newColor, getBounds(), DEFAULT_STEPSIZE);
-		} else if (newColor != null && !f.getColor().equals(newColor)) {
-			functionList.get(functionList.indexOf(f)).setColor(newColor);
-		}
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Function wrapFunction = (Function) e.getSource();
+				if(wrapFunction.getStepsize() != f.getStepsize()){
+					updatePlot(f, f.getExpression(), wrapFunction.getColor(), wrapFunction.getBounds(), wrapFunction.getStepsize());
+				}
+				else if(!wrapFunction.getColor().equals(f.getColor())){
+					if(!f.getClass().equals(ParametricFunction.class)){
+						stdFunctionList.get(stdFunctionList.indexOf(f)).setColor(wrapFunction.getColor());
+					}
+					else{
+						paramFunctionList.get(paramFunctionList.indexOf(f)).setColor(wrapFunction.getColor());
+					}
+				}
+				editDialog.setVisible(false);
+			}
+		});
+		editDialog.getContentPane().add(editOptionPanel);
+		editDialog.pack();
+		editDialog.setVisible(true);
 	}
 
 	/*
@@ -692,12 +829,12 @@ public class V2GUI {
 		}
 		JFileChooser fc = new JFileChooser(new File(filePath));
 		fc.showSaveDialog(frame);
-		inputFile = fc.getSelectedFile();
+		outputFile = fc.getSelectedFile();
 
 		if (inputFile != null) {
 
-		filePath=inputFile.getPath().replace(inputFile.getName(), "");
-		ObjectWriter.ObjectToFile(inputFile, o);
+		filePath=outputFile.getPath().replace(outputFile.getName(), "");
+		ObjectWriter.ObjectToFile(outputFile, o);
 		}
 	}
 }

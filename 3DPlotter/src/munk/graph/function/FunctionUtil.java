@@ -92,12 +92,12 @@ public class FunctionUtil {
 		return false;
 	}
 	
-	public static Function createFunction(String expression, Color3f color, 
-										float[] bounds, float stepsize) 
-												throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
-		String[] expressions = {expression};
-		return createFunction(expressions, color, bounds, stepsize);
-	}
+//	public static Function createFunction(String expression, Color3f color, 
+//										float[] bounds, float stepsize) 
+//												throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
+//		String[] expressions = {expression};
+//		return createFunction(expressions, color, bounds, stepsize);
+//	}
 
 	public static String[] variableNames (String[] expressions) throws ExpressionParseException {
 		Set<String> variables = new HashSet<String>();

@@ -10,7 +10,7 @@ import munk.graph.function.Function;
 @SuppressWarnings("serial")
 public class FunctionLabel extends JPanel{
 	
-	JCheckBox chckbx;
+	ToggleButton toggleButton;
 	JTextField exprField;
 	Function mother;
 	ActionListener listener;
@@ -29,13 +29,12 @@ public class FunctionLabel extends JPanel{
 		gbl_fLabel.rowWeights = new double[]{0.0, Double.MIN_VALUE};
 		this.setLayout(gbl_fLabel);
 
-		chckbx = new JCheckBox("");
+		toggleButton = new ToggleButton(new ImageIcon("Icons/selected.png"),new ImageIcon("Icons/notSelected.png"));
 		GridBagConstraints gbc_chckbxTest = new GridBagConstraints();
 		gbc_chckbxTest.insets = new Insets(0, 0, 0, 5);
 		gbc_chckbxTest.gridx = 0;
 		gbc_chckbxTest.gridy = 0;
-		chckbx.setSelected(true);
-		this.add(chckbx, gbc_chckbxTest);
+		this.add(toggleButton, gbc_chckbxTest);
 
 		exprField = new JTextField(mother.getExpression()[0]);
 		GridBagConstraints gbc_list = new GridBagConstraints();
@@ -63,7 +62,7 @@ public class FunctionLabel extends JPanel{
 		gbc_btnDelete.gridy = 0;
 		add(btnDelete, gbc_btnDelete);
 		addTextChangeListener();
-		addCheckboxListener();	
+		addToggleButtonListener();	
 		addDeleteListener();
 	}
 
@@ -89,11 +88,11 @@ public class FunctionLabel extends JPanel{
 		});
 	}
 
-	private void addCheckboxListener() {
+	private void addToggleButtonListener() {
 		// Update visibility.
-		chckbx.addActionListener(new ActionListener() {
+		toggleButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				mother.setVisible(chckbx.isSelected());
+				mother.setVisible(toggleButton.isSelected());
 				listener.actionPerformed(new ActionEvent(mother, 3, ""));
 			}
 		});
