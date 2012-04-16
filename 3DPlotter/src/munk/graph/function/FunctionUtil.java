@@ -115,4 +115,13 @@ public class FunctionUtil {
 		variables.toArray(varNames);
 		return varNames;
 	}
+	
+	public static ZippedFunction[] zipFunctionList(FunctionList<Function> list){
+		ZippedFunction[] zippedList = new ZippedFunction[list.size()];
+		for(int i = 0; i < list.size(); i++){
+			Function f = list.get(i);
+			zippedList[i] = new ZippedFunction(f.getExpression(), f.getColor(), f.getBounds(), f.getStepsize(), f.isSelected(), f.isVisible());
+		}
+		return zippedList;
+	}
 }
