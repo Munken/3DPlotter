@@ -48,7 +48,7 @@ public class ParametricFunction extends AbstractFunction {
 		} else if (nVariables == 2){
 			pp = new Parametric2D(xExpr, yExpr, zExpr, bounds[0], bounds[1], bounds[2], bounds[3], varNames, stepsize);
 		} else {
-			throw new IllegalStateException("There must be one or two variables in the expression!");
+			throw new IllegalEquationException("There must be one or two variables in the expression!");
 		}
 	}
 	
