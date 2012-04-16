@@ -88,14 +88,22 @@ public class Plotter3D extends JPanel{
         root.setTransform(scaling);
 	}
 	
-	public void plotFunction(Function function) {
-		BranchGroup bg = function.getPlot();
+	public void plotFunction(final Function function) {
 		
-		if (bg != null) {
-			plots.addChild(bg);
-			updateAxes();
-			adjustZoom();
-		}
+		Thread t = new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				BranchGroup bg = function.getPlot();
+				
+				if (bg != null) {
+					plots.addChild(bg);
+					updateAxes();
+					adjustZoom();
+				}
+			}
+		});
+		t.start();
 	}
 	
 	public void changeColor(String expr, Color3f color) {
