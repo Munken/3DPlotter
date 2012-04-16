@@ -24,7 +24,7 @@ public class FunctionUtil {
 		BranchGroup bg = new BranchGroup();
 		bg.setCapability(BranchGroup.ALLOW_DETACH);
 		bg.addChild(handle);
-
+		bg.compile();
 		return bg;
 	}
 

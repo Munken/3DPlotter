@@ -13,7 +13,8 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
-import java.io.InvalidClassException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -29,6 +30,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
+import javax.swing.SwingWorker;
 import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -97,6 +99,10 @@ public class V2GUI {
 	private JMenuItem mntmImportColors, mntmExportColors, mntmAddCustomColor;
 	private JTextField inputX, inputY, inputZ;
 	private JLabel lblX, lblY, lblZ;
+	
+	
+	// Plotter renderes
+	private ExecutorService plottingQueue = Executors.newSingleThreadExecutor(); // Only plot one at a time
 	
 	/**
 	 * Launch the application.
@@ -671,7 +677,7 @@ public class V2GUI {
 		else{
 			stdFunctionList.add(newFunc);
 		}
-		plotter.plotFunction(newFunc);
+		spawnNewPlotterThread(newFunc);
 		frame.pack();
 		} catch (ExpressionParseException e) {
 			String message = e.getMessage();
@@ -702,7 +708,7 @@ public class V2GUI {
 				stdFunctionList.set(stdFunctionList.indexOf(oldFunc),newFunc);
 			}
 			plotter.removePlot(oldFunc);
-			plotter.plotFunction(newFunc);
+			spawnNewPlotterThread(newFunc);
 			frame.pack();
 		} 
 		// Catch error.
@@ -876,5 +882,24 @@ public class V2GUI {
 			filePath=outputFile.getPath().replace(outputFile.getName(), "");
 			ObjectWriter.ObjectToFile(outputFile, o);
 		}
+	}
+	
+	private void spawnNewPlotterThread(final Function function) {
+		SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+
+			@Override
+			protected Void doInBackground() throws Exception {
+				System.out.println("Starter");
+				plotter.plotFunction(function);
+				return null;
+			}
+			
+			@Override
+			protected void done() {
+				System.out.println("Færdig");
+			}
+			
+		};
+		plottingQueue.execute(worker);
 	}
 }
