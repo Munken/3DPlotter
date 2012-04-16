@@ -820,7 +820,6 @@ public class V2GUI {
 	 * Spawn simple import dialog.
 	 */
 	private void spawnImportDialog(String type){
-		JFrame frame = new JFrame();
 		if(filePath == null){
 			filePath = File.separator+"tmp";
 		}
@@ -869,7 +868,6 @@ public class V2GUI {
 	 */
 	private void spawnExportDialog(Object o){
 		outputFile = null;
-		JFrame frame = new JFrame();
 		// Remember dir.
 		if(filePath == null){
 			filePath = File.separator+"tmp";
