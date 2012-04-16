@@ -13,6 +13,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
+import java.io.InvalidClassException;
 
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -40,6 +41,7 @@ import munk.graph.function.FunctionList;
 import munk.graph.function.FunctionUtil;
 import munk.graph.function.IllegalEquationException;
 import munk.graph.function.ParametricFunction;
+import munk.graph.function.ZippedFunction;
 
 import com.graphbuilder.math.ExpressionParseException;
 import com.graphbuilder.math.UndefinedVariableException;
@@ -146,7 +148,7 @@ public class V2GUI {
      	frame.pack();
      	
      	// Test Function
-     	addPlot(new String[]{"y = sin(x*5)*cos(z*5)"}, colorList.getNextAvailableColor(stdFunctionList));
+     	addPlot(new String[]{"y = sin(x*5)*cos(z*5)"}, colorList.getNextAvailableColor(stdFunctionList), getBounds(), DEFAULT_STEPSIZE);
      	
      	autoResize();
 	}
@@ -169,11 +171,24 @@ public class V2GUI {
 		mnFile = new JMenu("File");
 		menuBar.add(mnFile);
 		
-		// TODO: Implement save-/load project (serialize current functions).
 		mntmSaveProject = new JMenuItem("Save Project", new ImageIcon("Icons/save.png"));
+		mntmSaveProject.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				spawnExportDialog(new ZippedFunction[][]{FunctionUtil.zipFunctionList(stdFunctionList),FunctionUtil.zipFunctionList(paramFunctionList)});
+			}
+		});
 		mnFile.add(mntmSaveProject);
 		
 		mntmLoadProject = new JMenuItem("Load project", new ImageIcon("Icons/file.png"));
+		mntmLoadProject.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				spawnImportDialog("FunctionList");
+			}
+		});
 		mnFile.add(mntmLoadProject);
 		
 		// Close application on click.
@@ -206,7 +221,7 @@ public class V2GUI {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				spawnImportDialog();
+				spawnImportDialog("ColorList");
 			}
 		});
 		mnColorOptions.add(mntmImportColors);
@@ -307,7 +322,7 @@ public class V2GUI {
      		@Override
      		public void keyPressed(KeyEvent e) {
      			if (e.getKeyCode() == KeyEvent.VK_ENTER && stdFuncInput.isFocusOwner()) {
-     				addPlot(new String[]{stdFuncInput.getText()},colorList.getNextAvailableColor(stdFunctionList));
+     				addPlot(new String[]{stdFuncInput.getText()},colorList.getNextAvailableColor(stdFunctionList), getBounds(), DEFAULT_STEPSIZE);
      			}
      		}
      	});
@@ -451,7 +466,7 @@ public class V2GUI {
      		public void keyPressed(KeyEvent e) {
      			String[] paramExpr = new String[]{inputX.getText(),inputY.getText(),inputZ.getText()};
      			if (e.getKeyCode() == KeyEvent.VK_ENTER && (inputX.isFocusOwner() || inputY.isFocusOwner() || inputZ.isFocusOwner())) {
-     				addPlot(paramExpr,colorList.getNextAvailableColor(stdFunctionList));
+     				addPlot(paramExpr,colorList.getNextAvailableColor(stdFunctionList), getBounds(), DEFAULT_STEPSIZE);
      			}
      		}
      	};
@@ -646,10 +661,10 @@ public class V2GUI {
 	/*
 	 * Add new plot.
 	 */
-	private void addPlot(String[] expr, Color3f color) {
+	private void addPlot(String[] expr, Color3f color, float[] bounds, float stepSize) {
 		// Create the function.
 		try{
-		Function newFunc = FunctionUtil.createFunction(expr,color,getBounds(),DEFAULT_STEPSIZE);
+		Function newFunc = FunctionUtil.createFunction(expr,color,bounds,stepSize);
 		if(newFunc.getClass().equals(ParametricFunction.class)){
 			paramFunctionList.add(newFunc);
 		}
@@ -798,7 +813,7 @@ public class V2GUI {
 	/*
 	 * Spawn simple import dialog.
 	 */
-	private void spawnImportDialog(){
+	private void spawnImportDialog(String type){
 		JFrame frame = new JFrame();
 		if(filePath == null){
 			filePath = File.separator+"tmp";
@@ -808,33 +823,58 @@ public class V2GUI {
 		inputFile = fc.getSelectedFile();
 		
 		if (inputFile != null) {
-
 			try{
 				filePath=inputFile.getPath().replace(inputFile.getName(), "");
-				colorList = (ColorList) ObjectReader.ObjectFromFile(inputFile);
+				if(type.equals("ColorList")){
+					colorList = (ColorList) ObjectReader.ObjectFromFile(inputFile);
+				}
+				if(type.equals("FunctionList")){
+					ZippedFunction[][] importLists = (ZippedFunction[][]) ObjectReader.ObjectFromFile(inputFile);
+					//Erase current work space.
+					for(int i = stdFunctionList.size()-1; i >= 0; i--){
+						deletePlot(stdFunctionList.get(i));
+					}
+					for(int i = paramFunctionList.size()-1; i >= 0; i--){
+						deletePlot(paramFunctionList.get(i));
+					}
+					//Read new functions from zipped object.
+					for(int i = 0; i < importLists[0].length; i++){
+						addPlot(importLists[0][i].getExpression(), importLists[0][i].getColor(), importLists[0][i].getBounds(), importLists[0][i].getStepsize());
+						stdFunctionList.get(i).setSelected(importLists[0][i].isSelected());
+						stdFunctionList.get(i).setVisible(importLists[0][i].isVisible());
+					}
+					for(int i = 0; i < importLists[1].length; i++){
+						addPlot(importLists[1][i].getExpression(), importLists[1][i].getColor(), importLists[1][i].getBounds(), importLists[1][i].getStepsize());
+						stdFunctionList.get(i).setSelected(importLists[1][i].isSelected());
+						stdFunctionList.get(i).setVisible(importLists[1][i].isVisible());
+					}
+				}
 			}
-			catch(ClassCastException e){
-				e.printStackTrace();
+			catch(Exception e){
+				String message = e.getMessage();
+				JLabel label = new JLabel(message,JLabel.CENTER);
+				JOptionPane.showMessageDialog(frame,label);
 			}
 		}
 	}
-	
+
 	/*
 	 * Spawn simple export dialog.
 	 */
 	private void spawnExportDialog(Object o){
+		outputFile = null;
 		JFrame frame = new JFrame();
+		// Remember dir.
 		if(filePath == null){
 			filePath = File.separator+"tmp";
 		}
 		JFileChooser fc = new JFileChooser(new File(filePath));
 		fc.showSaveDialog(frame);
 		outputFile = fc.getSelectedFile();
-
-		if (inputFile != null) {
-
-		filePath=outputFile.getPath().replace(outputFile.getName(), "");
-		ObjectWriter.ObjectToFile(outputFile, o);
+		// Write file.
+		if (outputFile != null){
+			filePath=outputFile.getPath().replace(outputFile.getName(), "");
+			ObjectWriter.ObjectToFile(outputFile, o);
 		}
 	}
 }
