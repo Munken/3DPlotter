@@ -1,45 +1,18 @@
 package munk.graph.gui;
-import java.awt.Desktop;
-import java.awt.Dimension;
-import java.awt.EventQueue;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.*;
+import java.awt.event.*;
 import java.io.File;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextField;
-import javax.swing.UIManager;
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.vecmath.Color3f;
 
 import munk.graph.IO.ObjectReader;
 import munk.graph.IO.ObjectWriter;
-import munk.graph.function.Function;
-import munk.graph.function.FunctionList;
-import munk.graph.function.FunctionUtil;
-import munk.graph.function.IllegalEquationException;
-import munk.graph.function.ParametricFunction;
+import munk.graph.function.*;
 
 import com.graphbuilder.math.ExpressionParseException;
 import com.graphbuilder.math.UndefinedVariableException;
@@ -95,6 +68,10 @@ public class V2GUI {
 	private JMenuItem mntmImportColors, mntmExportColors, mntmAddCustomColor;
 	private JTextField inputX, inputY, inputZ;
 	private JLabel lblX, lblY, lblZ;
+	
+	
+	// Plotter renderes
+	private ExecutorService plottingQueue = Executors.newSingleThreadExecutor(); // Only plot one at a time
 	
 	/**
 	 * Launch the application.
@@ -650,13 +627,13 @@ public class V2GUI {
 		// Create the function.
 		try{
 		Function newFunc = FunctionUtil.createFunction(expr,color,getBounds(),DEFAULT_STEPSIZE);
-		if(newFunc.getClass().equals(ParametricFunction.class)){
+		if(newFunc.getClass() == ParametricFunction.class){
 			paramFunctionList.add(newFunc);
 		}
 		else{
 			stdFunctionList.add(newFunc);
 		}
-		plotter.plotFunction(newFunc);
+		spawnNewPlotterThread(newFunc);
 		frame.pack();
 		} catch (ExpressionParseException e) {
 			String message = e.getMessage();
@@ -687,7 +664,7 @@ public class V2GUI {
 				stdFunctionList.set(stdFunctionList.indexOf(oldFunc),newFunc);
 			}
 			plotter.removePlot(oldFunc);
-			plotter.plotFunction(newFunc);
+			spawnNewPlotterThread(newFunc);
 			frame.pack();
 		} 
 		// Catch error.
@@ -836,5 +813,24 @@ public class V2GUI {
 		filePath=outputFile.getPath().replace(outputFile.getName(), "");
 		ObjectWriter.ObjectToFile(outputFile, o);
 		}
+	}
+	
+	private void spawnNewPlotterThread(final Function function) {
+		SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+
+			@Override
+			protected Void doInBackground() throws Exception {
+				System.out.println("Starter");
+				plotter.plotFunction(function);
+				return null;
+			}
+			
+			@Override
+			protected void done() {
+				System.out.println("Færdig");
+			}
+			
+		};
+		plottingQueue.execute(worker);
 	}
 }

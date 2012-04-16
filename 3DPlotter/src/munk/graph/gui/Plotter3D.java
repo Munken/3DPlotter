@@ -1,14 +1,11 @@
 package munk.graph.gui;
 
 import java.awt.GraphicsConfiguration;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.media.j3d.*;
 import javax.swing.JPanel;
 import javax.vecmath.*;
 
-import munk.graph.appearance.ColorAppearance;
 import munk.graph.function.Function;
 import munk.graph.plot.Axes;
 import munk.graph.rotaters.*;
@@ -25,8 +22,6 @@ public class Plotter3D extends JPanel{
 	private SimpleUniverse universe;
 	private Canvas3D canvas;
 	private BranchGroup	currentAxis;
-	private Map<String, BranchGroup> functions = new HashMap<String, BranchGroup>();
-	private Map<String, Shape3D> shapes = new HashMap<String, Shape3D>();
 	
 	public Plotter3D() {
 		this(600, 600);
@@ -88,27 +83,15 @@ public class Plotter3D extends JPanel{
         root.setTransform(scaling);
 	}
 	
-	public void plotFunction(final Function function) {
-		
-		Thread t = new Thread(new Runnable() {
-			
-			@Override
-			public void run() {
-				BranchGroup bg = function.getPlot();
-				
-				if (bg != null) {
-					plots.addChild(bg);
-					updateAxes();
-					adjustZoom();
-				}
-			}
-		});
-		t.start();
-	}
 	
-	public void changeColor(String expr, Color3f color) {
-		Shape3D shape = shapes.get(expr);
-		shape.setAppearance(new ColorAppearance(color));
+	public void plotFunction(final Function function) {
+		BranchGroup bg = function.getPlot();
+		
+		if (bg != null) {
+			plots.addChild(bg);
+			updateAxes();
+			adjustZoom();
+		}
 	}
 	
 	
@@ -117,7 +100,6 @@ public class Plotter3D extends JPanel{
 		
 		if (bg != null) {
 			bg.detach();
-			functions.remove(bg);
 		}
 		adjustZoom();
 	}
