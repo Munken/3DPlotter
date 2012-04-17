@@ -777,12 +777,7 @@ public class V2GUI {
 					updatePlot(f, f.getExpression(), wrapFunction.getColor(), wrapFunction.getBounds(), wrapFunction.getStepsize());
 				}
 				else if(!wrapFunction.getColor().equals(f.getColor())){
-					if(!f.getClass().equals(ParametricFunction.class)){
-						stdFunctionList.get(stdFunctionList.indexOf(f)).setColor(wrapFunction.getColor());
-					}
-					else{
-						paramFunctionList.get(paramFunctionList.indexOf(f)).setColor(wrapFunction.getColor());
-					}
+					f.setColor(wrapFunction.getColor());
 				}
 				editDialog.setVisible(false);
 			}
