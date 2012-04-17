@@ -63,6 +63,7 @@ public class StdFunctionLabel extends JPanel implements FunctionLabel{
 		addTextChangeListener();
 		addToggleButtonListener();	
 		addDeleteListener();
+		GuiUtil.setupUndoListener(exprField);
 	}
 
 	private void addDeleteListener() {

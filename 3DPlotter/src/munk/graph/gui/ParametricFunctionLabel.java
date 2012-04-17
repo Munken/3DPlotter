@@ -131,6 +131,9 @@ public class ParametricFunctionLabel extends JPanel implements FunctionLabel{
 		
 		this.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
 
+		GuiUtil.setupUndoListener(exprFieldX);
+		GuiUtil.setupUndoListener(exprFieldY);
+		GuiUtil.setupUndoListener(exprFieldZ);
 	}
 
 	private void addDeleteListener() {
