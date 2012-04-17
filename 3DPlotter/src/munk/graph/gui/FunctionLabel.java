@@ -133,4 +133,8 @@ public class FunctionLabel extends JPanel{
 		mother = f;
 		exprField.setText(mother.getExpression()[0]);
 	}
+	
+	public void setIndeterminate(boolean b){
+		toggleButton.setIndeterminate(b);
+	}
 }
