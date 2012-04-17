@@ -21,7 +21,7 @@ import javax.swing.border.EtchedBorder;
 import munk.graph.function.Function;
 
 @SuppressWarnings("serial")
-public class ParametricFunctionLabel extends JPanel{
+public class ParametricFunctionLabel extends JPanel implements FunctionLabel{
 	
 	ToggleButton toggleButton;
 	JTextField exprFieldX;
@@ -212,5 +212,10 @@ public class ParametricFunctionLabel extends JPanel{
 		exprFieldX.setText(mother.getExpression()[0]);
 		exprFieldY.setText(mother.getExpression()[1]);
 		exprFieldZ.setText(mother.getExpression()[2]);
+	}
+
+	@Override
+	public void setIndeterminate(boolean b) {
+		toggleButton.setIndeterminate(b);
 	}
 }

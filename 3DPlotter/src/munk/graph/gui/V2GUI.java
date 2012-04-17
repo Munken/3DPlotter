@@ -13,7 +13,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -371,7 +370,7 @@ public class V2GUI {
      		@Override
      		public void actionPerformed(ActionEvent e) {
      			if(e.getActionCommand().equals("ADD")){
-     				stdFuncInnerPanel.add(new FunctionLabel((Function) e.getSource(), new ActionListener() {
+     				stdFuncInnerPanel.add(new StdFunctionLabel((Function) e.getSource(), new ActionListener() {
      					public void actionPerformed(ActionEvent e) {
      						Function source = (Function) e.getSource();
      						if(e.getID() == 0){
@@ -394,7 +393,7 @@ public class V2GUI {
      				stdFuncInnerPanel.remove(e.getID());
      			}
      			else if(e.getActionCommand().equals("SET")){
-     				FunctionLabel label = (FunctionLabel) stdFuncInnerPanel.getComponent(e.getID());
+     				StdFunctionLabel label = (StdFunctionLabel) stdFuncInnerPanel.getComponent(e.getID());
      				label.setMother((Function) e.getSource());
      			}
      		}
@@ -900,11 +899,19 @@ public class V2GUI {
 	 */
 	private void spawnNewPlotterThread(final Function function) {
 		SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
-
+			
+			FunctionLabel thisLabel;
+			
 			@Override
 			protected Void doInBackground() throws Exception {
 				System.out.println("Starter");
-				FunctionLabel thisLabel = (FunctionLabel) stdFuncInnerPanel.getComponent(stdFunctionList.size()-1);
+				thisLabel = null; 
+				if(function.getClass().equals(ParametricFunction.class)){
+					thisLabel = (ParametricFunctionLabel) paramFuncInnerPanel.getComponent(paramFunctionList.size()-1);
+				}
+				else{
+					thisLabel = (StdFunctionLabel) stdFuncInnerPanel.getComponent(stdFunctionList.size()-1);
+				}
 				thisLabel.setIndeterminate(true);
 				// Test of spinner.
 				// Thread.currentThread().sleep(5000);
@@ -915,7 +922,6 @@ public class V2GUI {
 			@Override
 			protected void done() {
 				System.out.println("Færdig");
-				FunctionLabel thisLabel = (FunctionLabel) stdFuncInnerPanel.getComponent(stdFunctionList.size()-1);
 				thisLabel.setIndeterminate(false);
 			}
 			
