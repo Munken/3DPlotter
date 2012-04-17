@@ -179,7 +179,7 @@ public class V2GUI {
 		mnFile = new JMenu("File");
 		menuBar.add(mnFile);
 		
-		mntmSaveProject = new JMenuItem("Import workspace", new ImageIcon("Icons/save.png"));
+		mntmSaveProject = new JMenuItem("Export workspace", new ImageIcon("Icons/save.png"));
 		mntmSaveProject.addActionListener(new ActionListener() {
 			
 			@Override
@@ -189,7 +189,7 @@ public class V2GUI {
 		});
 		mnFile.add(mntmSaveProject);
 		
-		mntmLoadProject = new JMenuItem("Export workspace", new ImageIcon("Icons/file.png"));
+		mntmLoadProject = new JMenuItem("Import workspace", new ImageIcon("Icons/file.png"));
 		mntmLoadProject.addActionListener(new ActionListener() {
 			
 			@Override
