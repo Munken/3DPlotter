@@ -15,7 +15,6 @@ public class StdFunctionLabel extends JPanel implements FunctionLabel{
 	Function mother;
 	ActionListener listener;
 	private JButton btnDelete;
-	private static final Color WARNING_COLOR = new Color(255, 215, 0); 
 
 	public StdFunctionLabel (Function function, ActionListener a){
 		this.mother = function;
@@ -108,20 +107,25 @@ public class StdFunctionLabel extends JPanel implements FunctionLabel{
 
 			@Override
 			public void keyReleased(KeyEvent e) {
-				if(!exprField.getBackground().equals(Color.RED) || !(e.getKeyCode() == KeyEvent.VK_ENTER)){
+				if(!exprField.getBackground().equals(FAILED_COLOR) || !(e.getKeyCode() == KeyEvent.VK_ENTER)){
+					
 					if (!exprField.getText().equals(mother.getExpression()[0])) {
-						exprField.setBackground(WARNING_COLOR);
+						
 						if(e.getKeyCode() == KeyEvent.VK_ENTER){
 							listener.actionPerformed(new ActionEvent(mother, 0, exprField.getText()));
+							
 							if(exprField.getText().equals(mother.getExpression()[0])){
-								exprField.setBackground(Color.WHITE);
+								exprField.setBackground(NORMAL_COLOR);
 							}
-							else{
-								exprField.setBackground(Color.RED);
+							else {
+								exprField.setBackground(FAILED_COLOR);
 							}
+							
+						} else {
+							exprField.setBackground(WARNING_COLOR);
 						}
 					} else {
-						exprField.setBackground(Color.WHITE);
+						exprField.setBackground(NORMAL_COLOR);
 					}
 
 				}
