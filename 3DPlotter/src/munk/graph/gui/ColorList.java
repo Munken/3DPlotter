@@ -1,6 +1,7 @@
 package munk.graph.gui;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -64,7 +65,12 @@ public class ColorList extends ArrayList<Color3f> {
 	 */
 	public boolean add(Color3f color){
 		Boolean returnBoolean = super.add(color);
+		try{
 		ObjectWriter.ObjectToFile(new File("Files/config.color"), this);
+		}
+		catch(IOException e){
+			e.printStackTrace();
+		}
 		return returnBoolean;
 	}
 }

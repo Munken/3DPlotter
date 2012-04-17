@@ -8,18 +8,12 @@ import java.io.ObjectInputStream;
 
 public class ObjectReader {
 
-	public static Object ObjectFromFile(File f){
+	public static Object ObjectFromFile(File f) throws ClassNotFoundException, IOException{
 		Object returnObject = null;
 		ObjectInputStream inputStream = null;
 		try {
 			inputStream = new ObjectInputStream(new FileInputStream(f));
 			returnObject = inputStream.readObject();
-		} catch (FileNotFoundException ex) {
-			ex.printStackTrace();
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
 		} finally {
 			//Close the ObjectOutputStream
 			try {

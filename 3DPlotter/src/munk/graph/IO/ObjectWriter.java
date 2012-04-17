@@ -8,17 +8,14 @@ import java.io.ObjectOutputStream;
 
 public class ObjectWriter {
 
-	public static void ObjectToFile(File f, Object o){
+	public static void ObjectToFile(File f, Object o) throws FileNotFoundException, IOException{
 		ObjectOutputStream outputStream = null;
 		try {
 			outputStream = new ObjectOutputStream(new FileOutputStream(f));
 			outputStream.writeObject(o);
 
-		} catch (FileNotFoundException ex) {
-			ex.printStackTrace();
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		} finally {
+		} 
+		finally {
 			//Close the ObjectOutputStream
 			try {
 				if (outputStream != null) {

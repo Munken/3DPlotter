@@ -13,6 +13,8 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -178,7 +180,7 @@ public class V2GUI {
 		mnFile = new JMenu("File");
 		menuBar.add(mnFile);
 		
-		mntmSaveProject = new JMenuItem("Save Project", new ImageIcon("Icons/save.png"));
+		mntmSaveProject = new JMenuItem("Import workspace", new ImageIcon("Icons/save.png"));
 		mntmSaveProject.addActionListener(new ActionListener() {
 			
 			@Override
@@ -188,7 +190,7 @@ public class V2GUI {
 		});
 		mnFile.add(mntmSaveProject);
 		
-		mntmLoadProject = new JMenuItem("Load project", new ImageIcon("Icons/file.png"));
+		mntmLoadProject = new JMenuItem("Export workspace", new ImageIcon("Icons/file.png"));
 		mntmLoadProject.addActionListener(new ActionListener() {
 			
 			@Override
@@ -837,12 +839,14 @@ public class V2GUI {
 				}
 				if(type.equals("FunctionList")){
 					ZippedFunction[][] importLists = (ZippedFunction[][]) ObjectReader.ObjectFromFile(inputFile);
-					//Erase current work space.
+					boolean eraseWorkspace = 0 == JOptionPane.showOptionDialog(frame, "Would you like to erase current work space during import?", "Import Dialog", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+					if(eraseWorkspace){
 					for(int i = stdFunctionList.size()-1; i >= 0; i--){
 						deletePlot(stdFunctionList.get(i));
 					}
 					for(int i = paramFunctionList.size()-1; i >= 0; i--){
 						deletePlot(paramFunctionList.get(i));
+					}
 					}
 					//Read new functions from zipped object.
 					for(int i = 0; i < importLists[0].length; i++){
@@ -881,10 +885,16 @@ public class V2GUI {
 		// Write file.
 		if (outputFile != null){
 			filePath=outputFile.getPath().replace(outputFile.getName(), "");
-			ObjectWriter.ObjectToFile(outputFile, o);
+			try {
+				ObjectWriter.ObjectToFile(outputFile, o);
+			} catch (IOException e) {
+				String message = "Unable to write file.";
+				JLabel label = new JLabel(message,JLabel.CENTER);
+				JOptionPane.showMessageDialog(frame,label);
+			}
 		}
 	}
-	
+
 	/*
 	 * Spawn new plotter thread.
 	 */
@@ -896,6 +906,8 @@ public class V2GUI {
 				System.out.println("Starter");
 				FunctionLabel thisLabel = (FunctionLabel) stdFuncInnerPanel.getComponent(stdFunctionList.size()-1);
 				thisLabel.setIndeterminate(true);
+				// Test of spinner.
+				// Thread.currentThread().sleep(5000);
 				plotter.plotFunction(function);
 				return null;
 			}
