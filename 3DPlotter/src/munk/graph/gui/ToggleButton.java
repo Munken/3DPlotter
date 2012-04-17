@@ -1,5 +1,7 @@
 package munk.graph.gui;
 
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -12,11 +14,13 @@ public class ToggleButton extends JButton {
 	private ImageIcon selectedIcon;
 	private ImageIcon notSelectedIcon;
 	private Boolean isSelected;
+	private Boolean isIndeterminate;
 	
 	public ToggleButton(ImageIcon selected, ImageIcon notSelected){
 		selectedIcon = selected;
 		notSelectedIcon = notSelected;
 		isSelected = false;
+		isIndeterminate = false;
 		
 		// Handle change of graphics
 		this.setIcon(selectedIcon);
@@ -36,8 +40,25 @@ public class ToggleButton extends JButton {
 			}
 		});
 	}
+
+	public void setIndeterminate(boolean b){
+		// Set indeterminate icon.
+		if(b){
+			Toolkit kit = Toolkit.getDefaultToolkit();
+			Image spinner = kit.getImage("Icons/4-1.gif");
+			this.setIcon(new ImageIcon(spinner.getScaledInstance(15, 15, Image.SCALE_DEFAULT)));
+		}
+		// Set normal icon.
+		else{
+			this.setIcon(selectedIcon);
+		}
+	}
 	
 	public boolean isSelected(){
 		return(isSelected);
+	}
+	
+	public boolean isIndeterminate(){
+		return isIndeterminate;
 	}
 }

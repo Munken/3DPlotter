@@ -884,12 +884,17 @@ public class V2GUI {
 		}
 	}
 	
+	/*
+	 * Spawn new plotter thread.
+	 */
 	private void spawnNewPlotterThread(final Function function) {
 		SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
 
 			@Override
 			protected Void doInBackground() throws Exception {
 				System.out.println("Starter");
+				FunctionLabel thisLabel = (FunctionLabel) stdFuncInnerPanel.getComponent(stdFunctionList.size()-1);
+				thisLabel.setIndeterminate(true);
 				plotter.plotFunction(function);
 				return null;
 			}
@@ -897,6 +902,8 @@ public class V2GUI {
 			@Override
 			protected void done() {
 				System.out.println("Færdig");
+				FunctionLabel thisLabel = (FunctionLabel) stdFuncInnerPanel.getComponent(stdFunctionList.size()-1);
+				thisLabel.setIndeterminate(false);
 			}
 			
 		};
