@@ -1,49 +1,18 @@
 package munk.graph.gui;
-import java.awt.Desktop;
-import java.awt.Dimension;
-import java.awt.EventQueue;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.*;
+import java.awt.event.*;
 import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextField;
-import javax.swing.SwingWorker;
-import javax.swing.UIManager;
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.vecmath.Color3f;
 
 import munk.graph.IO.ObjectReader;
 import munk.graph.IO.ObjectWriter;
-import munk.graph.function.Function;
-import munk.graph.function.FunctionList;
-import munk.graph.function.FunctionUtil;
-import munk.graph.function.IllegalEquationException;
-import munk.graph.function.ParametricFunction;
-import munk.graph.function.ZippedFunction;
+import munk.graph.function.*;
 
 import com.graphbuilder.math.ExpressionParseException;
 import com.graphbuilder.math.UndefinedVariableException;
@@ -472,7 +441,10 @@ public class V2GUI {
      		@Override
      		public void keyPressed(KeyEvent e) {
      			String[] paramExpr = new String[]{inputX.getText(),inputY.getText(),inputZ.getText()};
-     			if (e.getKeyCode() == KeyEvent.VK_ENTER && (inputX.isFocusOwner() || inputY.isFocusOwner() || inputZ.isFocusOwner())) {
+     			
+     			if (e.getKeyCode() == KeyEvent.VK_ENTER 
+     					&& (inputX.isFocusOwner() || inputY.isFocusOwner() || inputZ.isFocusOwner())) {
+     				
      				addPlot(paramExpr,colorList.getNextAvailableColor(stdFunctionList), getBounds(), DEFAULT_STEPSIZE);
      			}
      		}
@@ -516,6 +488,7 @@ public class V2GUI {
      		public void actionPerformed(ActionEvent e) {
      			if(e.getActionCommand().equals("ADD")){
      				paramFuncInnerPanel.add(new ParametricFunctionLabel((Function) e.getSource(), new ActionListener() {
+     					
      					public void actionPerformed(ActionEvent e) {
      						Function source = (Function) e.getSource();
      						if(e.getID() == 0){

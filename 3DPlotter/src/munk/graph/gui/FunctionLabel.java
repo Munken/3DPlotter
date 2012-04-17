@@ -8,14 +8,13 @@ import javax.swing.*;
 import munk.graph.function.Function;
 
 @SuppressWarnings("serial")
-public class FunctionLabel extends JPanel{
+public class FunctionLabel extends JPanel implements PlotLabel{
 	
 	ToggleButton toggleButton;
 	JTextField exprField;
 	Function mother;
 	ActionListener listener;
 	private JButton btnDelete;
-	private static final Color WARNING_COLOR = new Color(255, 215, 0); 
 
 	public FunctionLabel (Function function, ActionListener a){
 		this.mother = function;
@@ -108,20 +107,25 @@ public class FunctionLabel extends JPanel{
 
 			@Override
 			public void keyReleased(KeyEvent e) {
-				if(!exprField.getBackground().equals(Color.RED) || !(e.getKeyCode() == KeyEvent.VK_ENTER)){
+				if(!exprField.getBackground().equals(FAILED_COLOR) || !(e.getKeyCode() == KeyEvent.VK_ENTER)){
+					
 					if (!exprField.getText().equals(mother.getExpression()[0])) {
-						exprField.setBackground(WARNING_COLOR);
+						
 						if(e.getKeyCode() == KeyEvent.VK_ENTER){
 							listener.actionPerformed(new ActionEvent(mother, 0, exprField.getText()));
+							
 							if(exprField.getText().equals(mother.getExpression()[0])){
-								exprField.setBackground(Color.WHITE);
+								exprField.setBackground(NORMAL_COLOR);
 							}
-							else{
-								exprField.setBackground(Color.RED);
+							else {
+								exprField.setBackground(FAILED_COLOR);
 							}
+							
+						} else {
+							exprField.setBackground(WARNING_COLOR);
 						}
 					} else {
-						exprField.setBackground(Color.WHITE);
+						exprField.setBackground(NORMAL_COLOR);
 					}
 
 				}

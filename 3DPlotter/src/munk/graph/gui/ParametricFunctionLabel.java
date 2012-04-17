@@ -1,34 +1,22 @@
 package munk.graph.gui;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.*;
+import java.awt.event.*;
 
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.swing.border.EtchedBorder;
 
 import munk.graph.function.Function;
 
 @SuppressWarnings("serial")
-public class ParametricFunctionLabel extends JPanel{
+public class ParametricFunctionLabel extends JPanel implements PlotLabel{
 	
+
 	ToggleButton toggleButton;
 	JTextField exprFieldX;
 	Function mother;
 	ActionListener listener;
 	private JButton btnDelete;
-	private static final Color WARNING_COLOR = new Color(255, 215, 0); 
 	private JTextField exprFieldY;
 	private JTextField exprFieldZ;
 	private JLabel lblX;
@@ -165,46 +153,55 @@ public class ParametricFunctionLabel extends JPanel{
 		});
 	}
 
-	/*
-	 * WHITE: Equation evaluated.
-	 * YELLOW: Equation not evaluated.
-	 * RED: Evaluation failed.
-	 */
 	private void addTextChangeListener() {
 		KeyAdapter keyListener = new KeyAdapter() {
 
 			@Override
 			public void keyReleased(KeyEvent e) {
-				if(!exprFieldX.getBackground().equals(Color.RED) || !(e.getKeyCode() == KeyEvent.VK_ENTER)){
-					if (!exprFieldX.getText().equals(mother.getExpression()[0]) || !exprFieldY.getText().equals(mother.getExpression()[1]) || !exprFieldZ.getText().equals(mother.getExpression()[2])) {
-						exprFieldX.setBackground(WARNING_COLOR);
-						exprFieldY.setBackground(WARNING_COLOR);
-						exprFieldZ.setBackground(WARNING_COLOR);
+				if(!(exprFieldX.getBackground() == FAILED_COLOR) || !(e.getKeyCode() == KeyEvent.VK_ENTER)){
+					
+					if (!exprFieldX.getText().equals(mother.getExpression()[0]) 
+							|| !exprFieldY.getText().equals(mother.getExpression()[1]) 
+							|| !exprFieldZ.getText().equals(mother.getExpression()[2])) {
+						
+						// They want to plot
 						if(e.getKeyCode() == KeyEvent.VK_ENTER){
-							listener.actionPerformed(new ActionEvent(mother, 0, exprFieldX.getText() + "," + exprFieldY.getText() + "," + exprFieldZ.getText()));
-							if(exprFieldX.getText().equals(mother.getExpression()[0]) && exprFieldY.getText().equals(mother.getExpression()[1]) && exprFieldZ.getText().equals(mother.getExpression()[2])){
-								exprFieldX.setBackground(Color.WHITE);
-								exprFieldY.setBackground(Color.WHITE);
-								exprFieldZ.setBackground(Color.WHITE);
+							// Inform the listeners
+							String expressionString = exprFieldX.getText() + "," + exprFieldY.getText() + "," + exprFieldZ.getText();
+							listener.actionPerformed(new ActionEvent(mother, 0, expressionString));
+							
+							// Update the colors
+							if(exprFieldX.getText().equals(mother.getExpression()[0]) 
+									&& exprFieldY.getText().equals(mother.getExpression()[1]) 
+									&& exprFieldZ.getText().equals(mother.getExpression()[2])){
+								setExpressionFieldBackground(NORMAL_COLOR);
 							}
 							else{
-								exprFieldX.setBackground(Color.RED);
-								exprFieldY.setBackground(Color.RED);
-								exprFieldZ.setBackground(Color.RED);
+								setExpressionFieldBackground(FAILED_COLOR);
 							}
+						} 
+						else { // Still working on the expression
+							setExpressionFieldBackground(WARNING_COLOR);
 						}
 					}
+					// Nothing changed just keey calm and carry on
 					else {
-						exprFieldX.setBackground(Color.WHITE);
-						exprFieldY.setBackground(Color.WHITE);
-						exprFieldZ.setBackground(Color.WHITE);
+						setExpressionFieldBackground(NORMAL_COLOR);
 					}
 				}
 			}
+
+
 		};
 		exprFieldX.addKeyListener(keyListener);
 		exprFieldY.addKeyListener(keyListener);
 		exprFieldZ.addKeyListener(keyListener);
+	}
+	
+	private void setExpressionFieldBackground(Color color) {
+		exprFieldX.setBackground(color);
+		exprFieldY.setBackground(color);
+		exprFieldZ.setBackground(color);
 	}
 
 	public void setMother(Function f){
@@ -212,5 +209,9 @@ public class ParametricFunctionLabel extends JPanel{
 		exprFieldX.setText(mother.getExpression()[0]);
 		exprFieldY.setText(mother.getExpression()[1]);
 		exprFieldZ.setText(mother.getExpression()[2]);
+	}
+	
+	public void setIndeterminate(boolean b){
+		 throw new UnsupportedOperationException("Implement me!");
 	}
 }
