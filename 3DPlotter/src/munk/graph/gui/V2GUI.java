@@ -893,7 +893,6 @@ public class V2GUI {
 
 			@Override
 			protected Void doInBackground() throws Exception {
-				System.out.println("Starter");
 				FunctionLabel thisLabel = (FunctionLabel) stdFuncInnerPanel.getComponent(stdFunctionList.size()-1);
 				thisLabel.setIndeterminate(true);
 				plotter.plotFunction(function);
@@ -902,7 +901,6 @@ public class V2GUI {
 			
 			@Override
 			protected void done() {
-				System.out.println("Færdig");
 				FunctionLabel thisLabel = (FunctionLabel) stdFuncInnerPanel.getComponent(stdFunctionList.size()-1);
 				thisLabel.setIndeterminate(false);
 			}
