@@ -1,6 +1,8 @@
 package munk.graph.gui;
 
-import java.awt.GraphicsConfiguration;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
 
 import javax.media.j3d.*;
 import javax.swing.JPanel;
@@ -16,12 +18,14 @@ import com.sun.j3d.utils.universe.SimpleUniverse;
 @SuppressWarnings("serial")
 public class Plotter3D extends JPanel{
 	
+	private static final int	OFFSCREEN_SCALE	= 3;
 	private TransformGroup  root;
 	private TransformGroup	plots;
 	private BranchGroup axes;
 	private SimpleUniverse universe;
 	private Canvas3D canvas;
 	private BranchGroup	currentAxis;
+	private Canvas3D	offScreenCanvas;
 	
 	public Plotter3D() {
 		this(600, 600);
@@ -34,6 +38,7 @@ public class Plotter3D extends JPanel{
 
 	    universe = new SimpleUniverse(canvas);
 	    BranchGroup group = new BranchGroup();
+	    setupOffscreenCanvas();
 	    
 	    addLights(group);
     
@@ -61,8 +66,49 @@ public class Plotter3D extends JPanel{
 	    initView();
 	    add(canvas);
 	}
+	
+	private Canvas3D createCanvas3D(boolean offscreen) {
+		GraphicsConfigTemplate3D gc3D = new GraphicsConfigTemplate3D();
+		gc3D.setSceneAntialiasing(GraphicsConfigTemplate.PREFERRED);
+		GraphicsDevice gd[] = GraphicsEnvironment.getLocalGraphicsEnvironment()
+				.getScreenDevices();
 
+		Canvas3D c3d = new Canvas3D(gd[0].getBestConfiguration(gc3D), offscreen);
+		c3d.setSize(500, 500);
 
+		return c3d;
+	}
+
+	private void setupOffscreenCanvas() {
+
+		offScreenCanvas = createCanvas3D(true);
+		int offScreenWidth = OFFSCREEN_SCALE*canvas.getWidth();
+		int offScreenHeight = OFFSCREEN_SCALE*canvas.getHeight();
+		offScreenCanvas.getScreen3D()
+		.setSize(offScreenWidth, offScreenHeight);
+		offScreenCanvas.getScreen3D().setPhysicalScreenHeight(
+				0.0254 / 90 * offScreenHeight);
+		offScreenCanvas.getScreen3D().setPhysicalScreenWidth(
+				0.0254 / 90 * offScreenWidth);
+
+		RenderedImage renderedImage = new BufferedImage(offScreenWidth,
+				offScreenHeight, BufferedImage.TYPE_3BYTE_BGR);
+		ImageComponent2D imageComponent = new ImageComponent2D(ImageComponent.FORMAT_RGB8,
+				renderedImage);
+		imageComponent.setCapability(ImageComponent2D.ALLOW_IMAGE_READ);
+		offScreenCanvas.setOffScreenBuffer(imageComponent);
+
+		universe.getViewer().getView().addCanvas3D(offScreenCanvas);
+
+	}
+	
+	public RenderedImage takeScreenshot() {
+		offScreenCanvas.renderOffScreenBuffer();
+		offScreenCanvas.waitForOffScreenRendering();
+
+		return offScreenCanvas.getOffScreenBuffer().getImage();
+	}
+	
 	private void initView() {
 		universe.getViewingPlatform().setNominalViewingTransform();
 		adjustZoom();

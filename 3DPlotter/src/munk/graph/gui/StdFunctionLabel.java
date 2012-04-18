@@ -108,7 +108,7 @@ public class StdFunctionLabel extends JPanel implements FunctionLabel{
 
 			@Override
 			public void keyReleased(KeyEvent e) {
-				if(!exprField.getBackground().equals(FAILED_COLOR) || !(e.getKeyCode() == KeyEvent.VK_ENTER)){
+				if(!(exprField.getBackground() == FAILED_COLOR) || !(e.getKeyCode() == KeyEvent.VK_ENTER)){
 					
 					if (!exprField.getText().equals(mother.getExpression()[0])) {
 						

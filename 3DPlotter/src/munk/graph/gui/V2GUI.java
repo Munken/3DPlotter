@@ -1,19 +1,24 @@
 package munk.graph.gui;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.BufferedImage;
-import java.io.*;
-import java.util.concurrent.*;
+import java.awt.image.RenderedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.event.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.vecmath.Color3f;
 
-import munk.graph.IO.*;
+import munk.graph.IO.ObjectReader;
+import munk.graph.IO.ObjectWriter;
 import munk.graph.function.*;
 
-import com.graphbuilder.math.*;
+import com.graphbuilder.math.ExpressionParseException;
+import com.graphbuilder.math.UndefinedVariableException;
 
 
 /**
@@ -221,7 +226,7 @@ public class V2GUI {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				BufferedImage SSH = GuiUtil.getSSH(plotter.getGraphicsConfiguration().getDevice(), canvasPanel.getLocationOnScreen(), canvasPanel.getWidth(), canvasPanel.getHeight());
+				RenderedImage outputImage = plotter.takeScreenshot();
 				File outputFile = GuiUtil.spawnExportDialog(filePath, frame);
 				if(outputFile != null){
 				filePath=outputFile.getPath().replace(outputFile.getName(), "");
@@ -231,7 +236,7 @@ public class V2GUI {
 					outputFile = new File(outputFile.getAbsolutePath() + ".png");
 				}
 				try {
-					ImageIO.write(SSH, "png", outputFile);
+					ImageIO.write(outputImage, "png", outputFile);
 				} catch (IOException e) {
 					JOptionPane.showMessageDialog(frame,new JLabel("Unable to write file.",JLabel.CENTER));
 				}
