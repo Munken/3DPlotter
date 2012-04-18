@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.concurrent.*;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.vecmath.Color3f;
@@ -50,8 +51,6 @@ public class V2GUI {
 	private javax.swing.Timer resizeTimer;
 	private ColorList colorList;
 	private String filePath;
-	private File inputFile;
-	private File outputFile;
 	
 	// Option variables
 	private JTextField stdFuncInput;
@@ -98,6 +97,7 @@ public class V2GUI {
 		stdFunctionList = new FunctionList<Function>();
 		paramFunctionList = new FunctionList<Function>();
 		colorList = new ColorList();
+		filePath = File.separator+"tmp";
 		
 		initialize();
 	}
@@ -143,23 +143,65 @@ public class V2GUI {
 		
 		mnFile = new JMenu("File");
 		menuBar.add(mnFile);
-		
+
 		mntmSaveProject = new JMenuItem("Export workspace", new ImageIcon("Icons/save.png"));
 		mntmSaveProject.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				spawnExportDialog(new ZippedFunction[][]{FunctionUtil.zipFunctionList(stdFunctionList),FunctionUtil.zipFunctionList(paramFunctionList)});
+				File outputFile = GuiUtil.spawnExportDialog(filePath, frame);
+				if(outputFile != null){
+				filePath=outputFile.getPath().replace(outputFile.getName(), "");
+				try {
+					ObjectWriter.ObjectToFile(outputFile, new ZippedFunction[][]{FunctionUtil.zipFunctionList(stdFunctionList),FunctionUtil.zipFunctionList(paramFunctionList)});
+				} catch (IOException e) {
+					JOptionPane.showMessageDialog(frame,new JLabel("Unable to write file.",JLabel.CENTER));
+				}
+				}
 			}
 		});
 		mnFile.add(mntmSaveProject);
-		
+
 		mntmLoadProject = new JMenuItem("Import workspace", new ImageIcon("Icons/file.png"));
 		mntmLoadProject.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				spawnImportDialog("FunctionList");
+				File inputFile = GuiUtil.spawnImportDialog(filePath, frame);
+				if(inputFile != null){
+					filePath=inputFile.getPath().replace(inputFile.getName(), "");
+					try{
+						ZippedFunction[][] importLists = (ZippedFunction[][]) ObjectReader.ObjectFromFile(inputFile);
+						// Determine if current workspace should be erased.
+						boolean eraseWorkspace = (0 == 
+								JOptionPane.showOptionDialog(frame, 
+										"Would you like to erase current workspace during import?",
+										"Import Dialog", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null));
+						
+						if(eraseWorkspace){
+						for(int i = stdFunctionList.size()-1; i >= 0; i--){
+							deletePlot(stdFunctionList.get(i));
+						}
+						for(int i = paramFunctionList.size()-1; i >= 0; i--){
+							deletePlot(paramFunctionList.get(i));
+						}
+						}
+						//Read new functions from zipped object.
+						for(int i = 0; i < importLists[0].length; i++){
+							addPlot(importLists[0][i].getExpression(), importLists[0][i].getColor(), importLists[0][i].getBounds(), importLists[0][i].getStepsize());
+							stdFunctionList.get(i).setSelected(importLists[0][i].isSelected());
+							stdFunctionList.get(i).setVisible(importLists[0][i].isVisible());
+						}
+						for(int i = 0; i < importLists[1].length; i++){
+							addPlot(importLists[1][i].getExpression(), importLists[1][i].getColor(), importLists[1][i].getBounds(), importLists[1][i].getStepsize());
+							stdFunctionList.get(i).setSelected(importLists[1][i].isSelected());
+							stdFunctionList.get(i).setVisible(importLists[1][i].isVisible());
+						}
+					}
+					catch(IOException | ClassCastException | ClassNotFoundException ex){
+						JOptionPane.showMessageDialog(frame,new JLabel("Unable to import workspace from file.",JLabel.CENTER));
+					}
+				}
 			}
 		});
 		mnFile.add(mntmLoadProject);
@@ -169,7 +211,21 @@ public class V2GUI {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				spawnExportDialog(null);
+				BufferedImage SSH = GuiUtil.getSSH(plotter.getGraphicsConfiguration().getDevice(), canvasPanel.getLocationOnScreen(), canvasPanel.getWidth(), canvasPanel.getHeight());
+				File outputFile = GuiUtil.spawnExportDialog(filePath, frame);
+				if(outputFile != null){
+				filePath=outputFile.getPath().replace(outputFile.getName(), "");
+				// Fix file extension
+				String absPath = outputFile.getAbsolutePath();
+				if(!absPath.substring(absPath.length()-4, absPath.length()).equalsIgnoreCase(".png")){
+					outputFile = new File(outputFile.getAbsolutePath() + ".png");
+				}
+				try {
+					ImageIO.write(SSH, "png", outputFile);
+				} catch (IOException e) {
+					JOptionPane.showMessageDialog(frame,new JLabel("Unable to write file.",JLabel.CENTER));
+				}
+				}
 			}
 		});
 		mnFile.add(mntmPrintCanvas);
@@ -194,7 +250,15 @@ public class V2GUI {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				spawnExportDialog(colorList);
+				File outputFile = GuiUtil.spawnExportDialog(filePath, frame);
+				if(outputFile != null){
+				filePath=outputFile.getPath().replace(outputFile.getName(), "");
+				try {
+					ObjectWriter.ObjectToFile(outputFile,colorList);
+				} catch (IOException e) {
+					JOptionPane.showMessageDialog(frame,new JLabel("Unable to write file.",JLabel.CENTER));
+				}
+				}
 			}
 		});
 		mnColorOptions.add(mntmExportColors);
@@ -204,7 +268,16 @@ public class V2GUI {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				spawnImportDialog("ColorList");
+				File inputFile = GuiUtil.spawnImportDialog(filePath, frame);
+				if(inputFile != null){
+					filePath=inputFile.getPath().replace(inputFile.getName(), "");
+					try{
+						colorList = (ColorList) ObjectReader.ObjectFromFile(inputFile);
+					}
+					catch(IOException | ClassCastException | ClassNotFoundException e){
+						JOptionPane.showMessageDialog(frame,new JLabel("Unable to read color list from file.",JLabel.CENTER));
+					}
+				}
 			}
 		});
 		mnColorOptions.add(mntmImportColors);
@@ -808,102 +881,6 @@ public class V2GUI {
 		colorDialog.pack();
 		}
 		colorDialog.setVisible(true);
-	}
-	
-	/*
-	 * Spawn simple import dialog.
-	 */
-	private void spawnImportDialog(String type){
-		if(filePath == null){
-			filePath = File.separator+"tmp";
-		}
-		JFileChooser fc = new JFileChooser(new File(filePath));
-		fc.showOpenDialog(frame);
-		inputFile = fc.getSelectedFile();
-		
-		if (inputFile != null) {
-			try{
-				filePath=inputFile.getPath().replace(inputFile.getName(), "");
-				if(type.equals("ColorList")){
-					colorList = (ColorList) ObjectReader.ObjectFromFile(inputFile);
-				}
-				if(type.equals("FunctionList")){
-					ZippedFunction[][] importLists = (ZippedFunction[][]) ObjectReader.ObjectFromFile(inputFile);
-					
-					boolean eraseWorkspace = (0 == 
-							JOptionPane.showOptionDialog(frame, 
-									"Would you like to erase current work space during import?",
-									"Import Dialog", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null));
-					
-					if(eraseWorkspace){
-					for(int i = stdFunctionList.size()-1; i >= 0; i--){
-						deletePlot(stdFunctionList.get(i));
-					}
-					for(int i = paramFunctionList.size()-1; i >= 0; i--){
-						deletePlot(paramFunctionList.get(i));
-					}
-					}
-					//Read new functions from zipped object.
-					for(int i = 0; i < importLists[0].length; i++){
-						addPlot(importLists[0][i].getExpression(), importLists[0][i].getColor(), importLists[0][i].getBounds(), importLists[0][i].getStepsize());
-						stdFunctionList.get(i).setSelected(importLists[0][i].isSelected());
-						stdFunctionList.get(i).setVisible(importLists[0][i].isVisible());
-					}
-					for(int i = 0; i < importLists[1].length; i++){
-						addPlot(importLists[1][i].getExpression(), importLists[1][i].getColor(), importLists[1][i].getBounds(), importLists[1][i].getStepsize());
-						stdFunctionList.get(i).setSelected(importLists[1][i].isSelected());
-						stdFunctionList.get(i).setVisible(importLists[1][i].isVisible());
-					}
-				}
-			}
-			catch(Exception e){
-				String message = e.getMessage();
-				JLabel label = new JLabel(message,JLabel.CENTER);
-				JOptionPane.showMessageDialog(frame,label);
-			}
-		}
-	}
-
-	/*
-	 * Spawn simple export dialog.
-	 */
-	private void spawnExportDialog(Object o){
-		outputFile = null;
-		// Take screenshot.
-		BufferedImage SSH = null;
-		if(o == null){
-			SSH = CanvasPrinter.getSSH(plotter.getGraphicsConfiguration().getDevice(), canvasPanel.getLocationOnScreen(), canvasPanel.getWidth(), canvasPanel.getHeight());
-		}
-		// Remember dir.
-		if(filePath == null){
-			filePath = File.separator+"tmp";
-		}
-		JFileChooser fc = new JFileChooser(new File(filePath));
-		fc.showSaveDialog(frame);
-		outputFile = fc.getSelectedFile();
-		// Write file.
-		if (outputFile != null){
-			filePath=outputFile.getPath().replace(outputFile.getName(), "");
-			try {
-				if(o != null){
-					// Is an object is to be written.
-					ObjectWriter.ObjectToFile(outputFile, o);
-				}
-				else{
-					// In the screen shot case.
-					String originalPath = outputFile.getAbsolutePath();
-					if(!originalPath.substring(originalPath.length()-4, originalPath.length()).equalsIgnoreCase(".png")){
-						outputFile = new File(outputFile.getAbsolutePath() + ".png");
-					}
-					CanvasPrinter.writeCanvasCapture(outputFile, SSH);
-				}
-			} catch (IOException e) {
-				String message = "Unable to write file.";
-				JLabel label = new JLabel(message,JLabel.CENTER);
-				JOptionPane.showMessageDialog(frame,label);
-			}
-		}
-
 	}
 
 	/*
