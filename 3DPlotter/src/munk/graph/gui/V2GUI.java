@@ -209,8 +209,8 @@ public class V2GUI {
 						}
 						for(int i = 0; i < importLists[1].length; i++){
 							addPlot(importLists[1][i].getExpression(), importLists[1][i].getColor(), importLists[1][i].getBounds(), importLists[1][i].getStepsize());
-							stdFunctionList.get(i).setSelected(importLists[1][i].isSelected());
-							stdFunctionList.get(i).setVisible(importLists[1][i].isVisible());
+							paramFunctionList.get(i).setSelected(importLists[1][i].isSelected());
+							paramFunctionList.get(i).setVisible(importLists[1][i].isVisible());
 						}
 					}
 					catch(IOException | ClassCastException | ClassNotFoundException ex){
