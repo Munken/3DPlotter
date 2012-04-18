@@ -216,20 +216,29 @@ public class V2GUI {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				RenderedImage outputImage = plotter.takeScreenshot();
-				File outputFile = GuiUtil.spawnExportDialog(filePath, frame);
+				final File outputFile = GuiUtil.spawnExportDialog(filePath, frame);
 				if(outputFile != null){
-				filePath=outputFile.getPath().replace(outputFile.getName(), "");
-				// Fix file extension
-				String absPath = outputFile.getAbsolutePath();
-				if(!absPath.substring(absPath.length()-4, absPath.length()).equalsIgnoreCase(".png")){
-					outputFile = new File(outputFile.getAbsolutePath() + ".png");
-				}
-				try {
-					ImageIO.write(outputImage, "png", outputFile);
-				} catch (IOException e) {
-					JOptionPane.showMessageDialog(frame,new JLabel("Unable to write file.",JLabel.CENTER));
-				}
+
+					Thread t = new Thread(new Runnable() {
+
+						@Override
+						public void run() {
+							RenderedImage outputImage = plotter.takeScreenshot();
+							File outFile = outputFile;
+							filePath=outputFile.getPath().replace(outputFile.getName(), "");
+							// Fix file extension
+							String absPath = outFile.getAbsolutePath();
+							if(!absPath.substring(absPath.length()-4, absPath.length()).equalsIgnoreCase(".png")){
+								outFile = new File(outFile.getAbsolutePath() + ".png");
+							}
+							try {
+								ImageIO.write(outputImage, "png", outFile);
+							} catch (IOException e) {
+								JOptionPane.showMessageDialog(frame,new JLabel("Unable to write file.",JLabel.CENTER));
+							}
+						}
+					});
+					t.start();
 				}
 			}
 		});
