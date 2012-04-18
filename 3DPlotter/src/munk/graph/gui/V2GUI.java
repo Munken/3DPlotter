@@ -1,47 +1,17 @@
 package munk.graph.gui;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.io.File;
-import java.io.IOException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.awt.event.*;
+import java.io.*;
+import java.util.concurrent.*;
 
-import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextField;
-import javax.swing.SwingWorker;
-import javax.swing.UIManager;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+import javax.swing.*;
+import javax.swing.event.*;
 import javax.vecmath.Color3f;
 
 import munk.graph.IO.*;
-import munk.graph.function.Function;
-import munk.graph.function.FunctionList;
-import munk.graph.function.FunctionUtil;
-import munk.graph.function.IllegalEquationException;
-import munk.graph.function.ParametricFunction;
-import munk.graph.function.ZippedFunction;
+import munk.graph.function.*;
 
-import com.graphbuilder.math.ExpressionParseException;
-import com.graphbuilder.math.UndefinedVariableException;
+import com.graphbuilder.math.*;
 
 
 /**
@@ -336,6 +306,7 @@ public class V2GUI {
      	gbc_stdFuncInput.gridy = 1;
      	stdFuncTab.add(stdFuncInput, gbc_stdFuncInput);
      	stdFuncInput.setColumns(10);
+     	GuiUtil.setupUndoListener(stdFuncInput);
      	stdFuncInput.addKeyListener(new KeyAdapter() {
      		// Plot the graph.
      		
@@ -344,6 +315,7 @@ public class V2GUI {
      			if (e.getKeyCode() == KeyEvent.VK_ENTER && stdFuncInput.isFocusOwner()) {
      				addPlot(new String[]{stdFuncInput.getText()},colorList.getNextAvailableColor(stdFunctionList), getBounds(), DEFAULT_STEPSIZE);
      			}
+     			
      		}
      	});
      	
@@ -477,6 +449,10 @@ public class V2GUI {
      	gbc_textField_1.gridx = 2;
      	gbc_textField_1.gridy = 3;
      	paramFuncTab.add(inputZ, gbc_textField_1);
+     	
+     	GuiUtil.setupUndoListener(inputX);
+     	GuiUtil.setupUndoListener(inputY);
+     	GuiUtil.setupUndoListener(inputZ);
      	
      	// Input detection
      	KeyListener inputListener = new KeyAdapter() {
@@ -656,6 +632,13 @@ public class V2GUI {
      	optionPanel.add(txtZmax, gbc_txtZmax);
      	txtZmax.setText("" + DEFAULT_BOUNDS[5]);
      	txtZmax.setColumns(10);
+     	
+     	GuiUtil.setupUndoListener(txtXmin);
+     	GuiUtil.setupUndoListener(txtXmax);
+     	GuiUtil.setupUndoListener(txtYmin);
+     	GuiUtil.setupUndoListener(txtYmax);
+     	GuiUtil.setupUndoListener(txtZmin);
+     	GuiUtil.setupUndoListener(txtZmax);
 	}
 
 	private void autoResize(){
@@ -780,6 +763,7 @@ public class V2GUI {
 		editDialog = new JDialog();
 		editDialog.setLocation(frame.getLocationOnScreen());
 		EditOptionPanel editOptionPanel = new EditOptionPanel(colorList, f);
+		
 		editOptionPanel.addActionListener(new ActionListener() {
 
 			@Override
@@ -829,7 +813,6 @@ public class V2GUI {
 	 * Spawn simple import dialog.
 	 */
 	private void spawnImportDialog(String type){
-		JFrame frame = new JFrame();
 		if(filePath == null){
 			filePath = File.separator+"tmp";
 		}
@@ -845,7 +828,12 @@ public class V2GUI {
 				}
 				if(type.equals("FunctionList")){
 					ZippedFunction[][] importLists = (ZippedFunction[][]) ObjectReader.ObjectFromFile(inputFile);
-					boolean eraseWorkspace = 0 == JOptionPane.showOptionDialog(frame, "Would you like to erase current work space during import?", "Import Dialog", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+					
+					boolean eraseWorkspace = (0 == 
+							JOptionPane.showOptionDialog(frame, 
+									"Would you like to erase current work space during import?",
+									"Import Dialog", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null));
+					
 					if(eraseWorkspace){
 					for(int i = stdFunctionList.size()-1; i >= 0; i--){
 						deletePlot(stdFunctionList.get(i));
@@ -923,7 +911,6 @@ public class V2GUI {
 			
 			@Override
 			protected Void doInBackground() throws Exception {
-				System.out.println("Starter");
 				thisLabel = null; 
 				if(function.getClass().equals(ParametricFunction.class)){
 					thisLabel = (ParametricFunctionLabel) paramFuncInnerPanel.getComponent(paramFunctionList.size()-1);
@@ -940,7 +927,6 @@ public class V2GUI {
 			
 			@Override
 			protected void done() {
-				System.out.println("Færdig");
 				thisLabel.setIndeterminate(false);
 			}
 			
