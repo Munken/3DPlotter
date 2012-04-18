@@ -216,29 +216,17 @@ public class V2GUI {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				final File outputFile = GuiUtil.spawnExportDialog(filePath, frame);
+				File outputFile = GuiUtil.spawnExportDialog(filePath, frame);
 				if(outputFile != null){
-
-					Thread t = new Thread(new Runnable() {
-
-						@Override
-						public void run() {
-							RenderedImage outputImage = plotter.takeScreenshot();
-							File outFile = outputFile;
-							filePath=outputFile.getPath().replace(outputFile.getName(), "");
-							// Fix file extension
-							String absPath = outFile.getAbsolutePath();
-							if(!absPath.substring(absPath.length()-4, absPath.length()).equalsIgnoreCase(".png")){
-								outFile = new File(outFile.getAbsolutePath() + ".png");
-							}
-							try {
-								ImageIO.write(outputImage, "png", outFile);
-							} catch (IOException e) {
-								JOptionPane.showMessageDialog(frame,new JLabel("Unable to write file.",JLabel.CENTER));
-							}
-						}
-					});
-					t.start();
+					filePath=outputFile.getPath().replace(outputFile.getName(), "");
+					// Fix file extension
+					
+					String fileEnding = getFileExtension(outputFile);
+					if(!"png".equalsIgnoreCase(fileEnding)){
+						outputFile = new File(outputFile.getAbsolutePath() + ".png");
+					}
+					savePlotToDisk(outputFile);
+					
 				}
 			}
 		});
@@ -338,6 +326,28 @@ public class V2GUI {
 		mnHelp.add(mntmAbout);
 	}
 	
+	protected void savePlotToDisk(final File outputFile) {
+		Thread t = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				RenderedImage outputImage = plotter.takeScreenshot();
+
+				try {
+					ImageIO.write(outputImage, "png", outputFile);
+				} catch (IOException e) {
+					SwingUtilities.invokeLater(new Runnable() {
+						public void run() {
+							JOptionPane.showMessageDialog(frame,new JLabel("Unable to write file.",JLabel.CENTER));
+						}
+					});
+				}
+			}
+		});
+		t.start();
+		
+	}
+
 	private void initTabbedPane(){
      	tabbedPane = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
      	GridBagConstraints gbc_tabbedPane = new GridBagConstraints();
@@ -929,4 +939,15 @@ public class V2GUI {
 		};
 		plottingQueue.execute(worker);
 	}
+	
+	private String getFileExtension(File file) {
+		return getFileExtension(file.getAbsolutePath());
+	}
+	
+	private String getFileExtension(String path) {
+		int index = path.lastIndexOf('.');
+		String result = path.substring(index + 1);
+		return (result.length() != path.length()) ? result : null;
+	}
+	
 }
