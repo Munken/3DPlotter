@@ -872,7 +872,7 @@ public class V2GUI {
 		// Take screenshot.
 		BufferedImage SSH = null;
 		if(o == null){
-			SSH = CanvasPrinter.getSSH(plotter.getGraphicsConfiguration().getDevice(), (int) canvasPanel.getLocation().getX(),(int) canvasPanel.getLocation().getY(), canvasPanel.getWidth(), canvasPanel.getHeight());
+			SSH = CanvasPrinter.getSSH(plotter.getGraphicsConfiguration().getDevice(), canvasPanel.getLocationOnScreen(), canvasPanel.getWidth(), canvasPanel.getHeight());
 		}
 		// Remember dir.
 		if(filePath == null){

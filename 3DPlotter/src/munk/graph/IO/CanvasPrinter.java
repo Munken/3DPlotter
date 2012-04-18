@@ -12,8 +12,8 @@ public class CanvasPrinter {
 		ImageIO.write(SSH, "png", file);
 	}
 	
-	public static BufferedImage getSSH(GraphicsDevice device, int x, int y, int w, int h){
-		Rectangle bounds = new Rectangle(x, y, w, h);		
+	public static BufferedImage getSSH(GraphicsDevice device, Point p, int w, int h){
+		Rectangle bounds = new Rectangle((int) p.getX(), (int) p.getY(), w, h);		
 		Robot robot = null;
 		try {
 			robot = new Robot(device);
