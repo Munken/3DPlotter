@@ -6,9 +6,6 @@ import javax.vecmath.Color3f;
 
 public class ZippedFunction implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 6392346219383074768L;
 	private String[] expr;
 	private Color3f color;

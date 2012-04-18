@@ -1,56 +1,23 @@
 package munk.graph.gui;
-import java.awt.Desktop;
-import java.awt.Dimension;
-import java.awt.EventQueue;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.io.File;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.util.concurrent.*;
 
-import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextField;
-import javax.swing.SwingWorker;
-import javax.swing.UIManager;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+import javax.swing.*;
+import javax.swing.event.*;
 import javax.vecmath.Color3f;
 
-import munk.graph.IO.ObjectReader;
-import munk.graph.IO.ObjectWriter;
-import munk.graph.function.Function;
-import munk.graph.function.FunctionList;
-import munk.graph.function.FunctionUtil;
-import munk.graph.function.IllegalEquationException;
-import munk.graph.function.ParametricFunction;
-import munk.graph.function.ZippedFunction;
+import munk.graph.IO.*;
+import munk.graph.function.*;
 
-import com.graphbuilder.math.ExpressionParseException;
-import com.graphbuilder.math.UndefinedVariableException;
+import com.graphbuilder.math.*;
 
 
 /**
  * A simple GUI for the 3DPlotter application.
+ * 
  * @author xXx
  *
  */
@@ -68,7 +35,7 @@ public class V2GUI {
 	private JScrollPane stdFuncPanelWrapper;
 	private JPanel paramFuncTab, paramFuncOuterPanel, paramFuncInnerPanel;
 	private JScrollPane paramFuncPanelWrapper;
-	private JPanel optionPanel;
+	private JPanel optionPanel, canvasPanel;
 	private JScrollPane optionPanelWrapper;
 	private JTabbedPane tabbedPane;
 	private JDialog colorDialog;
@@ -92,7 +59,7 @@ public class V2GUI {
 	private JTextField txtXmin, txtYmin, txtZmin, txtXmax, txtYmax,  txtZmax;
 	private JMenuBar menuBar;
 	private JMenu mnFile;
-	private JMenuItem mntmSaveProject, mntmLoadProject, mntmExit;
+	private JMenuItem mntmSaveProject, mntmLoadProject, mntmExit, mntmPrintCanvas;
 	private JMenu mnColorOptions;
 	private JMenu mnHelp;
 	private JMenuItem mntmDocumentation, mntmAbout;
@@ -177,7 +144,7 @@ public class V2GUI {
 		mnFile = new JMenu("File");
 		menuBar.add(mnFile);
 		
-		mntmSaveProject = new JMenuItem("Save Project", new ImageIcon("Icons/save.png"));
+		mntmSaveProject = new JMenuItem("Export workspace", new ImageIcon("Icons/save.png"));
 		mntmSaveProject.addActionListener(new ActionListener() {
 			
 			@Override
@@ -187,7 +154,7 @@ public class V2GUI {
 		});
 		mnFile.add(mntmSaveProject);
 		
-		mntmLoadProject = new JMenuItem("Load project", new ImageIcon("Icons/file.png"));
+		mntmLoadProject = new JMenuItem("Import workspace", new ImageIcon("Icons/file.png"));
 		mntmLoadProject.addActionListener(new ActionListener() {
 			
 			@Override
@@ -196,6 +163,16 @@ public class V2GUI {
 			}
 		});
 		mnFile.add(mntmLoadProject);
+		
+		mntmPrintCanvas = new JMenuItem("Export to PNG", new ImageIcon("Icons/png.png"));
+		mntmPrintCanvas.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				spawnExportDialog(null);
+			}
+		});
+		mnFile.add(mntmPrintCanvas);
 		
 		// Close application on click.
 		mntmExit = new JMenuItem("Exit", new ImageIcon("Icons/exit.png"));
@@ -285,19 +262,27 @@ public class V2GUI {
 	}
 	
 	private void init3Dplotter(){
+		canvasPanel = new JPanel();
      	plotter = new Plotter3D();
     	GridBagConstraints gbc_plotter = new GridBagConstraints();
     	gbc_plotter.gridheight = 3;
      	gbc_plotter.insets = new Insets(0, 0, 5, 5);
      	gbc_plotter.gridx = 4;
      	gbc_plotter.gridy = 1;
-     	frame.getContentPane().add(plotter, gbc_plotter);
+     	canvasPanel.add(plotter, gbc_plotter);
      	GridBagConstraints gbc_list = new GridBagConstraints();
      	gbc_list.anchor = GridBagConstraints.NORTH;
      	gbc_list.insets = new Insets(0, 0, 5, 5);
      	gbc_list.fill = GridBagConstraints.HORIZONTAL;
      	gbc_list.gridx = 1;
      	gbc_list.gridy = 2;
+     	GridBagConstraints gbc_canvasPanel = new GridBagConstraints();
+     	gbc_canvasPanel.fill = GridBagConstraints.BOTH;
+     	gbc_canvasPanel.gridheight = 3;
+     	gbc_canvasPanel.gridy = 1;
+     	gbc_canvasPanel.gridwidth = 4;
+     	gbc_canvasPanel.gridx = 3;
+     	frame.getContentPane().add(canvasPanel, gbc_canvasPanel);
 	}
 	
 	private void initStdFunctionTab(){
@@ -322,6 +307,7 @@ public class V2GUI {
      	gbc_stdFuncInput.gridy = 1;
      	stdFuncTab.add(stdFuncInput, gbc_stdFuncInput);
      	stdFuncInput.setColumns(10);
+     	GuiUtil.setupUndoListener(stdFuncInput);
      	stdFuncInput.addKeyListener(new KeyAdapter() {
      		// Plot the graph.
      		
@@ -330,6 +316,7 @@ public class V2GUI {
      			if (e.getKeyCode() == KeyEvent.VK_ENTER && stdFuncInput.isFocusOwner()) {
      				addPlot(new String[]{stdFuncInput.getText()},colorList.getNextAvailableColor(stdFunctionList), getBounds(), DEFAULT_STEPSIZE);
      			}
+     			
      		}
      	});
      	
@@ -368,7 +355,7 @@ public class V2GUI {
      		@Override
      		public void actionPerformed(ActionEvent e) {
      			if(e.getActionCommand().equals("ADD")){
-     				stdFuncInnerPanel.add(new FunctionLabel((Function) e.getSource(), new ActionListener() {
+     				stdFuncInnerPanel.add(new StdFunctionLabel((Function) e.getSource(), new ActionListener() {
      					public void actionPerformed(ActionEvent e) {
      						Function source = (Function) e.getSource();
      						if(e.getID() == 0){
@@ -391,7 +378,7 @@ public class V2GUI {
      				stdFuncInnerPanel.remove(e.getID());
      			}
      			else if(e.getActionCommand().equals("SET")){
-     				FunctionLabel label = (FunctionLabel) stdFuncInnerPanel.getComponent(e.getID());
+     				StdFunctionLabel label = (StdFunctionLabel) stdFuncInnerPanel.getComponent(e.getID());
      				label.setMother((Function) e.getSource());
      			}
      		}
@@ -463,6 +450,10 @@ public class V2GUI {
      	gbc_textField_1.gridx = 2;
      	gbc_textField_1.gridy = 3;
      	paramFuncTab.add(inputZ, gbc_textField_1);
+     	
+     	GuiUtil.setupUndoListener(inputX);
+     	GuiUtil.setupUndoListener(inputY);
+     	GuiUtil.setupUndoListener(inputZ);
      	
      	// Input detection
      	KeyListener inputListener = new KeyAdapter() {
@@ -642,6 +633,13 @@ public class V2GUI {
      	optionPanel.add(txtZmax, gbc_txtZmax);
      	txtZmax.setText("" + DEFAULT_BOUNDS[5]);
      	txtZmax.setColumns(10);
+     	
+     	GuiUtil.setupUndoListener(txtXmin);
+     	GuiUtil.setupUndoListener(txtXmax);
+     	GuiUtil.setupUndoListener(txtYmin);
+     	GuiUtil.setupUndoListener(txtYmax);
+     	GuiUtil.setupUndoListener(txtZmin);
+     	GuiUtil.setupUndoListener(txtZmax);
 	}
 
 	private void autoResize(){
@@ -766,6 +764,7 @@ public class V2GUI {
 		editDialog = new JDialog();
 		editDialog.setLocation(frame.getLocationOnScreen());
 		EditOptionPanel editOptionPanel = new EditOptionPanel(colorList, f);
+		
 		editOptionPanel.addActionListener(new ActionListener() {
 
 			@Override
@@ -775,12 +774,7 @@ public class V2GUI {
 					updatePlot(f, f.getExpression(), wrapFunction.getColor(), wrapFunction.getBounds(), wrapFunction.getStepsize());
 				}
 				else if(!wrapFunction.getColor().equals(f.getColor())){
-					if(!f.getClass().equals(ParametricFunction.class)){
-						stdFunctionList.get(stdFunctionList.indexOf(f)).setColor(wrapFunction.getColor());
-					}
-					else{
-						paramFunctionList.get(paramFunctionList.indexOf(f)).setColor(wrapFunction.getColor());
-					}
+					f.setColor(wrapFunction.getColor());
 				}
 				editDialog.setVisible(false);
 			}
@@ -835,12 +829,19 @@ public class V2GUI {
 				}
 				if(type.equals("FunctionList")){
 					ZippedFunction[][] importLists = (ZippedFunction[][]) ObjectReader.ObjectFromFile(inputFile);
-					//Erase current work space.
+					
+					boolean eraseWorkspace = (0 == 
+							JOptionPane.showOptionDialog(frame, 
+									"Would you like to erase current work space during import?",
+									"Import Dialog", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null));
+					
+					if(eraseWorkspace){
 					for(int i = stdFunctionList.size()-1; i >= 0; i--){
 						deletePlot(stdFunctionList.get(i));
 					}
 					for(int i = paramFunctionList.size()-1; i >= 0; i--){
 						deletePlot(paramFunctionList.get(i));
+					}
 					}
 					//Read new functions from zipped object.
 					for(int i = 0; i < importLists[0].length; i++){
@@ -868,6 +869,11 @@ public class V2GUI {
 	 */
 	private void spawnExportDialog(Object o){
 		outputFile = null;
+		// Take screenshot.
+		BufferedImage SSH = null;
+		if(o == null){
+			SSH = CanvasPrinter.getSSH(plotter.getGraphicsConfiguration().getDevice(), canvasPanel.getLocationOnScreen(), canvasPanel.getWidth(), canvasPanel.getHeight());
+		}
 		// Remember dir.
 		if(filePath == null){
 			filePath = File.separator+"tmp";
@@ -878,23 +884,55 @@ public class V2GUI {
 		// Write file.
 		if (outputFile != null){
 			filePath=outputFile.getPath().replace(outputFile.getName(), "");
-			ObjectWriter.ObjectToFile(outputFile, o);
+			try {
+				if(o != null){
+					// Is an object is to be written.
+					ObjectWriter.ObjectToFile(outputFile, o);
+				}
+				else{
+					// In the screen shot case.
+					String originalPath = outputFile.getAbsolutePath();
+					if(!originalPath.substring(originalPath.length()-4, originalPath.length()).equalsIgnoreCase(".png")){
+						outputFile = new File(outputFile.getAbsolutePath() + ".png");
+					}
+					CanvasPrinter.writeCanvasCapture(outputFile, SSH);
+				}
+			} catch (IOException e) {
+				String message = "Unable to write file.";
+				JLabel label = new JLabel(message,JLabel.CENTER);
+				JOptionPane.showMessageDialog(frame,label);
+			}
 		}
+
 	}
-	
+
+	/*
+	 * Spawn new plotter thread.
+	 */
 	private void spawnNewPlotterThread(final Function function) {
 		SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
-
+			
+			FunctionLabel thisLabel;
+			
 			@Override
 			protected Void doInBackground() throws Exception {
-				System.out.println("Starter");
+				thisLabel = null; 
+				if(function.getClass().equals(ParametricFunction.class)){
+					thisLabel = (ParametricFunctionLabel) paramFuncInnerPanel.getComponent(paramFunctionList.size()-1);
+				}
+				else{
+					thisLabel = (StdFunctionLabel) stdFuncInnerPanel.getComponent(stdFunctionList.size()-1);
+				}
+				thisLabel.setIndeterminate(true);
+				// Test of spinner.
+				// Thread.currentThread().sleep(5000);
 				plotter.plotFunction(function);
 				return null;
 			}
 			
 			@Override
 			protected void done() {
-				System.out.println("Færdig");
+				thisLabel.setIndeterminate(false);
 			}
 			
 		};

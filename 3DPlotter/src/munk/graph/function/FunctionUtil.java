@@ -103,11 +103,15 @@ public class FunctionUtil {
 		Set<String> variables = new HashSet<String>();
 		
 		for (String ex : expressions) {
-			Expression n = ExpressionTree.parse(ex);
 			
-			String[] variableNames = n.getVariableNames();
-			for (String var : variableNames) {
-				variables.add(var);
+			if (!ex.equals("")) {
+				Expression n = ExpressionTree.parse(ex);
+				String[] variableNames = n.getVariableNames();
+				for (String var : variableNames) {
+					variables.add(var);
+				}
+			} else {
+				throw new ExpressionParseException("You must specify all coordinates", -1);
 			}
 		}
 		
