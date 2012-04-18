@@ -1,6 +1,7 @@
 package munk.graph.gui;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.concurrent.*;
 
@@ -868,7 +869,11 @@ public class V2GUI {
 	 */
 	private void spawnExportDialog(Object o){
 		outputFile = null;
-		JFrame frame = new JFrame();
+		// Take screenshot.
+		BufferedImage SSH = null;
+		if(o == null){
+			SSH = CanvasPrinter.getSSH(plotter.getGraphicsConfiguration().getDevice(), (int) canvasPanel.getLocation().getX(),(int) canvasPanel.getLocation().getY(), canvasPanel.getWidth(), canvasPanel.getHeight());
+		}
 		// Remember dir.
 		if(filePath == null){
 			filePath = File.separator+"tmp";
@@ -885,14 +890,14 @@ public class V2GUI {
 					ObjectWriter.ObjectToFile(outputFile, o);
 				}
 				else{
-					// In the screenshot case.
+					// In the screen shot case.
 					String originalPath = outputFile.getAbsolutePath();
 					if(!originalPath.substring(originalPath.length()-4, originalPath.length()).equalsIgnoreCase(".png")){
 						outputFile = new File(outputFile.getAbsolutePath() + ".png");
 					}
-					CanvasPrinter.writeCanvasCapture(outputFile, plotter, canvasPanel.getLocationOnScreen(), canvasPanel.getWidth(), canvasPanel.getHeight());
+					CanvasPrinter.writeCanvasCapture(outputFile, SSH);
 				}
-			} catch (IOException | AWTException e) {
+			} catch (IOException e) {
 				String message = "Unable to write file.";
 				JLabel label = new JLabel(message,JLabel.CENTER);
 				JOptionPane.showMessageDialog(frame,label);

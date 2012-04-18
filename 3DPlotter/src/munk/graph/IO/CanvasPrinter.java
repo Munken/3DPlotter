@@ -6,15 +6,20 @@ import java.io.*;
 
 import javax.imageio.ImageIO;
 
-import munk.graph.gui.Plotter3D;
-
 public class CanvasPrinter {
 
-	public static void writeCanvasCapture(File file, Plotter3D plotter, Point corner, int width, int height) throws AWTException, IOException{
-		BufferedImage b = null;
-		Rectangle bounds = new Rectangle((int) corner.getX(), (int) corner.getY(), width, height);		
-		Robot robot = new Robot(plotter.getGraphicsConfiguration().getDevice());
-		b = robot.createScreenCapture(bounds);
-		ImageIO.write(b, "png", file);
+	public static void writeCanvasCapture(File file, BufferedImage SSH) throws IOException{
+		ImageIO.write(SSH, "png", file);
+	}
+	
+	public static BufferedImage getSSH(GraphicsDevice device, int x, int y, int w, int h){
+		Rectangle bounds = new Rectangle(x, y, w, h);		
+		Robot robot = null;
+		try {
+			robot = new Robot(device);
+		} catch (AWTException e) {
+			e.printStackTrace();
+		}
+		return robot.createScreenCapture(bounds);
 	}
 }
