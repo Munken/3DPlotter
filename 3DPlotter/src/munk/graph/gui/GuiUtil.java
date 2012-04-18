@@ -9,6 +9,8 @@ import javax.swing.*;
 import javax.swing.text.Document;
 import javax.swing.undo.*;
 
+import com.graphbuilder.math.*;
+
 public class GuiUtil {
 	
 	public static void setupUndoListener(JTextField textfield) {
@@ -71,5 +73,16 @@ public class GuiUtil {
 			e.printStackTrace();
 		}
 		return robot.createScreenCapture(bounds);
+	}
+	
+	/*
+	 * Evaluate expression, accounting only for constants.
+	 */
+	public static float evalString(String expr) throws ExpressionParseException{
+			VarMap varMap = new VarMap();
+			// Add more constants here.
+			varMap.setValue("pi", 3.14159265);
+			varMap.setValue("e", 2.71828183);
+			return (float) ExpressionTree.parse(expr).eval(varMap, new FuncMap());
 	}
 }
