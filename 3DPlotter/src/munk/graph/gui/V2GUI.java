@@ -1,10 +1,5 @@
 package munk.graph.gui;
-import java.awt.Desktop;
-import java.awt.Dimension;
-import java.awt.EventQueue;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
@@ -37,8 +32,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.vecmath.Color3f;
 
-import munk.graph.IO.ObjectReader;
-import munk.graph.IO.ObjectWriter;
+import munk.graph.IO.*;
 import munk.graph.function.Function;
 import munk.graph.function.FunctionList;
 import munk.graph.function.FunctionUtil;
@@ -70,7 +64,7 @@ public class V2GUI {
 	private JScrollPane stdFuncPanelWrapper;
 	private JPanel paramFuncTab, paramFuncOuterPanel, paramFuncInnerPanel;
 	private JScrollPane paramFuncPanelWrapper;
-	private JPanel optionPanel;
+	private JPanel optionPanel, canvasPanel;
 	private JScrollPane optionPanelWrapper;
 	private JTabbedPane tabbedPane;
 	private JDialog colorDialog;
@@ -94,7 +88,7 @@ public class V2GUI {
 	private JTextField txtXmin, txtYmin, txtZmin, txtXmax, txtYmax,  txtZmax;
 	private JMenuBar menuBar;
 	private JMenu mnFile;
-	private JMenuItem mntmSaveProject, mntmLoadProject, mntmExit;
+	private JMenuItem mntmSaveProject, mntmLoadProject, mntmExit, mntmPrintCanvas;
 	private JMenu mnColorOptions;
 	private JMenu mnHelp;
 	private JMenuItem mntmDocumentation, mntmAbout;
@@ -199,6 +193,16 @@ public class V2GUI {
 		});
 		mnFile.add(mntmLoadProject);
 		
+		mntmPrintCanvas = new JMenuItem("Export to PNG", new ImageIcon("Icons/png.png"));
+		mntmPrintCanvas.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				spawnExportDialog(null);
+			}
+		});
+		mnFile.add(mntmPrintCanvas);
+		
 		// Close application on click.
 		mntmExit = new JMenuItem("Exit", new ImageIcon("Icons/exit.png"));
 		mntmExit.addActionListener(new ActionListener(
@@ -287,19 +291,27 @@ public class V2GUI {
 	}
 	
 	private void init3Dplotter(){
+		canvasPanel = new JPanel();
      	plotter = new Plotter3D();
     	GridBagConstraints gbc_plotter = new GridBagConstraints();
     	gbc_plotter.gridheight = 3;
      	gbc_plotter.insets = new Insets(0, 0, 5, 5);
      	gbc_plotter.gridx = 4;
      	gbc_plotter.gridy = 1;
-     	frame.getContentPane().add(plotter, gbc_plotter);
+     	canvasPanel.add(plotter, gbc_plotter);
      	GridBagConstraints gbc_list = new GridBagConstraints();
      	gbc_list.anchor = GridBagConstraints.NORTH;
      	gbc_list.insets = new Insets(0, 0, 5, 5);
      	gbc_list.fill = GridBagConstraints.HORIZONTAL;
      	gbc_list.gridx = 1;
      	gbc_list.gridy = 2;
+     	GridBagConstraints gbc_canvasPanel = new GridBagConstraints();
+     	gbc_canvasPanel.fill = GridBagConstraints.BOTH;
+     	gbc_canvasPanel.gridheight = 3;
+     	gbc_canvasPanel.gridy = 1;
+     	gbc_canvasPanel.gridwidth = 4;
+     	gbc_canvasPanel.gridx = 3;
+     	frame.getContentPane().add(canvasPanel, gbc_canvasPanel);
 	}
 	
 	private void initStdFunctionTab(){
@@ -880,13 +892,25 @@ public class V2GUI {
 		if (outputFile != null){
 			filePath=outputFile.getPath().replace(outputFile.getName(), "");
 			try {
-				ObjectWriter.ObjectToFile(outputFile, o);
-			} catch (IOException e) {
+				if(o != null){
+					// Is an object is to be written.
+					ObjectWriter.ObjectToFile(outputFile, o);
+				}
+				else{
+					// In the screenshot case.
+					String originalPath = outputFile.getAbsolutePath();
+					if(!originalPath.substring(originalPath.length()-4, originalPath.length()).equalsIgnoreCase(".png")){
+						outputFile = new File(outputFile.getAbsolutePath() + ".png");
+					}
+					CanvasPrinter.writeCanvasCapture(outputFile, plotter, canvasPanel.getLocationOnScreen(), canvasPanel.getWidth(), canvasPanel.getHeight());
+				}
+			} catch (IOException | AWTException e) {
 				String message = "Unable to write file.";
 				JLabel label = new JLabel(message,JLabel.CENTER);
 				JOptionPane.showMessageDialog(frame,label);
 			}
 		}
+
 	}
 
 	/*
