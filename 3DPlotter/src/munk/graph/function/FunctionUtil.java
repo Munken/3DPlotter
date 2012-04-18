@@ -122,8 +122,9 @@ public class FunctionUtil {
 	
 	public static ZippedFunction[] zipFunctionList(FunctionList<Function> list){
 		ZippedFunction[] zippedList = new ZippedFunction[list.size()];
-		for(Function f : list){
-			zippedList[list.indexOf(f)] = new ZippedFunction(f.getExpression(), f.getColor(), f.getBounds(), f.getStepsize(), f.isSelected(), f.isVisible());
+		for(int i = 0; i < list.size(); i++){
+			Function f = list.get(i);
+			zippedList[i] = new ZippedFunction(f.getExpression(), f.getColor(), f.getBounds(), f.getStepsize(), f.isSelected(), f.isVisible());
 		}
 		return zippedList;
 	}
