@@ -17,6 +17,7 @@ public abstract class AbstractFunction implements Function{
 	private float[] bounds;
 	private Shape3D shape;
 	private float stepsize;
+	private boolean havePlotted;
 
 	public AbstractFunction(String[] expr, Color3f color, float[] bounds, float stepsize) {
 		this.expr = expr;
@@ -36,8 +37,9 @@ public abstract class AbstractFunction implements Function{
 	 * Lazy evaluation of plotting.
 	 */
 	public BranchGroup getPlot() {
-		if(plot == null){
+		if(plot == null && !havePlotted){
 			plot = plot();
+			havePlotted = true;
 		}
 		return plot;
 	}

@@ -4,6 +4,9 @@ import java.awt.event.*;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -51,8 +54,9 @@ public class V2GUI {
 	private Plotter3D plotter;
 	private int controlsWidth;
 	private int controlsHeight;
-	private FunctionList<Function> stdFunctionList; 
-	private FunctionList<Function> paramFunctionList; 
+	private List<Function> stdFuncList = new ArrayList<Function>();
+	private List<Function> paramFuncList = new ArrayList<Function>();
+	private HashMap<Function, FunctionLabel> map = new HashMap<Function, FunctionLabel>();
 	private javax.swing.Timer resizeTimer;
 	private ColorList colorList;
 	private String filePath;
@@ -74,6 +78,7 @@ public class V2GUI {
 	
 	// Plotter renderes
 	private ExecutorService plottingQueue = Executors.newSingleThreadExecutor(); // Only plot one at a time
+	private String	defaultImageExtension = "png";
 	
 	/**
 	 * Launch the application.
@@ -99,8 +104,6 @@ public class V2GUI {
 	 */
 	public V2GUI() {
 		// Initialize variables.
-		stdFunctionList = new FunctionList<Function>();
-		paramFunctionList = new FunctionList<Function>();
 		colorList = new ColorList();
 		filePath = File.separator+"tmp";
 		
@@ -126,7 +129,7 @@ public class V2GUI {
      	frame.pack();
      	
      	// Test Function
-     	addPlot(new String[]{"y = sin(x*5)*cos(z*5)"}, colorList.getNextAvailableColor(stdFunctionList), getBounds(), DEFAULT_STEPSIZE);
+     	addPlot(new String[]{"y = sin(x*5)*cos(z*5)"}, colorList.getNextAvailableColor(stdFuncList), getBounds(), DEFAULT_STEPSIZE);
      	
      	autoResize();
 	}
@@ -156,12 +159,12 @@ public class V2GUI {
 			public void actionPerformed(ActionEvent arg0) {
 				File outputFile = GuiUtil.spawnExportDialog(filePath, frame);
 				if(outputFile != null){
-				filePath=outputFile.getPath().replace(outputFile.getName(), "");
-				try {
-					ObjectWriter.ObjectToFile(outputFile, new ZippedFunction[][]{FunctionUtil.zipFunctionList(stdFunctionList),FunctionUtil.zipFunctionList(paramFunctionList)});
-				} catch (IOException e) {
-					JOptionPane.showMessageDialog(frame,new JLabel("Unable to write file.",JLabel.CENTER));
-				}
+					filePath=outputFile.getPath().replace(outputFile.getName(), "");
+					try {
+						ObjectWriter.ObjectToFile(outputFile, new ZippedFunction[][]{FunctionUtil.zipFunctionList(stdFuncList),FunctionUtil.zipFunctionList(paramFuncList)});
+					} catch (IOException e) {
+						JOptionPane.showMessageDialog(frame,new JLabel("Unable to write file.",JLabel.CENTER));
+					}
 				}
 			}
 		});
@@ -172,41 +175,7 @@ public class V2GUI {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				File inputFile = GuiUtil.spawnImportDialog(filePath, frame);
-				if(inputFile != null){
-					filePath=inputFile.getPath().replace(inputFile.getName(), "");
-					try{
-						ZippedFunction[][] importLists = (ZippedFunction[][]) ObjectReader.ObjectFromFile(inputFile);
-						// Determine if current workspace should be erased.
-						boolean eraseWorkspace = (0 == 
-								JOptionPane.showOptionDialog(frame, 
-										"Would you like to erase current workspace during import?",
-										"Import Dialog", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null));
-						
-						if(eraseWorkspace){
-						for(int i = stdFunctionList.size()-1; i >= 0; i--){
-							deletePlot(stdFunctionList.get(i));
-						}
-						for(int i = paramFunctionList.size()-1; i >= 0; i--){
-							deletePlot(paramFunctionList.get(i));
-						}
-						}
-						//Read new functions from zipped object.
-						for(int i = 0; i < importLists[0].length; i++){
-							addPlot(importLists[0][i].getExpression(), importLists[0][i].getColor(), importLists[0][i].getBounds(), importLists[0][i].getStepsize());
-							stdFunctionList.get(i).setSelected(importLists[0][i].isSelected());
-							stdFunctionList.get(i).setVisible(importLists[0][i].isVisible());
-						}
-						for(int i = 0; i < importLists[1].length; i++){
-							addPlot(importLists[1][i].getExpression(), importLists[1][i].getColor(), importLists[1][i].getBounds(), importLists[1][i].getStepsize());
-							stdFunctionList.get(i).setSelected(importLists[1][i].isSelected());
-							stdFunctionList.get(i).setVisible(importLists[1][i].isVisible());
-						}
-					}
-					catch(IOException | ClassCastException | ClassNotFoundException ex){
-						JOptionPane.showMessageDialog(frame,new JLabel("Unable to import workspace from file.",JLabel.CENTER));
-					}
-				}
+				importFunctions();
 			}
 		});
 		mnFile.add(mntmLoadProject);
@@ -216,6 +185,10 @@ public class V2GUI {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				saveAsImage();
+			}
+
+			private void saveAsImage() {
 				String[][] fileEndings = {{"png"}, {"jpg", "jpeg"}, {"gif"}, {"bmp"}};
 				String[] description = {"PNG image", "JPEG image", "GIF image", "Bitmap graphic"};
 				
@@ -324,27 +297,7 @@ public class V2GUI {
 		mnHelp.add(mntmAbout);
 	}
 	
-	protected void savePlotToDisk(final File outputFile) {
-		Thread t = new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				RenderedImage outputImage = plotter.takeScreenshot();
-
-				try {
-					ImageIO.write(outputImage, GuiUtil.getFileExtension(outputFile), outputFile);
-				} catch (IOException e) {
-					SwingUtilities.invokeLater(new Runnable() {
-						public void run() {
-							JOptionPane.showMessageDialog(frame,new JLabel("Unable to write file.",JLabel.CENTER));
-						}
-					});
-				}
-			}
-		});
-		t.start();
-		
-	}
+	
 
 	private void initTabbedPane(){
      	tabbedPane = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
@@ -409,7 +362,7 @@ public class V2GUI {
      		@Override
      		public void keyPressed(KeyEvent e) {
      			if (e.getKeyCode() == KeyEvent.VK_ENTER && stdFuncInput.isFocusOwner()) {
-     				addPlot(new String[]{stdFuncInput.getText()},colorList.getNextAvailableColor(stdFunctionList), getBounds(), DEFAULT_STEPSIZE);
+     				addPlot(new String[]{stdFuncInput.getText()},colorList.getNextAvailableColor(stdFuncList), getBounds(), DEFAULT_STEPSIZE);
      			}
      			
      		}
@@ -443,41 +396,6 @@ public class V2GUI {
      	stdFuncOuterPanel.add(stdFuncInnerPanel, gbc_panel);
      	stdFuncInnerPanel.setLayout(new BoxLayout(stdFuncInnerPanel, BoxLayout.Y_AXIS));
 
-
-     	// Auto update List according to the function list.
-     	stdFunctionList.addActionListener(new ActionListener() {
-
-     		@Override
-     		public void actionPerformed(ActionEvent e) {
-     			if(e.getActionCommand().equals("ADD")){
-     				stdFuncInnerPanel.add(new StdFunctionLabel((Function) e.getSource(), new ActionListener() {
-     					public void actionPerformed(ActionEvent e) {
-     						Function source = (Function) e.getSource();
-     						if(e.getID() == 0){
-     							String newExpr = e.getActionCommand();
-     							updatePlot(source, new String[]{newExpr}, source.getColor(), source.getBounds(), source.getStepsize());
-     						}
-     						if(e.getID() == 1){
-     							spawnEditDialog(source);
-     						}
-     						if(e.getID() == 2){
-     							deletePlot(source);
-     						}
-     						if(e.getID() == 3){
-     							plotter.showPlot(source);
-     						}
-     					}
-     				}));
-     			}
-     			else if(e.getActionCommand().equals("REMOVE")){
-     				stdFuncInnerPanel.remove(e.getID());
-     			}
-     			else if(e.getActionCommand().equals("SET")){
-     				StdFunctionLabel label = (StdFunctionLabel) stdFuncInnerPanel.getComponent(e.getID());
-     				label.setMother((Function) e.getSource());
-     			}
-     		}
-     	});
 	}
 	
 	private void initParamFunctionTab(){
@@ -558,7 +476,7 @@ public class V2GUI {
      		public void keyPressed(KeyEvent e) {
      			String[] paramExpr = new String[]{inputX.getText(),inputY.getText(),inputZ.getText()};
      			if (e.getKeyCode() == KeyEvent.VK_ENTER && (inputX.isFocusOwner() || inputY.isFocusOwner() || inputZ.isFocusOwner())) {
-     				addPlot(paramExpr,colorList.getNextAvailableColor(stdFunctionList), getBounds(), DEFAULT_STEPSIZE);
+     				addPlot(paramExpr,colorList.getNextAvailableColor(stdFuncList), getBounds(), DEFAULT_STEPSIZE);
      			}
      		}
      	};
@@ -594,41 +512,6 @@ public class V2GUI {
      	paramFuncOuterPanel.add(paramFuncInnerPanel, gbc_panel);
      	paramFuncInnerPanel.setLayout(new BoxLayout(paramFuncInnerPanel, BoxLayout.Y_AXIS));
 
-     	// Auto update List according to the function list.
-     	paramFunctionList.addActionListener(new ActionListener() {
-
-     		@Override
-     		public void actionPerformed(ActionEvent e) {
-     			if(e.getActionCommand().equals("ADD")){
-     				paramFuncInnerPanel.add(new ParametricFunctionLabel((Function) e.getSource(), new ActionListener() {
-     					public void actionPerformed(ActionEvent e) {
-     						Function source = (Function) e.getSource();
-     						if(e.getID() == 0){
-     							String newExpr = e.getActionCommand();
-     							System.out.println(newExpr);
-     							updatePlot(source, newExpr.split(","), source.getColor(), source.getBounds(), source.getStepsize());
-     						}
-     						if(e.getID() == 1){
-     							spawnEditDialog(source);
-     						}
-     						if(e.getID() == 2){
-     							deletePlot(source);
-     						}
-     						if(e.getID() == 3){
-     							plotter.showPlot(source);
-     						}
-     					}
-     				}));
-     			}
-     			else if(e.getActionCommand().equals("REMOVE")){
-     				paramFuncInnerPanel.remove(e.getID());
-     			}
-     			else if(e.getActionCommand().equals("SET")){
-     				ParametricFunctionLabel label = (ParametricFunctionLabel) paramFuncInnerPanel.getComponent(e.getID());
-     				label.setMother((Function) e.getSource());
-     			}
-     		}
-     	});
 	}
 	
 	// TODO: Think the design through! Current thoughts:
@@ -756,35 +639,87 @@ public class V2GUI {
 			}
 		});
 	}
+	
+	private void addXYZPlot(Function newFunction) {
+		stdFuncList.add(newFunction);
+		ActionListener listener = new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Function sourceFunction = (Function) e.getSource();
+				if(e.getID() == FunctionLabel.UPDATE){
+					String newExpr = e.getActionCommand();
+					updatePlot(sourceFunction, new String[]{newExpr}, sourceFunction.getColor(), sourceFunction.getBounds(), sourceFunction.getStepsize());
+				}
+				if(e.getID() == FunctionLabel.EDIT){
+					spawnEditDialog(sourceFunction);
+				}
+				if(e.getID() == FunctionLabel.DELETE){
+					deletePlot(sourceFunction);
+				}
+				if(e.getID() == FunctionLabel.VISIBILITY){
+					plotter.showPlot(sourceFunction);
+				}
+			}
+		};
+		StdFunctionLabel label = new StdFunctionLabel(newFunction, listener);
+		stdFuncInnerPanel.add(label);
+		map.put(newFunction, label);
+		doPlot(newFunction);
+	}
+	
+	private void addParametricPlot(Function newFunction) {
+		paramFuncList.add(newFunction);
+		
+		ActionListener listener = new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Function sourceFunction = (Function) e.getSource();
+				if(e.getID() == FunctionLabel.UPDATE){
+					String newExpr = e.getActionCommand();
+					updatePlot(sourceFunction, newExpr.split(","), sourceFunction.getColor(), sourceFunction.getBounds(), sourceFunction.getStepsize());
+				}
+				if(e.getID() == FunctionLabel.EDIT){
+					spawnEditDialog(sourceFunction);
+				}
+				if(e.getID() == FunctionLabel.DELETE){
+					deletePlot(sourceFunction);
+				}
+				if(e.getID() == FunctionLabel.VISIBILITY){
+					plotter.showPlot(sourceFunction);
+				}
+			}
+		};
+
+		ParametricFunctionLabel label = new ParametricFunctionLabel(newFunction, listener);
+		paramFuncInnerPanel.add(label);
+		map.put(newFunction, label);
+
+		doPlot(newFunction);
+	}
+	
+	private void doPlot(Function function) {
+		spawnNewPlotterThread(function);
+		frame.pack();
+	}
 
 	/*
 	 * Add new plot.
 	 */
 	private void addPlot(String[] expr, Color3f color, float[] bounds, float stepSize) {
 		// Create the function.
-		try{
-		Function newFunc = FunctionUtil.createFunction(expr,color,bounds,stepSize);
-		if(newFunc.getClass().equals(ParametricFunction.class)){
-			paramFunctionList.add(newFunc);
-		}
-		else{
-			stdFunctionList.add(newFunc);
-		}
-		spawnNewPlotterThread(newFunc);
-		frame.pack();
-		} catch (ExpressionParseException e) {
+		try {
+			Function newFunction = FunctionUtil.createFunction(expr,color,bounds,stepSize);
+			
+			if (newFunction.getClass() == ParametricFunction.class) {
+				addParametricPlot(newFunction);
+			} else {
+				addXYZPlot(newFunction);
+			}
+		} catch (ExpressionParseException | IllegalEquationException | UndefinedVariableException e) {
 			String message = e.getMessage();
 			JLabel label = new JLabel(message,JLabel.CENTER);
 			JOptionPane.showMessageDialog(frame,label);
-		} catch (IllegalEquationException e) {
-			String message = e.getMessage();
-			JLabel label = new JLabel(message,JLabel.CENTER);
-			JOptionPane.showMessageDialog(frame,label);
-		} catch (UndefinedVariableException e) {
-			String message = e.getMessage();
-			JLabel label = new JLabel(message,JLabel.CENTER);
-			JOptionPane.showMessageDialog(frame,label);
-		}
+		} 
+		
+
 	}
 
 	/*
@@ -794,12 +729,17 @@ public class V2GUI {
 		// Try evaluating the function.
 		try {
 			Function newFunc = FunctionUtil.createFunction(newExpr, newColor, bounds, stepsize);
-			if(newFunc.getClass().equals(ParametricFunction.class)){
-				paramFunctionList.set(paramFunctionList.indexOf(oldFunc),newFunc);
+			
+			if (oldFunc.getClass() == ParametricFunction.class) {
+				
+			} else {
+				stdFuncList.set(stdFuncList.indexOf(oldFunc), newFunc);
 			}
-			else{
-				stdFunctionList.set(stdFunctionList.indexOf(oldFunc),newFunc);
-			}
+			
+			FunctionLabel label = map.get(oldFunc);
+			label.setMother(newFunc);
+			map.remove(oldFunc);
+			map.put(newFunc, label);
 			plotter.removePlot(oldFunc);
 			spawnNewPlotterThread(newFunc);
 			frame.pack();
@@ -825,12 +765,18 @@ public class V2GUI {
 	 */
 	private void deletePlot(Function f) {
 		plotter.removePlot(f);
-		if(f.getClass().equals(ParametricFunction.class)){
-			paramFunctionList.remove(f);
+		if (f.getClass() == ParametricFunction.class) {
+			int index = paramFuncList.indexOf(f);
+			paramFuncInnerPanel.remove(index);
+			paramFuncList.remove(index);
+		} else {
+			int index = stdFuncList.indexOf(f);
+			stdFuncInnerPanel.remove(index);
+			stdFuncList.remove(index);
 		}
-		else{
-			stdFunctionList.remove(f);
-		}
+		
+		
+		map.remove(f);
 		frame.pack();
 	}
 
@@ -911,18 +857,10 @@ public class V2GUI {
 	private void spawnNewPlotterThread(final Function function) {
 		SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
 			
-			FunctionLabel thisLabel;
-			
 			@Override
 			protected Void doInBackground() throws Exception {
-				thisLabel = null; 
-				if(function.getClass().equals(ParametricFunction.class)){
-					thisLabel = (ParametricFunctionLabel) paramFuncInnerPanel.getComponent(paramFunctionList.size()-1);
-				}
-				else{
-					thisLabel = (StdFunctionLabel) stdFuncInnerPanel.getComponent(stdFunctionList.size()-1);
-				}
-				thisLabel.setIndeterminate(true);
+
+				map.get(function).setIndeterminate(true);
 				// Test of spinner.
 				// Thread.currentThread().sleep(5000);
 				plotter.plotFunction(function);
@@ -931,11 +869,81 @@ public class V2GUI {
 			
 			@Override
 			protected void done() {
-				thisLabel.setIndeterminate(false);
+				map.get(function).setIndeterminate(false);
 			}
 			
 		};
 		plottingQueue.execute(worker);
+	}
+	
+	private void savePlotToDisk(final File outputFile) {
+		Thread t = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				RenderedImage outputImage = plotter.takeScreenshot();
+
+				try {
+					boolean canWrite = ImageIO.write(outputImage, GuiUtil.getFileExtension(outputFile), outputFile);
+					if (!canWrite) {
+						
+						File newPath = new File(outputFile.getAbsolutePath() + "." + defaultImageExtension);
+						ImageIO.write(outputImage, defaultImageExtension, newPath);
+						showMessageDialogThreadSafe("Unknown image format. Defaulted to " + defaultImageExtension);
+					}
+				} catch (IOException e) {
+					showMessageDialogThreadSafe("Unable to write to file");
+				}
+			}
+		});
+		t.start();
+		
+	}
+
+	private void showMessageDialogThreadSafe(final String message) {
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				JOptionPane.showMessageDialog(frame, message);
+			}
+		});
+	}
+
+	private void importFunctions() {
+		File inputFile = GuiUtil.spawnImportDialog(filePath, frame);
+		if(inputFile != null){
+			filePath=inputFile.getPath().replace(inputFile.getName(), "");
+			try{
+				ZippedFunction[][] importLists = (ZippedFunction[][]) ObjectReader.ObjectFromFile(inputFile);
+				// Determine if current workspace should be erased.
+				boolean eraseWorkspace = (0 == 
+						JOptionPane.showOptionDialog(frame, 
+								"Would you like to erase current workspace during import?",
+								"Import Dialog", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null));
+
+				if(eraseWorkspace){
+					for(int i = stdFuncList.size()-1; i >= 0; i--){
+						deletePlot(stdFuncList.get(i));
+					}
+					for(int i = paramFuncList.size()-1; i >= 0; i--){
+						deletePlot(paramFuncList.get(i));
+					}
+				}
+				//Read new functions from zipped object.
+				for(int i = 0; i < importLists[0].length; i++){
+					addPlot(importLists[0][i].getExpression(), importLists[0][i].getColor(), importLists[0][i].getBounds(), importLists[0][i].getStepsize());
+					stdFuncList.get(i).setSelected(importLists[0][i].isSelected());
+					stdFuncList.get(i).setVisible(importLists[0][i].isVisible());
+				}
+				for(int i = 0; i < importLists[1].length; i++){
+					addPlot(importLists[1][i].getExpression(), importLists[1][i].getColor(), importLists[1][i].getBounds(), importLists[1][i].getStepsize());
+					stdFuncList.get(i).setSelected(importLists[1][i].isSelected());
+					stdFuncList.get(i).setVisible(importLists[1][i].isVisible());
+				}
+			}
+			catch(IOException | ClassCastException | ClassNotFoundException ex){
+				JOptionPane.showMessageDialog(frame,new JLabel("Unable to import workspace from file.",JLabel.CENTER));
+			}
+		}
 	}
 	
 

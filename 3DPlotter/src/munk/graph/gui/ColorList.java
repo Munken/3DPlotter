@@ -2,15 +2,13 @@ package munk.graph.gui;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 
 import javax.vecmath.Color3f;
 
 import munk.graph.IO.ObjectReader;
 import munk.graph.IO.ObjectWriter;
 import munk.graph.function.Function;
-import munk.graph.function.FunctionList;
 
 @SuppressWarnings("serial")
 public class ColorList extends ArrayList<Color3f> {
@@ -46,7 +44,7 @@ public class ColorList extends ArrayList<Color3f> {
 	/*
 	 * Return the next available color. If none are, return the one least in use.
 	 */
-	public Color3f getNextAvailableColor(FunctionList<Function> functionList){
+	public Color3f getNextAvailableColor(List<Function> functionList){
 		int[] frequence = new int[this.size()];
 		ArrayList<Integer> indexList = new ArrayList<Integer>();
 		for(int i = 0; i < this.size() ; i++){

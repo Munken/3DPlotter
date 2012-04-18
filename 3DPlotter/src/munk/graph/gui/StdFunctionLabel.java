@@ -142,4 +142,10 @@ public class StdFunctionLabel extends JPanel implements FunctionLabel{
 	public void setIndeterminate(boolean b){
 		toggleButton.setIndeterminate(b);
 	}
+	
+	@Override
+	public String toString() {
+		return exprField.getText();
+	}
+	
 }
