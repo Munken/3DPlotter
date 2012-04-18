@@ -211,20 +211,18 @@ public class V2GUI {
 		});
 		mnFile.add(mntmLoadProject);
 		
-		mntmPrintCanvas = new JMenuItem("Export to PNG", new ImageIcon("Icons/png.png"));
+		mntmPrintCanvas = new JMenuItem("Save as image", new ImageIcon("Icons/png.png"));
 		mntmPrintCanvas.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				File outputFile = GuiUtil.spawnExportDialog(filePath, frame);
+				String[][] fileEndings = {{"png"}, {"jpg", "jpeg"}, {"gif"}, {"bmp"}};
+				String[] description = {"PNG image", "JPEG image", "GIF image", "Bitmap graphic"};
+				
+				File outputFile = GuiUtil.spawnExportDialog(filePath, fileEndings, description, frame);
 				if(outputFile != null){
 					filePath=outputFile.getPath().replace(outputFile.getName(), "");
-					// Fix file extension
-					
-					String fileEnding = getFileExtension(outputFile);
-					if(!"png".equalsIgnoreCase(fileEnding)){
-						outputFile = new File(outputFile.getAbsolutePath() + ".png");
-					}
+
 					savePlotToDisk(outputFile);
 					
 				}
@@ -334,7 +332,7 @@ public class V2GUI {
 				RenderedImage outputImage = plotter.takeScreenshot();
 
 				try {
-					ImageIO.write(outputImage, "png", outputFile);
+					ImageIO.write(outputImage, GuiUtil.getFileExtension(outputFile), outputFile);
 				} catch (IOException e) {
 					SwingUtilities.invokeLater(new Runnable() {
 						public void run() {
@@ -940,14 +938,6 @@ public class V2GUI {
 		plottingQueue.execute(worker);
 	}
 	
-	private String getFileExtension(File file) {
-		return getFileExtension(file.getAbsolutePath());
-	}
-	
-	private String getFileExtension(String path) {
-		int index = path.lastIndexOf('.');
-		String result = path.substring(index + 1);
-		return (result.length() != path.length()) ? result : null;
-	}
+
 	
 }
