@@ -144,4 +144,28 @@ public class GuiUtil {
 		} else 
 			return null;
 	}
+	
+	public static String sphericalToCartesian(String expr){
+		if(expr.contains("r") || expr.contains("theta") || expr.contains("phi")){
+			expr = stringReplace(expr,"theta", "acos(z/r)");
+			expr = stringReplace(expr,"r", "(x^2+y^2+z^2)^0.5");
+			expr = stringReplace(expr,"phi", "atan(y/x)");
+			return expr;
+		}
+		throw new IllegalArgumentException("Expression must contain r, theta or phi.");
+	}
+	
+	private static String stringReplace(String str, String pattern, String replace) {
+	    int s = 0;
+	    int e = 0;
+	    StringBuffer result = new StringBuffer();
+
+	    while ((e = str.indexOf(pattern, s)) >= 0) {
+	        result.append(str.substring(s, e));
+	        result.append(replace);
+	        s = e+pattern.length();
+	    }
+	    result.append(str.substring(s));
+	    return result.toString();
+	}
 }

@@ -72,7 +72,6 @@ public class V2GUI {
 	// Plotter renderes
 	private ExecutorService plottingQueue = Executors.newSingleThreadExecutor(); // Only plot one at a time
 	private JLabel lblStepSize;
-	private JTextField txtStepSize;
 	private JPanel panel;
 	private JTextField txtTmin;
 	private JLabel label_4;
@@ -80,9 +79,10 @@ public class V2GUI {
 	private JTextField txtUmin;
 	private JLabel label_5;
 	private JTextField txtUmax;
-	private JLabel label_7;
-	private JTextField txtParamStepSize;
+	private JLabel lblResolution;
 	private String	defaultImageExtension = "png";
+	private JSlider slider;
+	private JSlider paramSlider;
 	
 	/**
 	 * Launch the application.
@@ -132,10 +132,16 @@ public class V2GUI {
      	frame.setVisible(true);
      	frame.pack();
      	
-     	// Test Function
-     	addPlot(new String[]{"y = sin(x*5)*cos(z*5)"}, colorList.getNextAvailableColor(stdFuncList), DEFAULT_BOUNDS, DEFAULT_STEPSIZE);
-     	
      	autoResize();
+     	
+     	// Test Function
+     	try {
+     		System.out.println(getStepsize("std"));
+			addPlot(new String[]{"y = sin(x*5)*cos(z*5)"}, colorList.getNextAvailableColor(stdFuncList), getBounds("std"), getStepsize("std"));
+		} catch (ExpressionParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}  	
 	}
 	
 	private void initFrame(){
@@ -144,7 +150,7 @@ public class V2GUI {
      	GridBagLayout gbl = new GridBagLayout();
      	gbl.columnWidths = new int[]{10, 350, 0, 0, 0};
      	gbl.rowHeights = new int[]{2, 0, 5, 0};
-     	gbl.columnWeights = new double[]{0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE};
+     	gbl.columnWeights = new double[]{0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
      	gbl.rowWeights = new double[]{0.0, 2.0, 0.0, Double.MIN_VALUE};
      	frame.getContentPane().setLayout(gbl);
 	}
@@ -339,9 +345,9 @@ public class V2GUI {
      	stdFuncTab = new JPanel();
      	tabbedPane.addTab("Standard equations", stdFuncTab);
      	GridBagLayout gbl_functionPanel = new GridBagLayout();
-     	gbl_functionPanel.columnWidths = new int[]{5, 25, 50, 50, 50, 25, 5, 0};
+     	gbl_functionPanel.columnWidths = new int[]{5, 25, 50, 50, 30, 25, 5, 0};
      	gbl_functionPanel.rowHeights = new int[]{10, 0, 0, 0, 0, 10, 5, 5, 0};
-     	gbl_functionPanel.columnWeights = new double[]{0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
+     	gbl_functionPanel.columnWeights = new double[]{0.0, 1.0, 1.0, 1.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
      	gbl_functionPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
      	stdFuncTab.setLayout(gbl_functionPanel);
      	
@@ -364,8 +370,7 @@ public class V2GUI {
      		public void keyPressed(KeyEvent e) {
      			if (e.getKeyCode() == KeyEvent.VK_ENTER && stdFuncInput.isFocusOwner()) {
      				try {
-     					float stepSize = GuiUtil.evalString(txtStepSize.getText());
-						addPlot(new String[]{stdFuncInput.getText()},colorList.getNextAvailableColor(stdFuncList), getBounds("std"), stepSize);
+						addPlot(new String[]{stdFuncInput.getText()},colorList.getNextAvailableColor(stdFuncList), getBounds("std"), getStepsize("std"));
 					} catch (ExpressionParseException e1) {
 						JOptionPane.showMessageDialog(frame,new JLabel(e1.getMessage(),JLabel.CENTER));
 					}
@@ -384,9 +389,9 @@ public class V2GUI {
      	gbc_optionPanel.gridy = 3;
      	stdFuncTab.add(optionPanel, gbc_optionPanel);
      	GridBagLayout gbl_panel = new GridBagLayout();
-     	gbl_panel.columnWidths = new int[]{5, 30, 0, 0, 0, 30, 5, 0};
+     	gbl_panel.columnWidths = new int[]{0, 15, 15, 30, 30, 0, 0};
      	gbl_panel.rowHeights = new int[]{10, 0, 0, 0, 5, 0, 5, 0};
-     	gbl_panel.columnWeights = new double[]{0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE};
+     	gbl_panel.columnWeights = new double[]{1.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
      	gbl_panel.rowWeights = new double[]{1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE};
      	optionPanel.setLayout(gbl_panel);
 
@@ -394,23 +399,24 @@ public class V2GUI {
      	txtXmin = new JTextField();
      	GridBagConstraints gbc_txtXmin = new GridBagConstraints();
      	gbc_txtXmin.gridwidth = 2;
+     	gbc_txtXmin.fill = GridBagConstraints.HORIZONTAL;
      	gbc_txtXmin.insets = new Insets(0, 0, 5, 5);
      	gbc_txtXmin.gridx = 1;
      	gbc_txtXmin.gridy = 1;
      	optionPanel.add(txtXmin, gbc_txtXmin);
      	txtXmin.setText("" + DEFAULT_BOUNDS[0]);
      	txtXmin.setColumns(10);
-
-     	label_1 = new JLabel("< x <");
-     	GridBagConstraints gbc_label_1 = new GridBagConstraints();
-     	gbc_label_1.insets = new Insets(0, 0, 5, 5);
-     	gbc_label_1.gridx = 3;
-     	gbc_label_1.gridy = 1;
-     	optionPanel.add(label_1, gbc_label_1);
+     	
+     	     	label_1 = new JLabel("< x <");
+     	     	GridBagConstraints gbc_label_1 = new GridBagConstraints();
+     	     	gbc_label_1.insets = new Insets(0, 0, 5, 5);
+     	     	gbc_label_1.gridx = 3;
+     	     	gbc_label_1.gridy = 1;
+     	     	optionPanel.add(label_1, gbc_label_1);
 
      	txtXmax = new JTextField();
      	GridBagConstraints gbc_txtXmax = new GridBagConstraints();
-     	gbc_txtXmax.gridwidth = 2;
+     	gbc_txtXmax.fill = GridBagConstraints.HORIZONTAL;
      	gbc_txtXmax.insets = new Insets(0, 0, 5, 5);
      	gbc_txtXmax.gridx = 4;
      	gbc_txtXmax.gridy = 1;
@@ -421,23 +427,24 @@ public class V2GUI {
      	txtYmin = new JTextField();
      	GridBagConstraints gbc_txtYmin = new GridBagConstraints();
      	gbc_txtYmin.gridwidth = 2;
+     	gbc_txtYmin.fill = GridBagConstraints.HORIZONTAL;
      	gbc_txtYmin.insets = new Insets(0, 0, 5, 5);
      	gbc_txtYmin.gridx = 1;
      	gbc_txtYmin.gridy = 2;
      	optionPanel.add(txtYmin, gbc_txtYmin);
      	txtYmin.setText("" + DEFAULT_BOUNDS[2]);
      	txtYmin.setColumns(10);
-
-     	label_2 = new JLabel("< y <");
-     	GridBagConstraints gbc_label_2 = new GridBagConstraints();
-     	gbc_label_2.insets = new Insets(0, 0, 5, 5);
-     	gbc_label_2.gridx = 3;
-     	gbc_label_2.gridy = 2;
-     	optionPanel.add(label_2, gbc_label_2);
+     	
+     	     	label_2 = new JLabel("< y <");
+     	     	GridBagConstraints gbc_label_2 = new GridBagConstraints();
+     	     	gbc_label_2.insets = new Insets(0, 0, 5, 5);
+     	     	gbc_label_2.gridx = 3;
+     	     	gbc_label_2.gridy = 2;
+     	     	optionPanel.add(label_2, gbc_label_2);
 
      	txtYmax = new JTextField();
      	GridBagConstraints gbc_txtYmax = new GridBagConstraints();
-     	gbc_txtYmax.gridwidth = 2;
+     	gbc_txtYmax.fill = GridBagConstraints.HORIZONTAL;
      	gbc_txtYmax.insets = new Insets(0, 0, 5, 5);
      	gbc_txtYmax.gridx = 4;
      	gbc_txtYmax.gridy = 2;
@@ -448,23 +455,24 @@ public class V2GUI {
      	txtZmin = new JTextField();
      	GridBagConstraints gbc_txtZmin = new GridBagConstraints();
      	gbc_txtZmin.gridwidth = 2;
+     	gbc_txtZmin.fill = GridBagConstraints.HORIZONTAL;
      	gbc_txtZmin.insets = new Insets(0, 0, 5, 5);
      	gbc_txtZmin.gridx = 1;
      	gbc_txtZmin.gridy = 3;
      	optionPanel.add(txtZmin, gbc_txtZmin);
      	txtZmin.setText("" + DEFAULT_BOUNDS[4]);
      	txtZmin.setColumns(10);
-
-     	label_3 = new JLabel("< z <");
-     	GridBagConstraints gbc_label_3 = new GridBagConstraints();
-     	gbc_label_3.insets = new Insets(0, 0, 5, 5);
-     	gbc_label_3.gridx = 3;
-     	gbc_label_3.gridy = 3;
-     	optionPanel.add(label_3, gbc_label_3);
+     	
+     	     	label_3 = new JLabel("< z <");
+     	     	GridBagConstraints gbc_label_3 = new GridBagConstraints();
+     	     	gbc_label_3.insets = new Insets(0, 0, 5, 5);
+     	     	gbc_label_3.gridx = 3;
+     	     	gbc_label_3.gridy = 3;
+     	     	optionPanel.add(label_3, gbc_label_3);
 
      	txtZmax = new JTextField();
      	GridBagConstraints gbc_txtZmax = new GridBagConstraints();
-     	gbc_txtZmax.gridwidth = 2;
+     	gbc_txtZmax.fill = GridBagConstraints.HORIZONTAL;
      	gbc_txtZmax.insets = new Insets(0, 0, 5, 5);
      	gbc_txtZmax.gridx = 4;
      	gbc_txtZmax.gridy = 3;
@@ -479,24 +487,24 @@ public class V2GUI {
      	GuiUtil.setupUndoListener(txtZmin);
      	GuiUtil.setupUndoListener(txtZmax);
 
-     	lblStepSize = new JLabel("Step size");
+     	lblStepSize = new JLabel("Resolution");
      	lblStepSize.setHorizontalAlignment(SwingConstants.CENTER);
      	GridBagConstraints gbc_lblStepSize = new GridBagConstraints();
      	gbc_lblStepSize.anchor = GridBagConstraints.EAST;
      	gbc_lblStepSize.insets = new Insets(0, 0, 5, 5);
-     	gbc_lblStepSize.gridx = 2;
+     	gbc_lblStepSize.gridx = 1;
      	gbc_lblStepSize.gridy = 5;
      	optionPanel.add(lblStepSize, gbc_lblStepSize);
-
-     	txtStepSize = new JTextField(DEFAULT_STEPSIZE + "");
-     	GridBagConstraints gbc_textField = new GridBagConstraints();
-     	gbc_textField.gridwidth = 2;
-     	gbc_textField.anchor = GridBagConstraints.WEST;
-     	gbc_textField.insets = new Insets(0, 0, 5, 5);
-     	gbc_textField.gridx = 3;
-     	gbc_textField.gridy = 5;
-     	optionPanel.add(txtStepSize, gbc_textField);
-     	txtStepSize.setColumns(10);
+     	
+     	slider = new JSlider();
+     	slider.setPreferredSize(new Dimension(100, 20));
+     	GridBagConstraints gbc_slider = new GridBagConstraints();
+     	gbc_slider.gridwidth = 3;
+     	gbc_slider.fill = GridBagConstraints.HORIZONTAL;
+     	gbc_slider.insets = new Insets(0, 0, 5, 5);
+     	gbc_slider.gridx = 2;
+     	gbc_slider.gridy = 5;
+     	optionPanel.add(slider, gbc_slider);
 
      	// The standard function list
      	stdFuncOuterPanel = new JPanel();
@@ -607,8 +615,7 @@ public class V2GUI {
      			String[] paramExpr = new String[]{inputX.getText(),inputY.getText(),inputZ.getText()};
      			if (e.getKeyCode() == KeyEvent.VK_ENTER && (inputX.isFocusOwner() || inputY.isFocusOwner() || inputZ.isFocusOwner())) {
      				try {
-						float stepSize = GuiUtil.evalString(txtParamStepSize.getText());
-	    				addPlot(paramExpr,colorList.getNextAvailableColor(paramFuncList), getBounds("parametric"), stepSize);
+	    				addPlot(paramExpr,colorList.getNextAvailableColor(paramFuncList), getBounds("parametric"), getStepsize("parametric"));
 					} catch (ExpressionParseException e1) {
 						JOptionPane.showMessageDialog(frame,new JLabel(e1.getMessage(),JLabel.CENTER));
 					}
@@ -629,9 +636,9 @@ public class V2GUI {
      	gbc_panel.gridy = 5;
      	paramFuncTab.add(panel, gbc_panel);
      	GridBagLayout gbl_panel = new GridBagLayout();
-     	gbl_panel.columnWidths = new int[]{5, 30, 0, 0, 0, 30, 5, 0};
+     	gbl_panel.columnWidths = new int[]{0, 15, 15, 0, 30, 30, 0, 0};
      	gbl_panel.rowHeights = new int[]{10, 0, 0, 5, 0, 5, 0};
-     	gbl_panel.columnWeights = new double[]{0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE};
+     	gbl_panel.columnWeights = new double[]{1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
      	gbl_panel.rowWeights = new double[]{1.0, 0.0, 0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE};
      	panel.setLayout(gbl_panel);
      	
@@ -689,24 +696,24 @@ public class V2GUI {
      	gbc_textField_3.gridy = 2;
      	panel.add(txtUmax, gbc_textField_3);
      	
-     	label_7 = new JLabel("Step size");
-     	label_7.setHorizontalAlignment(SwingConstants.CENTER);
-     	GridBagConstraints gbc_label_7 = new GridBagConstraints();
-     	gbc_label_7.anchor = GridBagConstraints.EAST;
-     	gbc_label_7.insets = new Insets(0, 0, 5, 5);
-     	gbc_label_7.gridx = 2;
-     	gbc_label_7.gridy = 4;
-     	panel.add(label_7, gbc_label_7);
+     	lblResolution = new JLabel("Resolution");
+     	lblResolution.setHorizontalAlignment(SwingConstants.CENTER);
+     	GridBagConstraints gbc_lblResolution = new GridBagConstraints();
+     	gbc_lblResolution.anchor = GridBagConstraints.EAST;
+     	gbc_lblResolution.insets = new Insets(0, 0, 5, 5);
+     	gbc_lblResolution.gridx = 1;
+     	gbc_lblResolution.gridy = 4;
+     	panel.add(lblResolution, gbc_lblResolution);
      	
-     	txtParamStepSize = new JTextField(DEFAULT_STEPSIZE + "");
-     	txtParamStepSize.setColumns(10);
-     	GridBagConstraints gbc_textField_6 = new GridBagConstraints();
-     	gbc_textField_6.anchor = GridBagConstraints.WEST;
-     	gbc_textField_6.gridwidth = 2;
-     	gbc_textField_6.insets = new Insets(0, 0, 5, 5);
-     	gbc_textField_6.gridx = 3;
-     	gbc_textField_6.gridy = 4;
-     	panel.add(txtParamStepSize, gbc_textField_6);
+     	paramSlider = new JSlider();
+     	paramSlider.setPreferredSize(new Dimension(100, 20));
+     	GridBagConstraints gbc_slider_1 = new GridBagConstraints();
+     	gbc_slider_1.fill = GridBagConstraints.HORIZONTAL;
+     	gbc_slider_1.gridwidth = 4;
+     	gbc_slider_1.insets = new Insets(0, 0, 5, 5);
+     	gbc_slider_1.gridx = 2;
+     	gbc_slider_1.gridy = 4;
+     	panel.add(paramSlider, gbc_slider_1);
      	
      	// The parametric function list
      	paramFuncOuterPanel = new JPanel();
@@ -831,6 +838,8 @@ public class V2GUI {
 	private void addPlot(String[] expr, Color3f color, float[] bounds, float stepSize) {
 		// Create the function.
 		try {
+			//expr[0] = GuiUtil.sphericalToCartesian(expr[0]);
+			//System.out.println(expr[0]);
 			Function newFunction = FunctionUtil.createFunction(expr,color,bounds,stepSize);
 			
 			if (newFunction.getClass() == ParametricFunction.class) {
@@ -927,6 +936,23 @@ public class V2GUI {
 			bounds[5] = GuiUtil.evalString(txtZmax.getText());
 		}
 		return bounds;
+	}
+	
+	/*
+	 * Return step size. Should maybe account for world size? 
+	 */
+	private float getStepsize(String type) throws ExpressionParseException{
+		double sliderValue = 0;
+		if(type.equals("std")){
+			sliderValue = slider.getValue();
+		}
+		else if (type.equals("parametric")){
+			sliderValue = paramSlider.getValue();
+		}
+		double resolution = 0.505 - Math.log10(sliderValue+1)/4;
+//		float[] bounds = getBounds(type);
+//		double worldSize = (bounds[1]-bounds[0])*(bounds[3]-bounds[2])*(bounds[5]-bounds[4]);
+		return (float) ((float) resolution);
 	}
 
 	/*

@@ -54,7 +54,7 @@ public class XYZPlotter {
 		
 		fm = new FuncMap();
 		fm.loadDefaultFunctions();
-		
+
 		expression.ensureVariablesDefined(vm);
 	}
 	
