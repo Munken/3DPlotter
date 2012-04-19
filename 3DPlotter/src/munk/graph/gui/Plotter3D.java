@@ -75,7 +75,7 @@ public class Plotter3D extends JPanel{
 
 		Canvas3D c3d = new Canvas3D(gd[0].getBestConfiguration(gc3D), offscreen);
 		c3d.setSize(500, 500);
-
+		
 		return c3d;
 	}
 
@@ -105,7 +105,7 @@ public class Plotter3D extends JPanel{
 	public RenderedImage takeScreenshot() {
 		offScreenCanvas.renderOffScreenBuffer();
 		offScreenCanvas.waitForOffScreenRendering();
-
+		System.out.println("Hest");
 		return offScreenCanvas.getOffScreenBuffer().getImage();
 	}
 	
@@ -161,9 +161,6 @@ public class Plotter3D extends JPanel{
 		else bg.detach();
 	}
 	
-	
-
-
 	protected void addLights(BranchGroup b) {
 		// Create a bounds for the lights
 		BoundingSphere bounds = new BoundingSphere(new Point3d(0.0, 0.0, 0.0),

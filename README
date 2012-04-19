@@ -1,42 +1,25 @@
-�nske listen:
+Product Back Log
 
-- GUI
-	- Flottere design :O!
-	- Der skal lidt "ipad"-rotation p� (n�r plottet slippes, skal det dreje lidt videre).
-	- GUI skal opdateres til at h�ndtere parametric functions (postpones til alm. functions er helt på plads).
-	- Zoom knap.
-	- EDIT skal opdateres med nye editeringsmuligheder (ny dialog skal designes).
-	- Custom farver skal kunne tilføjes.
-	- Det skal være muligt at gemme projekter (serializeable).
-	- Grid/point/solid view skal tilføjes (generelt - eller for hver funktion?).
-	- Fast implicit option skal tilføjes.
-	- Resize kan muligvis optimeres yderligere.
-	
-- Plotning	
-	- Implicit skal smukkeseres :)
-	- Det skal være muligt at plotte snitkurver mellem to (eller flere) flader.
-	- Akse labels.
-	- "Bounding box" (inden for hvilken, der plottes).
+GUI
+- Ipad rotation.
+- New edit dialog.
+- Possibility to remove colors.
+- Possibility to add custom constants (Theis' idea).
+- Grid/Point/Solid view option.
+- Fast implicit option.
 
-Done listen:
-- Opdatering af plots b�r effektiviseres
-- Zoom view skal gemmes i en variabel, s� det det ikke �ndres ved reset af plot.
-- Tilf�jelse af plots b�r effektiviseres
-- Visibility b�r h�ndteres af en ActionListener til hver enkelt Function object istedet for et samlet.
-- Parameter funktioner af en variabel
-- F� projektet under git
-- Parameter funktioner af to variable
-- Parameter funktioner af en variabl
-- Plotning af implicitte funktioner
-- H�ndtering af nye funktionstyper
-- Foresl�r at det detekteres om der anvendes 1 eller 2 variable i parameter plots og korrekte metode kaldes derefter
-  - Dermed undg�s at have for mange mulighede
-- Farveselektor
-  - I stil med den i GMail
-  - S� skal Color3f blot benyttes
-- Scroll Wheel can now zoom
+BACKEND
+- Axis labels.
+- Bounding box.
+- Otimization (Marching cubes).
+- GPU Acceleration
+- Freeze parametric first variabel to t, second variable to u.
+- Support of spherical coordiantes.
 
-
-- Function objectet skal gennemt�nkes/gent�nkes.
-  - Skal det samme object h�ndtere b�de parameter og normale funktioner ?
-  - T�nker en overklasse m. to subtyper
+Done-(and hopefully wokring)-LIST
+- Performance optimization (when changing colors).
+- Improved handling of visibility.
+- Support of parametric functions.
+- Support of implicit functions.
+- Scroll-Wheel zooming.
+- Function object refactoring.

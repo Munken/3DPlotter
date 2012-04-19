@@ -2,26 +2,20 @@ package munk.graph.gui;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.RenderedImage;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.io.*;
+import java.util.*;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+import javax.swing.event.*;
 import javax.vecmath.Color3f;
 
-import munk.graph.IO.ObjectReader;
-import munk.graph.IO.ObjectWriter;
+import munk.graph.IO.*;
 import munk.graph.function.*;
 
-import com.graphbuilder.math.ExpressionParseException;
-import com.graphbuilder.math.UndefinedVariableException;
+import com.graphbuilder.math.*;
 
 
 /**
@@ -45,7 +39,6 @@ public class V2GUI {
 	private JPanel paramFuncTab, paramFuncOuterPanel, paramFuncInnerPanel;
 	private JScrollPane paramFuncPanelWrapper;
 	private JPanel optionPanel, canvasPanel;
-	private JScrollPane optionPanelWrapper;
 	private JTabbedPane tabbedPane;
 	private JDialog colorDialog;
 	private JDialog editDialog;
@@ -78,6 +71,17 @@ public class V2GUI {
 	
 	// Plotter renderes
 	private ExecutorService plottingQueue = Executors.newSingleThreadExecutor(); // Only plot one at a time
+	private JLabel lblStepSize;
+	private JTextField txtStepSize;
+	private JPanel panel;
+	private JTextField txtTmin;
+	private JLabel label_4;
+	private JTextField txtTmax;
+	private JTextField txtUmin;
+	private JLabel label_5;
+	private JTextField txtUmax;
+	private JLabel label_7;
+	private JTextField txtParamStepSize;
 	private String	defaultImageExtension = "png";
 	
 	/**
@@ -129,7 +133,7 @@ public class V2GUI {
      	frame.pack();
      	
      	// Test Function
-     	addPlot(new String[]{"y = sin(x*5)*cos(z*5)"}, colorList.getNextAvailableColor(stdFuncList), getBounds(), DEFAULT_STEPSIZE);
+     	addPlot(new String[]{"y = sin(x*5)*cos(z*5)"}, colorList.getNextAvailableColor(stdFuncList), DEFAULT_BOUNDS, DEFAULT_STEPSIZE);
      	
      	autoResize();
 	}
@@ -138,10 +142,10 @@ public class V2GUI {
 		frame = new JFrame("Ultra Mega Epic Xtreme Plotter 3D");
 		frame.setBounds(100, 100, 1000, 1000);
      	GridBagLayout gbl = new GridBagLayout();
-     	gbl.columnWidths = new int[]{10, 0, 330, 0, 0, 2, 0, 0};
-     	gbl.rowHeights = new int[]{2, 0, 0, 0, 0, 0};
-     	gbl.columnWeights = new double[]{0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
-     	gbl.rowWeights = new double[]{0.0, 2.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
+     	gbl.columnWidths = new int[]{10, 350, 0, 0, 0};
+     	gbl.rowHeights = new int[]{2, 0, 5, 0};
+     	gbl.columnWeights = new double[]{0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE};
+     	gbl.rowWeights = new double[]{0.0, 2.0, 0.0, Double.MIN_VALUE};
      	frame.getContentPane().setLayout(gbl);
 	}
 	
@@ -159,12 +163,12 @@ public class V2GUI {
 			public void actionPerformed(ActionEvent arg0) {
 				File outputFile = GuiUtil.spawnExportDialog(filePath, frame);
 				if(outputFile != null){
-					filePath=outputFile.getPath().replace(outputFile.getName(), "");
-					try {
-						ObjectWriter.ObjectToFile(outputFile, new ZippedFunction[][]{FunctionUtil.zipFunctionList(stdFuncList),FunctionUtil.zipFunctionList(paramFuncList)});
-					} catch (IOException e) {
-						JOptionPane.showMessageDialog(frame,new JLabel("Unable to write file.",JLabel.CENTER));
-					}
+				filePath=outputFile.getPath().replace(outputFile.getName(), "");
+				try {
+					ObjectWriter.ObjectToFile(outputFile, new ZippedFunction[][]{FunctionUtil.zipFunctionList(stdFuncList),FunctionUtil.zipFunctionList(paramFuncList)});
+				} catch (IOException e) {
+					JOptionPane.showMessageDialog(frame,new JLabel("Unable to write file.",JLabel.CENTER));
+				}
 				}
 			}
 		});
@@ -297,14 +301,12 @@ public class V2GUI {
 		mnHelp.add(mntmAbout);
 	}
 	
-	
-
 	private void initTabbedPane(){
      	tabbedPane = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
      	GridBagConstraints gbc_tabbedPane = new GridBagConstraints();
      	gbc_tabbedPane.insets = new Insets(0, 0, 5, 5);
      	gbc_tabbedPane.fill = GridBagConstraints.BOTH;
-     	gbc_tabbedPane.gridx = 2;
+     	gbc_tabbedPane.gridx = 1;
      	gbc_tabbedPane.gridy = 1;
      	frame.getContentPane().add(tabbedPane, gbc_tabbedPane);
 	}
@@ -326,9 +328,8 @@ public class V2GUI {
      	gbc_list.gridy = 2;
      	GridBagConstraints gbc_canvasPanel = new GridBagConstraints();
      	gbc_canvasPanel.fill = GridBagConstraints.BOTH;
-     	gbc_canvasPanel.gridheight = 3;
+     	gbc_canvasPanel.gridheight = 2;
      	gbc_canvasPanel.gridy = 1;
-     	gbc_canvasPanel.gridwidth = 4;
      	gbc_canvasPanel.gridx = 3;
      	frame.getContentPane().add(canvasPanel, gbc_canvasPanel);
 	}
@@ -339,8 +340,8 @@ public class V2GUI {
      	tabbedPane.addTab("Standard equations", stdFuncTab);
      	GridBagLayout gbl_functionPanel = new GridBagLayout();
      	gbl_functionPanel.columnWidths = new int[]{5, 25, 50, 50, 50, 25, 5, 0};
-     	gbl_functionPanel.rowHeights = new int[]{5, 0, 0, 0, 0, 10, 5, 5, 0};
-     	gbl_functionPanel.columnWeights = new double[]{0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+     	gbl_functionPanel.rowHeights = new int[]{10, 0, 0, 0, 0, 10, 5, 5, 0};
+     	gbl_functionPanel.columnWeights = new double[]{0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
      	gbl_functionPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
      	stdFuncTab.setLayout(gbl_functionPanel);
      	
@@ -362,16 +363,145 @@ public class V2GUI {
      		@Override
      		public void keyPressed(KeyEvent e) {
      			if (e.getKeyCode() == KeyEvent.VK_ENTER && stdFuncInput.isFocusOwner()) {
-     				addPlot(new String[]{stdFuncInput.getText()},colorList.getNextAvailableColor(stdFuncList), getBounds(), DEFAULT_STEPSIZE);
+     				try {
+     					float stepSize = GuiUtil.evalString(txtStepSize.getText());
+						addPlot(new String[]{stdFuncInput.getText()},colorList.getNextAvailableColor(stdFuncList), getBounds("std"), stepSize);
+					} catch (ExpressionParseException e1) {
+						JOptionPane.showMessageDialog(frame,new JLabel(e1.getMessage(),JLabel.CENTER));
+					}
      			}
      			
      		}
      	});
-     	
+
+     	optionPanel = new JPanel();
+     	optionPanel.setBorder(BorderFactory.createEtchedBorder());
+     	GridBagConstraints gbc_optionPanel = new GridBagConstraints();
+     	gbc_optionPanel.fill = GridBagConstraints.HORIZONTAL;
+     	gbc_optionPanel.gridwidth = 5;
+     	gbc_optionPanel.insets = new Insets(0, 0, 5, 5);
+     	gbc_optionPanel.gridx = 1;
+     	gbc_optionPanel.gridy = 3;
+     	stdFuncTab.add(optionPanel, gbc_optionPanel);
+     	GridBagLayout gbl_panel = new GridBagLayout();
+     	gbl_panel.columnWidths = new int[]{5, 30, 0, 0, 0, 30, 5, 0};
+     	gbl_panel.rowHeights = new int[]{10, 0, 0, 0, 5, 0, 5, 0};
+     	gbl_panel.columnWeights = new double[]{0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE};
+     	gbl_panel.rowWeights = new double[]{1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE};
+     	optionPanel.setLayout(gbl_panel);
+
+     	// The limit data.
+     	txtXmin = new JTextField();
+     	GridBagConstraints gbc_txtXmin = new GridBagConstraints();
+     	gbc_txtXmin.gridwidth = 2;
+     	gbc_txtXmin.insets = new Insets(0, 0, 5, 5);
+     	gbc_txtXmin.gridx = 1;
+     	gbc_txtXmin.gridy = 1;
+     	optionPanel.add(txtXmin, gbc_txtXmin);
+     	txtXmin.setText("" + DEFAULT_BOUNDS[0]);
+     	txtXmin.setColumns(10);
+
+     	label_1 = new JLabel("< x <");
+     	GridBagConstraints gbc_label_1 = new GridBagConstraints();
+     	gbc_label_1.insets = new Insets(0, 0, 5, 5);
+     	gbc_label_1.gridx = 3;
+     	gbc_label_1.gridy = 1;
+     	optionPanel.add(label_1, gbc_label_1);
+
+     	txtXmax = new JTextField();
+     	GridBagConstraints gbc_txtXmax = new GridBagConstraints();
+     	gbc_txtXmax.gridwidth = 2;
+     	gbc_txtXmax.insets = new Insets(0, 0, 5, 5);
+     	gbc_txtXmax.gridx = 4;
+     	gbc_txtXmax.gridy = 1;
+     	optionPanel.add(txtXmax, gbc_txtXmax);
+     	txtXmax.setText("" + DEFAULT_BOUNDS[1]);
+     	txtXmax.setColumns(10);
+
+     	txtYmin = new JTextField();
+     	GridBagConstraints gbc_txtYmin = new GridBagConstraints();
+     	gbc_txtYmin.gridwidth = 2;
+     	gbc_txtYmin.insets = new Insets(0, 0, 5, 5);
+     	gbc_txtYmin.gridx = 1;
+     	gbc_txtYmin.gridy = 2;
+     	optionPanel.add(txtYmin, gbc_txtYmin);
+     	txtYmin.setText("" + DEFAULT_BOUNDS[2]);
+     	txtYmin.setColumns(10);
+
+     	label_2 = new JLabel("< y <");
+     	GridBagConstraints gbc_label_2 = new GridBagConstraints();
+     	gbc_label_2.insets = new Insets(0, 0, 5, 5);
+     	gbc_label_2.gridx = 3;
+     	gbc_label_2.gridy = 2;
+     	optionPanel.add(label_2, gbc_label_2);
+
+     	txtYmax = new JTextField();
+     	GridBagConstraints gbc_txtYmax = new GridBagConstraints();
+     	gbc_txtYmax.gridwidth = 2;
+     	gbc_txtYmax.insets = new Insets(0, 0, 5, 5);
+     	gbc_txtYmax.gridx = 4;
+     	gbc_txtYmax.gridy = 2;
+     	optionPanel.add(txtYmax, gbc_txtYmax);
+     	txtYmax.setText("" + DEFAULT_BOUNDS[3]);
+     	txtYmax.setColumns(10);
+
+     	txtZmin = new JTextField();
+     	GridBagConstraints gbc_txtZmin = new GridBagConstraints();
+     	gbc_txtZmin.gridwidth = 2;
+     	gbc_txtZmin.insets = new Insets(0, 0, 5, 5);
+     	gbc_txtZmin.gridx = 1;
+     	gbc_txtZmin.gridy = 3;
+     	optionPanel.add(txtZmin, gbc_txtZmin);
+     	txtZmin.setText("" + DEFAULT_BOUNDS[4]);
+     	txtZmin.setColumns(10);
+
+     	label_3 = new JLabel("< z <");
+     	GridBagConstraints gbc_label_3 = new GridBagConstraints();
+     	gbc_label_3.insets = new Insets(0, 0, 5, 5);
+     	gbc_label_3.gridx = 3;
+     	gbc_label_3.gridy = 3;
+     	optionPanel.add(label_3, gbc_label_3);
+
+     	txtZmax = new JTextField();
+     	GridBagConstraints gbc_txtZmax = new GridBagConstraints();
+     	gbc_txtZmax.gridwidth = 2;
+     	gbc_txtZmax.insets = new Insets(0, 0, 5, 5);
+     	gbc_txtZmax.gridx = 4;
+     	gbc_txtZmax.gridy = 3;
+     	optionPanel.add(txtZmax, gbc_txtZmax);
+     	txtZmax.setText("" + DEFAULT_BOUNDS[5]);
+     	txtZmax.setColumns(10);
+
+     	GuiUtil.setupUndoListener(txtXmin);
+     	GuiUtil.setupUndoListener(txtXmax);
+     	GuiUtil.setupUndoListener(txtYmin);
+     	GuiUtil.setupUndoListener(txtYmax);
+     	GuiUtil.setupUndoListener(txtZmin);
+     	GuiUtil.setupUndoListener(txtZmax);
+
+     	lblStepSize = new JLabel("Step size");
+     	lblStepSize.setHorizontalAlignment(SwingConstants.CENTER);
+     	GridBagConstraints gbc_lblStepSize = new GridBagConstraints();
+     	gbc_lblStepSize.anchor = GridBagConstraints.EAST;
+     	gbc_lblStepSize.insets = new Insets(0, 0, 5, 5);
+     	gbc_lblStepSize.gridx = 2;
+     	gbc_lblStepSize.gridy = 5;
+     	optionPanel.add(lblStepSize, gbc_lblStepSize);
+
+     	txtStepSize = new JTextField(DEFAULT_STEPSIZE + "");
+     	GridBagConstraints gbc_textField = new GridBagConstraints();
+     	gbc_textField.gridwidth = 2;
+     	gbc_textField.anchor = GridBagConstraints.WEST;
+     	gbc_textField.insets = new Insets(0, 0, 5, 5);
+     	gbc_textField.gridx = 3;
+     	gbc_textField.gridy = 5;
+     	optionPanel.add(txtStepSize, gbc_textField);
+     	txtStepSize.setColumns(10);
+
      	// The standard function list
      	stdFuncOuterPanel = new JPanel();
      	stdFuncPanelWrapper = new JScrollPane(stdFuncOuterPanel);
-     	stdFuncPanelWrapper.setBorder(null);
+     	stdFuncPanelWrapper.setBorder(BorderFactory.createEtchedBorder());
      	stdFuncPanelWrapper.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
      	GridBagConstraints gbc_stdFuncPanel = new GridBagConstraints();
      	gbc_stdFuncPanel.fill = GridBagConstraints.BOTH;
@@ -476,13 +606,107 @@ public class V2GUI {
      		public void keyPressed(KeyEvent e) {
      			String[] paramExpr = new String[]{inputX.getText(),inputY.getText(),inputZ.getText()};
      			if (e.getKeyCode() == KeyEvent.VK_ENTER && (inputX.isFocusOwner() || inputY.isFocusOwner() || inputZ.isFocusOwner())) {
-     				addPlot(paramExpr,colorList.getNextAvailableColor(stdFuncList), getBounds(), DEFAULT_STEPSIZE);
+     				try {
+						float stepSize = GuiUtil.evalString(txtParamStepSize.getText());
+	    				addPlot(paramExpr,colorList.getNextAvailableColor(paramFuncList), getBounds("parametric"), stepSize);
+					} catch (ExpressionParseException e1) {
+						JOptionPane.showMessageDialog(frame,new JLabel(e1.getMessage(),JLabel.CENTER));
+					}
      			}
      		}
      	};
      	inputX.addKeyListener(inputListener);
      	inputY.addKeyListener(inputListener);
      	inputZ.addKeyListener(inputListener);
+     	
+     	panel = new JPanel();
+     	panel.setBorder(BorderFactory.createEtchedBorder());
+     	GridBagConstraints gbc_panel = new GridBagConstraints();
+     	gbc_panel.gridwidth = 5;
+     	gbc_panel.insets = new Insets(0, 0, 5, 5);
+     	gbc_panel.fill = GridBagConstraints.HORIZONTAL;
+     	gbc_panel.gridx = 1;
+     	gbc_panel.gridy = 5;
+     	paramFuncTab.add(panel, gbc_panel);
+     	GridBagLayout gbl_panel = new GridBagLayout();
+     	gbl_panel.columnWidths = new int[]{5, 30, 0, 0, 0, 30, 5, 0};
+     	gbl_panel.rowHeights = new int[]{10, 0, 0, 5, 0, 5, 0};
+     	gbl_panel.columnWeights = new double[]{0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE};
+     	gbl_panel.rowWeights = new double[]{1.0, 0.0, 0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE};
+     	panel.setLayout(gbl_panel);
+     	
+     	txtTmin = new JTextField();
+     	txtTmin.setText("0");
+     	txtTmin.setColumns(10);
+     	GridBagConstraints gbc_textField_param = new GridBagConstraints();
+     	gbc_textField_param.gridwidth = 2;
+     	gbc_textField_param.insets = new Insets(0, 0, 5, 5);
+     	gbc_textField_param.gridx = 1;
+     	gbc_textField_param.gridy = 1;
+     	panel.add(txtTmin, gbc_textField_param);
+     	
+     	label_4 = new JLabel("< t <");
+     	GridBagConstraints gbc_label_4 = new GridBagConstraints();
+     	gbc_label_4.insets = new Insets(0, 0, 5, 5);
+     	gbc_label_4.gridx = 3;
+     	gbc_label_4.gridy = 1;
+     	panel.add(label_4, gbc_label_4);
+     	
+     	txtTmax = new JTextField();
+     	txtTmax.setText("2*pi");
+     	txtTmax.setColumns(10);
+     	GridBagConstraints gbc_textField_param_1 = new GridBagConstraints();
+     	gbc_textField_param_1.gridwidth = 2;
+     	gbc_textField_param_1.insets = new Insets(0, 0, 5, 5);
+     	gbc_textField_param_1.gridx = 4;
+     	gbc_textField_param_1.gridy = 1;
+     	panel.add(txtTmax, gbc_textField_param_1);
+     	
+     	txtUmin = new JTextField();
+     	txtUmin.setText("0");
+     	txtUmin.setColumns(10);
+     	GridBagConstraints gbc_textField_2 = new GridBagConstraints();
+     	gbc_textField_2.gridwidth = 2;
+     	gbc_textField_2.insets = new Insets(0, 0, 5, 5);
+     	gbc_textField_2.gridx = 1;
+     	gbc_textField_2.gridy = 2;
+     	panel.add(txtUmin, gbc_textField_2);
+     	
+     	label_5 = new JLabel("< u <");
+     	GridBagConstraints gbc_label_5 = new GridBagConstraints();
+     	gbc_label_5.insets = new Insets(0, 0, 5, 5);
+     	gbc_label_5.gridx = 3;
+     	gbc_label_5.gridy = 2;
+     	panel.add(label_5, gbc_label_5);
+     	
+     	txtUmax = new JTextField();
+     	txtUmax.setText("2*pi");
+     	txtUmax.setColumns(10);
+     	GridBagConstraints gbc_textField_3 = new GridBagConstraints();
+     	gbc_textField_3.gridwidth = 2;
+     	gbc_textField_3.insets = new Insets(0, 0, 5, 5);
+     	gbc_textField_3.gridx = 4;
+     	gbc_textField_3.gridy = 2;
+     	panel.add(txtUmax, gbc_textField_3);
+     	
+     	label_7 = new JLabel("Step size");
+     	label_7.setHorizontalAlignment(SwingConstants.CENTER);
+     	GridBagConstraints gbc_label_7 = new GridBagConstraints();
+     	gbc_label_7.anchor = GridBagConstraints.EAST;
+     	gbc_label_7.insets = new Insets(0, 0, 5, 5);
+     	gbc_label_7.gridx = 2;
+     	gbc_label_7.gridy = 4;
+     	panel.add(label_7, gbc_label_7);
+     	
+     	txtParamStepSize = new JTextField(DEFAULT_STEPSIZE + "");
+     	txtParamStepSize.setColumns(10);
+     	GridBagConstraints gbc_textField_6 = new GridBagConstraints();
+     	gbc_textField_6.anchor = GridBagConstraints.WEST;
+     	gbc_textField_6.gridwidth = 2;
+     	gbc_textField_6.insets = new Insets(0, 0, 5, 5);
+     	gbc_textField_6.gridx = 3;
+     	gbc_textField_6.gridy = 4;
+     	panel.add(txtParamStepSize, gbc_textField_6);
      	
      	// The parametric function list
      	paramFuncOuterPanel = new JPanel();
@@ -504,12 +728,12 @@ public class V2GUI {
      	paramFuncOuterPanel.setLayout(gbl_paramFuncPanel);
      	
      	paramFuncInnerPanel = new JPanel();
-     	GridBagConstraints gbc_panel = new GridBagConstraints();
-     	gbc_panel.anchor = GridBagConstraints.NORTH;
-     	gbc_panel.fill = GridBagConstraints.HORIZONTAL;
-     	gbc_panel.gridx = 0;
-     	gbc_panel.gridy = 0;
-     	paramFuncOuterPanel.add(paramFuncInnerPanel, gbc_panel);
+     	GridBagConstraints gbc_panel_param = new GridBagConstraints();
+     	gbc_panel_param.anchor = GridBagConstraints.NORTH;
+     	gbc_panel_param.fill = GridBagConstraints.HORIZONTAL;
+     	gbc_panel_param.gridx = 0;
+     	gbc_panel_param.gridy = 0;
+     	paramFuncOuterPanel.add(paramFuncInnerPanel, gbc_panel_param);
      	paramFuncInnerPanel.setLayout(new BoxLayout(paramFuncInnerPanel, BoxLayout.Y_AXIS));
 
 	}
@@ -519,105 +743,6 @@ public class V2GUI {
 		//			- I guess faster implicit should be an option here - or should it be controlled by a menu bar item?
 		//			- How should variable limits be handled in the parametric case?
 	private void initOptionPanel(){
-		optionPanelWrapper = new JScrollPane();
-     	GridBagConstraints gbc_scrollPane = new GridBagConstraints();
-     	gbc_scrollPane.insets = new Insets(0, 0, 5, 5);
-     	gbc_scrollPane.fill = GridBagConstraints.BOTH;
-     	gbc_scrollPane.gridx = 2;
-     	gbc_scrollPane.gridy = 3;
-     	frame.getContentPane().add(optionPanelWrapper, gbc_scrollPane);
-     	
-     	optionPanel = new JPanel();
-     	optionPanelWrapper.setViewportView(optionPanel);
-     	GridBagLayout gbl_panel = new GridBagLayout();
-     	gbl_panel.columnWidths = new int[]{5, 0, 0, 0, 5, 0};
-     	gbl_panel.rowHeights = new int[]{10, 0, 0, 0, 5, 0};
-     	gbl_panel.columnWeights = new double[]{1.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
-     	gbl_panel.rowWeights = new double[]{1.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
-     	optionPanel.setLayout(gbl_panel);
-     	
-     	// The limit data.
-     	txtXmin = new JTextField();
-     	GridBagConstraints gbc_txtXmin = new GridBagConstraints();
-     	gbc_txtXmin.insets = new Insets(0, 0, 5, 5);
-     	gbc_txtXmin.gridx = 1;
-     	gbc_txtXmin.gridy = 1;
-     	optionPanel.add(txtXmin, gbc_txtXmin);
-     	txtXmin.setText("" + DEFAULT_BOUNDS[0]);
-     	txtXmin.setColumns(10);
-
-     	label_1 = new JLabel("< X <");
-     	GridBagConstraints gbc_label_1 = new GridBagConstraints();
-     	gbc_label_1.insets = new Insets(0, 0, 5, 5);
-     	gbc_label_1.gridx = 2;
-     	gbc_label_1.gridy = 1;
-     	optionPanel.add(label_1, gbc_label_1);
-     	
-     	txtXmax = new JTextField();
-     	GridBagConstraints gbc_txtXmax = new GridBagConstraints();
-     	gbc_txtXmax.insets = new Insets(0, 0, 5, 5);
-     	gbc_txtXmax.gridx = 3;
-     	gbc_txtXmax.gridy = 1;
-     	optionPanel.add(txtXmax, gbc_txtXmax);
-     	txtXmax.setText("" + DEFAULT_BOUNDS[1]);
-     	txtXmax.setColumns(10);
-     	
-     	txtYmin = new JTextField();
-     	GridBagConstraints gbc_txtYmin = new GridBagConstraints();
-     	gbc_txtYmin.insets = new Insets(0, 0, 5, 5);
-     	gbc_txtYmin.gridx = 1;
-     	gbc_txtYmin.gridy = 2;
-     	optionPanel.add(txtYmin, gbc_txtYmin);
-     	txtYmin.setText("" + DEFAULT_BOUNDS[2]);
-     	txtYmin.setColumns(10);
-     	
-     	label_2 = new JLabel("< Y <");
-     	GridBagConstraints gbc_label_2 = new GridBagConstraints();
-     	gbc_label_2.insets = new Insets(0, 0, 5, 5);
-     	gbc_label_2.gridx = 2;
-     	gbc_label_2.gridy = 2;
-     	optionPanel.add(label_2, gbc_label_2);
-     	
-     	txtYmax = new JTextField();
-     	GridBagConstraints gbc_txtYmax = new GridBagConstraints();
-     	gbc_txtYmax.insets = new Insets(0, 0, 5, 5);
-     	gbc_txtYmax.gridx = 3;
-     	gbc_txtYmax.gridy = 2;
-     	optionPanel.add(txtYmax, gbc_txtYmax);
-     	txtYmax.setText("" + DEFAULT_BOUNDS[3]);
-     	txtYmax.setColumns(10);
-     	
-     	txtZmin = new JTextField();
-     	GridBagConstraints gbc_txtZmin = new GridBagConstraints();
-     	gbc_txtZmin.insets = new Insets(0, 0, 5, 5);
-     	gbc_txtZmin.gridx = 1;
-     	gbc_txtZmin.gridy = 3;
-     	optionPanel.add(txtZmin, gbc_txtZmin);
-     	txtZmin.setText("" + DEFAULT_BOUNDS[4]);
-     	txtZmin.setColumns(10);
-     	
-     	label_3 = new JLabel("< Z <");
-     	GridBagConstraints gbc_label_3 = new GridBagConstraints();
-     	gbc_label_3.insets = new Insets(0, 0, 5, 5);
-     	gbc_label_3.gridx = 2;
-     	gbc_label_3.gridy = 3;
-     	optionPanel.add(label_3, gbc_label_3);
-     	
-     	txtZmax = new JTextField();
-     	GridBagConstraints gbc_txtZmax = new GridBagConstraints();
-     	gbc_txtZmax.insets = new Insets(0, 0, 5, 5);
-     	gbc_txtZmax.gridx = 3;
-     	gbc_txtZmax.gridy = 3;
-     	optionPanel.add(txtZmax, gbc_txtZmax);
-     	txtZmax.setText("" + DEFAULT_BOUNDS[5]);
-     	txtZmax.setColumns(10);
-     	
-     	GuiUtil.setupUndoListener(txtXmin);
-     	GuiUtil.setupUndoListener(txtXmax);
-     	GuiUtil.setupUndoListener(txtYmin);
-     	GuiUtil.setupUndoListener(txtYmax);
-     	GuiUtil.setupUndoListener(txtZmin);
-     	GuiUtil.setupUndoListener(txtZmax);
 	}
 
 	private void autoResize(){
@@ -783,14 +908,24 @@ public class V2GUI {
 	/*
 	 * Return current bounds (set in GUI).
 	 */
-	private float[] getBounds(){
+	private float[] getBounds(String type) throws ExpressionParseException{
 		float[] bounds = new float[6];
-		bounds[0] = Float.parseFloat(txtXmin.getText());
-		bounds[1] = Float.parseFloat(txtXmax.getText());
-		bounds[2] = Float.parseFloat(txtYmin.getText());
-		bounds[3] = Float.parseFloat(txtYmax.getText());
-		bounds[4] = Float.parseFloat(txtZmin.getText());
-		bounds[5] = Float.parseFloat(txtZmax.getText());
+		if(type == "parametric"){
+			bounds[0] = GuiUtil.evalString(txtTmin.getText());
+			bounds[1] = GuiUtil.evalString(txtTmax.getText());
+			bounds[2] = GuiUtil.evalString(txtUmin.getText());
+			bounds[3] = GuiUtil.evalString(txtUmax.getText());
+			bounds[4] = 0;
+			bounds[5] = 0;
+		}
+		if(type == "std"){
+			bounds[0] = GuiUtil.evalString(txtXmin.getText());
+			bounds[1] = GuiUtil.evalString(txtXmax.getText());
+			bounds[2] = GuiUtil.evalString(txtYmin.getText());
+			bounds[3] = GuiUtil.evalString(txtYmax.getText());
+			bounds[4] = GuiUtil.evalString(txtZmin.getText());
+			bounds[5] = GuiUtil.evalString(txtZmax.getText());
+		}
 		return bounds;
 	}
 
@@ -936,8 +1071,8 @@ public class V2GUI {
 				}
 				for(int i = 0; i < importLists[1].length; i++){
 					addPlot(importLists[1][i].getExpression(), importLists[1][i].getColor(), importLists[1][i].getBounds(), importLists[1][i].getStepsize());
-					stdFuncList.get(i).setSelected(importLists[1][i].isSelected());
-					stdFuncList.get(i).setVisible(importLists[1][i].isVisible());
+					paramFuncList.get(i).setSelected(importLists[1][i].isSelected());
+					paramFuncList.get(i).setVisible(importLists[1][i].isVisible());
 				}
 			}
 			catch(IOException | ClassCastException | ClassNotFoundException ex){
