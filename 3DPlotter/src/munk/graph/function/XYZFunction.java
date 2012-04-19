@@ -42,4 +42,12 @@ public class XYZFunction extends AbstractFunction {
 		} else 
 			return null;
 	}
+	
+	@Override
+	public String toString() {
+		String result = "";
+		for (String str : getExpression())
+			result += str;
+		return result;
+	}
 }

@@ -1,7 +1,6 @@
 package munk.graph.function;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -120,7 +119,7 @@ public class FunctionUtil {
 		return varNames;
 	}
 	
-	public static ZippedFunction[] zipFunctionList(FunctionList<Function> list){
+	public static ZippedFunction[] zipFunctionList(List<Function> list){
 		ZippedFunction[] zippedList = new ZippedFunction[list.size()];
 		for(int i = 0; i < list.size(); i++){
 			Function f = list.get(i);
