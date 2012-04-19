@@ -77,7 +77,7 @@ public abstract class AbstractImplicit implements ImplicitPlotter {
 	
 	public Shape3D getPlot() {
 		if (plot == null) {
-			triangles = new ArrayList<Point3f>(30000);
+			
 			plot = plot();
 			triangles = null;
 		}
@@ -159,6 +159,9 @@ public abstract class AbstractImplicit implements ImplicitPlotter {
 	}
 	
 	protected void addTriangles(int nFacets, Triangle[] newTriangles) {
+		if (triangles == null)
+			triangles = new ArrayList<Point3f>(30000);
+		
 		addTriangles(nFacets, newTriangles, triangles);
 	}
 	
