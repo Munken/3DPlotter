@@ -362,7 +362,7 @@ public class V2GUI {
      		@Override
      		public void keyPressed(KeyEvent e) {
      			if (e.getKeyCode() == KeyEvent.VK_ENTER && stdFuncInput.isFocusOwner()) {
-     				addPlot(new String[]{stdFuncInput.getText()},colorList.getNextAvailableColor(stdFuncList), getBounds(), DEFAULT_STEPSIZE);
+     				addPlot(new String[]{stdFuncInput.getText()},colorList.getNextAvailableColor(map.keySet()), getBounds(), DEFAULT_STEPSIZE);
      			}
      			
      		}
@@ -476,7 +476,7 @@ public class V2GUI {
      		public void keyPressed(KeyEvent e) {
      			String[] paramExpr = new String[]{inputX.getText(),inputY.getText(),inputZ.getText()};
      			if (e.getKeyCode() == KeyEvent.VK_ENTER && (inputX.isFocusOwner() || inputY.isFocusOwner() || inputZ.isFocusOwner())) {
-     				addPlot(paramExpr,colorList.getNextAvailableColor(stdFuncList), getBounds(), DEFAULT_STEPSIZE);
+     				addPlot(paramExpr,colorList.getNextAvailableColor(map.keySet()), getBounds(), DEFAULT_STEPSIZE);
      			}
      		}
      	};
