@@ -856,7 +856,7 @@ public class V2GUI {
 			Function newFunc = FunctionUtil.createFunction(newExpr, newColor, bounds, stepsize);
 			
 			if (oldFunc.getClass() == ParametricFunction.class) {
-				
+				paramFuncList.set(paramFuncList.indexOf(oldFunc), newFunc);
 			} else {
 				stdFuncList.set(stdFuncList.indexOf(oldFunc), newFunc);
 			}
