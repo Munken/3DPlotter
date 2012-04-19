@@ -1,7 +1,7 @@
 package munk.graph.plot.implicit;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.media.j3d.Shape3D;
 import javax.vecmath.Point3f;
@@ -26,7 +26,10 @@ public class ImplicitIterative extends AbstractImplicit{
 	private static final MarchingCubes MARCHER = new MarchingCubes();
 	private static final float ISOLEVEL = 0;
 	
-	private List<MarchCell> cells;
+//	private List<MarchCell> cells;
+	private Queue<MarchCell> cells;
+
+	private int	nThreadsDone;
 	
 	public ImplicitIterative(String expression, 
 							 float xMin, float xMax, 
@@ -37,7 +40,8 @@ public class ImplicitIterative extends AbstractImplicit{
 		super(expression, xMin, xMax, yMin, yMax, zMin, zMax, stepsize, stepsize, stepsize);
 		this.stepsize = stepsize;
 		
-		cells = new LinkedList<MarchCell>();
+//		cells = new LinkedList<MarchCell>();
+		cells = new ConcurrentLinkedQueue<MarchCell>();
 	}
 	
 	public  Shape3D plot() {
@@ -66,21 +70,44 @@ public class ImplicitIterative extends AbstractImplicit{
 		
 		addStartCells(startCell);
 		
-		while (cells.size() > 0) {
+		int nThreads = Runtime.getRuntime().availableProcessors();
+		nThreads = 1;
+		
+		while (true) {
 			// Next cell to process
-			MarchCell next = cells.remove(0);
+			MarchCell next;
+			while ((next = cells.poll()) != null) {
 
-			// How many triangles do we need for this cell
-			int nTriangles = MARCHER.marchCube(next, newTriangles, ISOLEVEL);
-			
-			if (nTriangles > 0) {
-				addTriangles(nTriangles, newTriangles);
-				
-				// Add the triangles from this cell and add neighbours
-				marchNext(next);
+				// How many triangles do we need for this cell
+				int nTriangles = MARCHER.marchCube(next, newTriangles, ISOLEVEL);
+
+				if (nTriangles > 0) {
+					addTriangles(nTriangles, newTriangles);
+
+					// Add the triangles from this cell and add neighbours
+					marchNext(next);
+				}
 			}
+			nThreadsDone++;
+			
+			while (cells.peek() == null) {
+				try {
+					Thread.sleep(50);
+					if (nThreadsDone == nThreads) {
+						visited = null;
+						return;
+					}
+					
+					
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
+			nThreadsDone--;
 		}
-		visited = null;
+		
 		
 	}
 	
@@ -556,3 +583,41 @@ public class ImplicitIterative extends AbstractImplicit{
 	}
 	
 }
+
+//private void marchCubes(Point3f startcube) {
+//
+//	newTriangles = initTriangleArray(MarchingCubes.MAX_TRIANGLES_RETURNED);
+//	visited = new boolean[zLength][yLength][xLength];
+//	
+//	MarchCell startCell = initStartCube(startcube, startX, startY, startZ);
+//	int nFacets = marchCube(startCell, newTriangles);
+//	if (nFacets > 0)
+//		addTriangles(nFacets, newTriangles);
+//	
+//	addStartCells(startCell);
+//	
+//	while (cells.size() > 0) {
+//		// Next cell to process
+//		MarchCell next = cells.remove(0);
+//
+//		// How many triangles do we need for this cell
+//		int nTriangles = MARCHER.marchCube(next, newTriangles, ISOLEVEL);
+//		
+//		if (nTriangles > 0) {
+//			addTriangles(nTriangles, newTriangles);
+//			
+//			// Add the triangles from this cell and add neighbours
+//			marchNext(next);
+//		}
+//	}
+//	visited = null;
+//	
+//}
+
+//private void markAsVisited(int x, int y, int z) {
+//	visited[z][y][x] = true;		
+//}
+//
+//private boolean isVisited(int x, int y, int z) {
+//	return visited[z][y][x];
+//}
