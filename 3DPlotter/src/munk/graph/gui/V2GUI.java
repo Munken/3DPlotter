@@ -140,7 +140,7 @@ public class V2GUI {
 	
 	private void initFrame(){
 		frame = new JFrame("Ultra Mega Epic Xtreme Plotter 3D");
-		frame.setBounds(100, 100, 1000, 1000);
+		frame.setBounds(0, 0, 1000, 1000);
      	GridBagLayout gbl = new GridBagLayout();
      	gbl.columnWidths = new int[]{10, 350, 0, 0, 0};
      	gbl.rowHeights = new int[]{2, 0, 5, 0};
@@ -856,7 +856,7 @@ public class V2GUI {
 			Function newFunc = FunctionUtil.createFunction(newExpr, newColor, bounds, stepsize);
 			
 			if (oldFunc.getClass() == ParametricFunction.class) {
-				
+				paramFuncList.set(paramFuncList.indexOf(oldFunc), newFunc);
 			} else {
 				stdFuncList.set(stdFuncList.indexOf(oldFunc), newFunc);
 			}
@@ -938,7 +938,10 @@ public class V2GUI {
 	//			- XMin, XMax and ZMax should be added; but how should this be handled in the parametric case?
 	private void spawnEditDialog(final Function f) {
 		editDialog = new JDialog();
-		editDialog.setLocation(frame.getLocationOnScreen());
+		Point loc = frame.getLocationOnScreen();
+		loc.x += frame.getWidth()/2;
+		loc.y += frame.getHeight()/2;
+		editDialog.setLocation(loc);
 		EditOptionPanel editOptionPanel = new EditOptionPanel(colorList, f);
 		
 		editOptionPanel.addActionListener(new ActionListener() {
