@@ -91,9 +91,16 @@ public class Plotter3D extends JPanel{
 		offScreenCanvas.getScreen3D().setPhysicalScreenWidth(
 				0.0254 / 90 * offScreenWidth);
 
-		RenderedImage renderedImage = new BufferedImage(offScreenWidth,
-				offScreenHeight, BufferedImage.TYPE_3BYTE_BGR);
-		ImageComponent2D imageComponent = new ImageComponent2D(ImageComponent.FORMAT_RGB8,
+		GraphicsConfigTemplate3D gc3D = new GraphicsConfigTemplate3D();
+		gc3D.setSceneAntialiasing(GraphicsConfigTemplate.PREFERRED);
+		GraphicsDevice gd[] = GraphicsEnvironment.getLocalGraphicsEnvironment()
+				.getScreenDevices();
+//		RenderedImage renderedImage = new BufferedImage(offScreenWidth,
+//				offScreenHeight, BufferedImage.TYPE_3BYTE_BGR);
+		
+		RenderedImage renderedImage = gd[0].getBestConfiguration(gc3D).createCompatibleImage(offScreenWidth, offScreenWidth);
+		
+		ImageComponent2D imageComponent = new ImageComponent2D(ImageComponent.FORMAT_RGB,
 				renderedImage);
 		imageComponent.setCapability(ImageComponent2D.ALLOW_IMAGE_READ);
 		offScreenCanvas.setOffScreenBuffer(imageComponent);
@@ -105,7 +112,6 @@ public class Plotter3D extends JPanel{
 	public RenderedImage takeScreenshot() {
 		offScreenCanvas.renderOffScreenBuffer();
 		offScreenCanvas.waitForOffScreenRendering();
-		System.out.println("Hest");
 		return offScreenCanvas.getOffScreenBuffer().getImage();
 	}
 	
