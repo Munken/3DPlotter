@@ -1,7 +1,6 @@
 package munk.graph.gui;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 
 import javax.media.j3d.*;
@@ -75,7 +74,7 @@ public class Plotter3D extends JPanel{
 
 		Canvas3D c3d = new Canvas3D(gd[0].getBestConfiguration(gc3D), offscreen);
 		c3d.setSize(500, 500);
-
+		
 		return c3d;
 	}
 
@@ -91,9 +90,16 @@ public class Plotter3D extends JPanel{
 		offScreenCanvas.getScreen3D().setPhysicalScreenWidth(
 				0.0254 / 90 * offScreenWidth);
 
-		RenderedImage renderedImage = new BufferedImage(offScreenWidth,
-				offScreenHeight, BufferedImage.TYPE_3BYTE_BGR);
-		ImageComponent2D imageComponent = new ImageComponent2D(ImageComponent.FORMAT_RGB8,
+		GraphicsConfigTemplate3D gc3D = new GraphicsConfigTemplate3D();
+		gc3D.setSceneAntialiasing(GraphicsConfigTemplate.PREFERRED);
+		GraphicsDevice gd[] = GraphicsEnvironment.getLocalGraphicsEnvironment()
+				.getScreenDevices();
+//		RenderedImage renderedImage = new BufferedImage(offScreenWidth,
+//				offScreenHeight, BufferedImage.TYPE_3BYTE_BGR);
+		
+		RenderedImage renderedImage = gd[0].getBestConfiguration(gc3D).createCompatibleImage(offScreenWidth, offScreenWidth);
+		
+		ImageComponent2D imageComponent = new ImageComponent2D(ImageComponent.FORMAT_RGB,
 				renderedImage);
 		imageComponent.setCapability(ImageComponent2D.ALLOW_IMAGE_READ);
 		offScreenCanvas.setOffScreenBuffer(imageComponent);
@@ -105,7 +111,6 @@ public class Plotter3D extends JPanel{
 	public RenderedImage takeScreenshot() {
 		offScreenCanvas.renderOffScreenBuffer();
 		offScreenCanvas.waitForOffScreenRendering();
-
 		return offScreenCanvas.getOffScreenBuffer().getImage();
 	}
 	

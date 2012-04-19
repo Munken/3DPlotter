@@ -1,21 +1,17 @@
 package munk.graph.gui;
 
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.vecmath.Color3f;
 
-import munk.graph.function.Function;
-import munk.graph.function.XYZFunction;
+import com.graphbuilder.math.ExpressionParseException;
+import com.graphbuilder.math.UndefinedVariableException;
+
+import munk.graph.function.*;
 
 @SuppressWarnings("serial")
 public class EditOptionPanel extends JPanel {
@@ -51,7 +47,7 @@ public class EditOptionPanel extends JPanel {
 		add(stepSize, gbc_textField);
 		stepSize.setColumns(10);
 		
-		comboBox = new JComboBox(colorList.getIconList());
+		comboBox = new JComboBox<ColorIcon>(colorList.getIconList());
 		GridBagConstraints gbc_comboBox = new GridBagConstraints();
 		gbc_comboBox.insets = new Insets(0, 0, 5, 5);
 		gbc_comboBox.fill = GridBagConstraints.HORIZONTAL;
@@ -88,11 +84,24 @@ public class EditOptionPanel extends JPanel {
 	 */
 	private void signalAll(){
 		for(ActionListener a : listeners){
-			try{
-					a.actionPerformed(new ActionEvent(new XYZFunction("y=x", (Color3f) colorList.get(comboBox.getSelectedIndex()), new float[]{-1,1,-1,1,-1,1}, Float.parseFloat(stepSize.getText())), 0, ""));
-			}
-			catch(Exception e){
-				e.printStackTrace();
+			Function f;
+			try {
+				f = FunctionUtil.createFunction(oldFunc.getExpression(), 
+						(Color3f) colorList.get(comboBox.getSelectedIndex()),
+						oldFunc.getBounds(), Float.parseFloat(stepSize.getText()));
+				a.actionPerformed(new ActionEvent(f, FunctionLabel.UPDATE, ""));
+			} catch (ExpressionParseException | IllegalEquationException | UndefinedVariableException e) {
+				SwingUtilities.invokeLater(new Runnable() {
+					public void run() {
+						JOptionPane.showMessageDialog(null, e.getMessage());
+					}
+				});
+			} catch (NumberFormatException e) {
+				SwingUtilities.invokeLater(new Runnable() {
+					public void run() {
+						JOptionPane.showMessageDialog(null, stepSize.getText() + " is not a valid nuber");
+					}
+				});
 			}
 		}
 	}

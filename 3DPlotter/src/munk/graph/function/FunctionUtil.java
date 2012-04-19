@@ -7,8 +7,6 @@ import java.util.regex.Pattern;
 import javax.media.j3d.*;
 import javax.vecmath.Color3f;
 
-import munk.graph.appearance.ColorAppearance;
-
 import com.graphbuilder.math.*;
 
 public class FunctionUtil {
@@ -17,7 +15,7 @@ public class FunctionUtil {
 	private static Pattern SEPARATION = Pattern.compile("^ *([xyz]) *=(?:(?!(?:(\\1|=))).)*$");
 	
 	public static BranchGroup setApperancePackInBranchGroup(Color3f color, Shape3D shape, Node handle) {
-		shape.setAppearance(new ColorAppearance(color));
+//		shape.setAppearance(new ColorAppearance(color));
 		shape.setCapability(Shape3D.ALLOW_APPEARANCE_WRITE);
 
 		BranchGroup bg = new BranchGroup();

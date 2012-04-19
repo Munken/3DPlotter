@@ -43,17 +43,7 @@ public class PlotterDriver {
 //		ImplicitRecursiveFunction rec = new ImplicitRecursiveFunction(expr, Colors.BLUE, recBound, 0.05f);
 //		p.plotFunction(rec);
 		
-		ImplicitIterativeFunction it = new ImplicitIterativeFunction("x = .97", Colors.BLUE, recBound, 0.05f);
-		p.plotFunction(it);
-		it = new ImplicitIterativeFunction("y = 0.97", Colors.BLUE, recBound, 0.05f);
-		p.plotFunction(it);
-		it = new ImplicitIterativeFunction("x = -0.97", Colors.BLUE, recBound, 0.05f);
-		p.plotFunction(it);
-		it = new ImplicitIterativeFunction("y = -0.97", Colors.BLUE, recBound, 0.05f);
-		p.plotFunction(it);
-		it = new ImplicitIterativeFunction("z = -0.97", Colors.BLUE, recBound, 0.05f);
-		p.plotFunction(it);
-		it = new ImplicitIterativeFunction("z = 0.97", Colors.BLUE, recBound, 0.05f);
+		ImplicitIterativeFunction it = new ImplicitIterativeFunction("x^2 + y^2 = 1", Colors.BLUE, recBound, 0.1f);
 		p.plotFunction(it);
 		
 		
