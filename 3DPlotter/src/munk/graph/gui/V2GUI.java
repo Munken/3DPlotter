@@ -28,7 +28,6 @@ public class V2GUI {
 
 	private static final int CANVAS_INITIAL_WIDTH = 600;
 	private static final int CANVAS_INITIAL_HEIGTH = 600;
-	private static final float DEFAULT_STEPSIZE = (float) 0.05;
 	private static final float[] DEFAULT_BOUNDS = {-1,1,-1,1,-1,1};
 	
 	// GUI Variables.
@@ -950,8 +949,8 @@ public class V2GUI {
 			sliderValue = paramSlider.getValue();
 		}
 		double resolution = 0.505 - Math.log10(sliderValue+1)/4;
-//		float[] bounds = getBounds(type);
-//		double worldSize = (bounds[1]-bounds[0])*(bounds[3]-bounds[2])*(bounds[5]-bounds[4]);
+		// float[] bounds = getBounds(type);
+		// double worldSize = Math.pow((bounds[1]-bounds[0])*(bounds[3]-bounds[2])*(bounds[5]-bounds[4])/8,3);
 		return (float) ((float) resolution);
 	}
 
