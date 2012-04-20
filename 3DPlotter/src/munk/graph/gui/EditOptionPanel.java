@@ -9,7 +9,6 @@ import javax.vecmath.Color3f;
 import munk.graph.function.*;
 
 import com.graphbuilder.math.*;
-import javax.swing.border.EtchedBorder;
 
 @SuppressWarnings("serial")
 public class EditOptionPanel extends JPanel {
