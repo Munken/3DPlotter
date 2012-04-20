@@ -47,6 +47,12 @@ public class ImplicitIterativeFunction extends AbstractFunction {
 		} else 
 			return null;
 	}
+	
+	@Override
+	public String toString() {
+		return "Implicit: " + super.toString();
+	}
+
 
 }
 

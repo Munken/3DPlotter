@@ -120,5 +120,16 @@ public abstract class AbstractFunction implements Function{
 	public float[] getBounds() {
 		return bounds;
 	}
+	
+	@Override
+	public String toString() {
+		String result = "[";
+		for (String str : expr) {
+			result += str + ", ";
+		}
+		
+		result = result.substring(0, result.length() - 2) + "]";
+		return result;
+	}
 
 }

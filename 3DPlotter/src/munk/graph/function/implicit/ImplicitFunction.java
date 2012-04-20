@@ -47,6 +47,11 @@ public class ImplicitFunction extends AbstractFunction {
 		} else 
 			return null;
 	}
+	
+	@Override
+	public String toString() {
+		return "Implicit: " + super.toString();
+	}
 
 }
 

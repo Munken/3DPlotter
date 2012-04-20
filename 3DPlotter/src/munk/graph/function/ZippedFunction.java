@@ -46,4 +46,15 @@ public class ZippedFunction implements Serializable {
 	public float[] getBounds(){
 		return bounds;
 	}
+	
+	@Override
+	public String toString() {
+		String result = "Wrap: [";
+		for (String str : expr) {
+			result += str + ", ";
+		}
+		
+		result = result.substring(0, result.length() - 2) + "]";
+		return result;
+	}
 }

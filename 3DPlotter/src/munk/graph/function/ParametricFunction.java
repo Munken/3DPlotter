@@ -68,4 +68,9 @@ public class ParametricFunction extends AbstractFunction {
 	private static String[] expressionArray(String... expr) {
 		return expr;
 	}
+	
+	@Override
+	public String toString() {
+		return "Parametric " + varNames.length + "D " + super.toString();
+	}
 }
