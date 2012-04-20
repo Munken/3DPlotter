@@ -11,7 +11,7 @@ public interface FunctionLabel {
 	static final Color  WARNING_COLOR = new Color(255, 215, 0); // Golden yellow
 	
 	static final int UPDATE = 0;
-	static final int SPAWNEDIT = 1;
+	static final int UPDATEEDIT = 1;
 	static final int DELETE = 2;
 	static final int VISIBILITY = 3;
 	static final int HIDEEDIT = 4;

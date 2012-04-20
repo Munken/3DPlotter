@@ -17,8 +17,7 @@ public class EditOptionPanel extends JPanel {
 	private Function oldFunc;
 	private JComboBox comboBox;
 	private JSlider slider;
-	
-	
+	private ColorList colorList;
 	
 	public EditOptionPanel(final ColorList colorList, Function f, final ActionListener a){
 		//setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
@@ -38,20 +37,20 @@ public class EditOptionPanel extends JPanel {
 		add(resolution, gbc_lblStepSize);
 		
 		comboBox = new JComboBox(colorList.getIconList());
+		comboBox.setEnabled(false);
 		GridBagConstraints gbc_comboBox = new GridBagConstraints();
 		gbc_comboBox.insets = new Insets(0, 0, 5, 5);
 		gbc_comboBox.fill = GridBagConstraints.HORIZONTAL;
 		gbc_comboBox.gridx = 3;
 		gbc_comboBox.gridy = 1;
 		add(comboBox, gbc_comboBox);
-		comboBox.setSelectedItem(new ColorIcon(f.getColor()));
 		comboBox.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				Function wrapFunction = null;
 				Color3f selectedColor = (Color3f) colorList.get(comboBox.getSelectedIndex());
-				if(!selectedColor.equals(oldFunc.getColor())){
+				if(comboBox.isEnabled() && !selectedColor.equals(oldFunc.getColor())){
 				try {
 					wrapFunction = new XYZFunction("y=x", (Color3f) colorList.get(comboBox.getSelectedIndex()), new float[]{-1,1,-1,1,-1,1}, (float) (0.505 - Math.log10(slider.getValue()+1)/4));
 				} catch (ExpressionParseException | UndefinedVariableException ex) {
@@ -61,22 +60,9 @@ public class EditOptionPanel extends JPanel {
 				}
 			}
 		});
-//		comboBox.addFocusListener(new FocusListener() {
-//			
-//			@Override
-//			public void focusLost(FocusEvent arg0) {
-//				a.actionPerformed(new ActionEvent("",FunctionLabel.HIDEEDIT,""));
-//			}
-//			
-//			@Override
-//			public void focusGained(FocusEvent arg0) {
-//				// TODO Auto-generated method stub
-//				
-//			}
-//		});
 		
 		slider = new JSlider();
-		slider.setValue(GuiUtil.getSliderValue(f.getStepsize(),f.getBounds()));
+		slider.setEnabled(false);
 		slider.setPreferredSize(new Dimension(150,20));
 		GridBagConstraints gbc_slider = new GridBagConstraints();
 		gbc_slider.insets = new Insets(0, 0, 5, 5);
@@ -88,9 +74,9 @@ public class EditOptionPanel extends JPanel {
 			@Override
 			public void mouseReleased(MouseEvent arg0) {
 				Function wrapFunction = null;
-				if(GuiUtil.getStepsize(slider.getValue(), oldFunc.getBounds())[0] != oldFunc.getStepsize()){
+				if(slider.isEnabled() && GuiUtil.getStepsize(slider.getValue(), oldFunc.getBounds())[0] != oldFunc.getStepsize()){
 					try {
-						wrapFunction = new XYZFunction("y=x", (Color3f) colorList.get(comboBox.getSelectedIndex()), new float[]{-1,1,-1,1,-1,1}, GuiUtil.getStepsize(slider.getValue(), oldFunc.getBounds())[0]);
+						wrapFunction = new XYZFunction("y=x", (Color3f) colorList.get(comboBox.getSelectedIndex()), oldFunc.getBounds(), GuiUtil.getStepsize(slider.getValue(), oldFunc.getBounds())[0]);
 					} catch (ExpressionParseException | UndefinedVariableException e) {
 						e.printStackTrace();
 					}
@@ -98,25 +84,21 @@ public class EditOptionPanel extends JPanel {
 				}
 			}
 		});
-//		slider.addFocusListener(new FocusListener() {
-//
-//			@Override
-//			public void focusLost(FocusEvent arg0) {
-//				a.actionPerformed(new ActionEvent("",FunctionLabel.HIDEEDIT,""));
-//			}
-//			
-//			@Override
-//			public void focusGained(FocusEvent arg0) {
-//				// TODO Auto-generated method stub
-//				
-//			}
-//		});
 
-		this.oldFunc = f;
+		this.colorList = colorList;
 	}
 	
 	public void updateFuncReference(Function f){
+		slider.setEnabled(true);
+		comboBox.setEnabled(true);
 		oldFunc = f;
+		comboBox.setSelectedIndex(colorList.indexOf(f.getColor()));
+		slider.setValue(GuiUtil.getSliderValue(f.getStepsize(),f.getBounds()));
+	}
+	
+	public void initMode(){
+		slider.setEnabled(false);
+		comboBox.setEnabled(false);
 	}
 	
 }
