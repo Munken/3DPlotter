@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 import javax.media.j3d.*;
 import javax.vecmath.Color3f;
 
-import munk.graph.function.implicit.ImplicitIterativeFunction;
+import munk.graph.function.implicit.ImplicitMultiFunction;
 
 import com.graphbuilder.math.*;
 
@@ -57,7 +57,7 @@ public class FunctionUtil {
 		if (isXYZExpression(expr)) {
 			result = new XYZFunction(expressions, color, bounds, stepsize);
 		} else {
-			result = new ImplicitIterativeFunction(expressions, color, bounds, stepsize);
+			result = new ImplicitMultiFunction(expressions, color, bounds, stepsize);
 		}
 		
 		
