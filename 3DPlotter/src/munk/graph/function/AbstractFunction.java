@@ -41,9 +41,11 @@ public abstract class AbstractFunction implements Function{
 	 */
 	public BranchGroup getPlot() {
 		if(plot == null && !havePlotted){
+						
 			plot = plot();
 			setColor(color);
 			havePlotted = true;
+						
 		}
 		return plot;
 	}
