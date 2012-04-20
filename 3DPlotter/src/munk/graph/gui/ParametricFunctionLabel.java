@@ -1,21 +1,9 @@
 package munk.graph.gui;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.*;
+import java.awt.event.*;
 
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.swing.border.EtchedBorder;
 
 import munk.graph.function.Function;
@@ -42,9 +30,9 @@ public class ParametricFunctionLabel extends JPanel implements FunctionLabel{
 		// GUI representation
 		GridBagLayout gbl_fLabel = new GridBagLayout();
 		gbl_fLabel.columnWidths = new int[]{0, 0, 150, 30, 0, 0};
-		gbl_fLabel.rowHeights = new int[]{5, 0, 0, 0, 0, 0};
+		gbl_fLabel.rowHeights = new int[]{5, 0, 0, 0, 0, 0, 0};
 		gbl_fLabel.columnWeights = new double[]{0.0, 0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE};
-		gbl_fLabel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gbl_fLabel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		this.setLayout(gbl_fLabel);
 
 		lblX = new JLabel("x =");
@@ -65,6 +53,7 @@ public class ParametricFunctionLabel extends JPanel implements FunctionLabel{
 
 		toggleButton = new ToggleButton(new ImageIcon("Icons/selected.png"),new ImageIcon("Icons/notSelected.png"));
 		GridBagConstraints gbc_chckbxTest = new GridBagConstraints();
+		gbc_chckbxTest.gridheight = 2;
 		gbc_chckbxTest.insets = new Insets(0, 0, 5, 5);
 		gbc_chckbxTest.gridx = 3;
 		gbc_chckbxTest.gridy = 1;
@@ -72,6 +61,7 @@ public class ParametricFunctionLabel extends JPanel implements FunctionLabel{
 
 		lblY = new JLabel("y =");
 		GridBagConstraints gbc_lblY = new GridBagConstraints();
+		gbc_lblY.gridheight = 2;
 		gbc_lblY.insets = new Insets(0, 0, 5, 5);
 		gbc_lblY.anchor = GridBagConstraints.EAST;
 		gbc_lblY.gridx = 1;
@@ -80,6 +70,7 @@ public class ParametricFunctionLabel extends JPanel implements FunctionLabel{
 
 		exprFieldY = new JTextField(mother.getExpression()[1]);
 		GridBagConstraints gbc_textField = new GridBagConstraints();
+		gbc_textField.gridheight = 2;
 		gbc_textField.insets = new Insets(0, 0, 5, 5);
 		gbc_textField.fill = GridBagConstraints.HORIZONTAL;
 		gbc_textField.gridx = 2;
@@ -87,20 +78,12 @@ public class ParametricFunctionLabel extends JPanel implements FunctionLabel{
 		add(exprFieldY, gbc_textField);
 		exprFieldY.setColumns(10);
 
-		JButton btnEdit = new JButton(new ImageIcon("Icons/edit.png"));
-		GridBagConstraints gbc_btnEdit = new GridBagConstraints();
-		gbc_btnEdit.insets = new Insets(0, 0, 5, 5);
-		gbc_btnEdit.gridx = 3;
-		gbc_btnEdit.gridy = 2;
-		add(btnEdit, gbc_btnEdit);
-		addEditListener(btnEdit);
-
 		lblZ = new JLabel("z =");
 		GridBagConstraints gbc_lblZ = new GridBagConstraints();
 		gbc_lblZ.insets = new Insets(0, 0, 5, 5);
 		gbc_lblZ.anchor = GridBagConstraints.EAST;
 		gbc_lblZ.gridx = 1;
-		gbc_lblZ.gridy = 3;
+		gbc_lblZ.gridy = 4;
 		add(lblZ, gbc_lblZ);
 
 		exprFieldZ = new JTextField(mother.getExpression()[2]);
@@ -108,7 +91,7 @@ public class ParametricFunctionLabel extends JPanel implements FunctionLabel{
 		gbc_textField_1.insets = new Insets(0, 0, 5, 5);
 		gbc_textField_1.fill = GridBagConstraints.HORIZONTAL;
 		gbc_textField_1.gridx = 2;
-		gbc_textField_1.gridy = 3;
+		gbc_textField_1.gridy = 4;
 		add(exprFieldZ, gbc_textField_1);
 		exprFieldZ.setColumns(10);
 
@@ -119,6 +102,7 @@ public class ParametricFunctionLabel extends JPanel implements FunctionLabel{
 
 		btnDelete = new JButton(new ImageIcon("Icons/delete.png"));
 		GridBagConstraints gbc_btnDelete = new GridBagConstraints();
+		gbc_btnDelete.gridheight = 2;
 		gbc_btnDelete.insets = new Insets(0, 0, 5, 5);
 		gbc_btnDelete.gridx = 3;
 		gbc_btnDelete.gridy = 3;
@@ -147,17 +131,6 @@ public class ParametricFunctionLabel extends JPanel implements FunctionLabel{
 		});
 	}
 
-	private void addEditListener(JButton btnEdit) {
-		// Spawn edit dialog on click.
-		btnEdit.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				listener.actionPerformed(new ActionEvent(mother, 1, ""));
-			}
-		});
-	}
-
 	private void addToggleButtonListener() {
 		// Update visibility.
 		toggleButton.addActionListener(new ActionListener() {
@@ -169,6 +142,23 @@ public class ParametricFunctionLabel extends JPanel implements FunctionLabel{
 	}
 
 	private void addTextChangeListener() {
+		// Edit panel.
+		FocusListener editListener = new FocusListener() {
+
+			@Override
+			public void focusLost(FocusEvent arg0) {
+				listener.actionPerformed(new ActionEvent(mother, FunctionLabel.HIDEEDIT, ""));
+			}
+
+			@Override
+			public void focusGained(FocusEvent arg0) {
+				listener.actionPerformed(new ActionEvent(mother, FunctionLabel.SPAWNEDIT, ""));
+			}
+		};
+		exprFieldX.addFocusListener(editListener);
+		exprFieldY.addFocusListener(editListener);
+		exprFieldZ.addFocusListener(editListener);
+
 		KeyAdapter keyListener = new KeyAdapter() {
 
 			@Override

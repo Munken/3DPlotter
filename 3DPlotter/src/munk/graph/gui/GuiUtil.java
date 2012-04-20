@@ -168,4 +168,23 @@ public class GuiUtil {
 	    result.append(str.substring(s));
 	    return result.toString();
 	}
+	
+	/*
+	 * Return step size. Should maybe account for world size? 
+	 */
+	public static float[] getStepsize(int sliderValue, float[] bounds){
+		float stepX = Math.abs(bounds[1]-bounds[0])/sliderValue;
+		float stepY = Math.abs(bounds[3]-bounds[2])/sliderValue;
+		float stepZ = Math.abs(bounds[5]-bounds[4])/sliderValue;
+		return new float[]{stepX,stepY,stepZ};
+	}
+	
+	/*
+	 * Return step size. Should maybe account for world size? 
+	 */
+	public static int getSliderValue(float stepX, float[] bounds){
+		int sliderValue = (int) (Math.abs(bounds[1]-bounds[0])/stepX);
+		
+		return sliderValue;
+	}
 }

@@ -22,9 +22,9 @@ public class StdFunctionLabel extends JPanel implements FunctionLabel{
 		
 		// GUI representation
 		GridBagLayout gbl_fLabel = new GridBagLayout();
-		gbl_fLabel.columnWidths = new int[]{20, 150, 30, 20, 0};
+		gbl_fLabel.columnWidths = new int[]{20, 150, 20, 0};
 		gbl_fLabel.rowHeights = new int[]{0, 0};
-		gbl_fLabel.columnWeights = new double[]{0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE};
+		gbl_fLabel.columnWeights = new double[]{0.0, 1.0, 0.0, Double.MIN_VALUE};
 		gbl_fLabel.rowWeights = new double[]{0.0, Double.MIN_VALUE};
 		this.setLayout(gbl_fLabel);
 
@@ -45,19 +45,10 @@ public class StdFunctionLabel extends JPanel implements FunctionLabel{
 		exprField.setEditable(true);
 		// Don't fuck up layout, when text string becomes too long.
 		exprField.setPreferredSize(new Dimension(100,20));
-
-		JButton btnEdit = new JButton(new ImageIcon("Icons/edit.png"));
-		GridBagConstraints gbc_btnEdit = new GridBagConstraints();
-		gbc_btnEdit.insets = new Insets(0, 0, 0, 5);
-		gbc_btnEdit.gridx = 2;
-		gbc_btnEdit.gridy = 0;
-		add(btnEdit, gbc_btnEdit);
-		
-		addEditListener(btnEdit);
 		
 		btnDelete = new JButton(new ImageIcon("Icons/delete.png"));
 		GridBagConstraints gbc_btnDelete = new GridBagConstraints();
-		gbc_btnDelete.gridx = 3;
+		gbc_btnDelete.gridx = 2;
 		gbc_btnDelete.gridy = 0;
 		add(btnDelete, gbc_btnDelete);
 		addTextChangeListener();
@@ -72,18 +63,7 @@ public class StdFunctionLabel extends JPanel implements FunctionLabel{
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				listener.actionPerformed(new ActionEvent(mother, 2, exprField.getText()));
-			}
-		});
-	}
-
-	private void addEditListener(JButton btnEdit) {
-		// Spawn edit dialog on click.
-		btnEdit.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				listener.actionPerformed(new ActionEvent(mother, 1, exprField.getText()));
+				listener.actionPerformed(new ActionEvent(mother, FunctionLabel.DELETE, exprField.getText()));
 			}
 		});
 	}
@@ -93,7 +73,7 @@ public class StdFunctionLabel extends JPanel implements FunctionLabel{
 		toggleButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				mother.setVisible(toggleButton.isSelected());
-				listener.actionPerformed(new ActionEvent(mother, 3, ""));
+				listener.actionPerformed(new ActionEvent(mother, FunctionLabel.VISIBILITY, ""));
 			}
 		});
 	}
@@ -104,6 +84,21 @@ public class StdFunctionLabel extends JPanel implements FunctionLabel{
 	 * RED: Evaluation failed.
 	 */
 	private void addTextChangeListener() {
+		// Edit panel.
+		exprField.addFocusListener(new FocusListener() {
+			
+			@Override
+			public void focusLost(FocusEvent arg0) {
+				listener.actionPerformed(new ActionEvent(mother, FunctionLabel.HIDEEDIT, ""));
+			}
+			
+			@Override
+			public void focusGained(FocusEvent arg0) {
+				listener.actionPerformed(new ActionEvent(mother, FunctionLabel.SPAWNEDIT, ""));
+			}
+		});
+		
+		// Evaluation.
 		exprField.addKeyListener(new KeyAdapter() {
 
 			@Override

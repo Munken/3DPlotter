@@ -1,55 +1,41 @@
 package munk.graph.gui;
 
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
+import java.awt.*;
+import java.awt.event.*;
 
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.vecmath.Color3f;
 
-import munk.graph.function.Function;
-import munk.graph.function.XYZFunction;
+import munk.graph.function.*;
+
+import com.graphbuilder.math.*;
+import javax.swing.border.EtchedBorder;
 
 @SuppressWarnings("serial")
 public class EditOptionPanel extends JPanel {
 	
-	private JTextField stepSize;
 	private Function oldFunc;
-	private ArrayList<ActionListener> listeners;
-	private JComboBox<ColorIcon> comboBox;
-	private ColorList colorList;
+	private JComboBox comboBox;
+	private JSlider slider;
 	
-	public EditOptionPanel(ColorList colorList, Function f){
+	
+	
+	public EditOptionPanel(final ColorList colorList, Function f, final ActionListener a){
+		//setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[]{5, 0, 0, 0, 5, 0};
-		gridBagLayout.rowHeights = new int[]{5, 0, 0, 5, 0};
-		gridBagLayout.columnWeights = new double[]{0.0, 0.0, 1.0, 1.0, 0.0, Double.MIN_VALUE};
-		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gridBagLayout.rowHeights = new int[]{5, 0, 0, 0};
+		gridBagLayout.columnWeights = new double[]{1.0, 0.0, 1.0, 0.0, 1.0, Double.MIN_VALUE};
+		gridBagLayout.rowWeights = new double[]{1.0, 0.0, 1.0, Double.MIN_VALUE};
 		setLayout(gridBagLayout);
 		
-		JLabel lblStepSize = new JLabel("Step size =");
+		JLabel resolution = new JLabel("Resolution");
 		GridBagConstraints gbc_lblStepSize = new GridBagConstraints();
 		gbc_lblStepSize.insets = new Insets(0, 0, 5, 5);
 		gbc_lblStepSize.anchor = GridBagConstraints.EAST;
 		gbc_lblStepSize.gridx = 1;
 		gbc_lblStepSize.gridy = 1;
-		add(lblStepSize, gbc_lblStepSize);
-		
-		stepSize = new JTextField(f.getStepsize() + "");
-		GridBagConstraints gbc_textField = new GridBagConstraints();
-		gbc_textField.insets = new Insets(0, 0, 5, 5);
-		gbc_textField.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField.gridx = 2;
-		gbc_textField.gridy = 1;
-		add(stepSize, gbc_textField);
-		stepSize.setColumns(10);
+		add(resolution, gbc_lblStepSize);
 		
 		comboBox = new JComboBox(colorList.getIconList());
 		GridBagConstraints gbc_comboBox = new GridBagConstraints();
@@ -59,42 +45,78 @@ public class EditOptionPanel extends JPanel {
 		gbc_comboBox.gridy = 1;
 		add(comboBox, gbc_comboBox);
 		comboBox.setSelectedItem(new ColorIcon(f.getColor()));
-		
-		JButton btnOK = new JButton("OK");
-		GridBagConstraints gbc_btnApply = new GridBagConstraints();
-		gbc_btnApply.insets = new Insets(0, 0, 5, 5);
-		gbc_btnApply.gridx = 2;
-		gbc_btnApply.gridy = 2;
-		add(btnOK, gbc_btnApply);
-		btnOK.addActionListener(new ActionListener() {
+		comboBox.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				signalAll();
+				Function wrapFunction = null;
+				Color3f selectedColor = (Color3f) colorList.get(comboBox.getSelectedIndex());
+				if(!selectedColor.equals(oldFunc.getColor())){
+				try {
+					wrapFunction = new XYZFunction("y=x", (Color3f) colorList.get(comboBox.getSelectedIndex()), new float[]{-1,1,-1,1,-1,1}, (float) (0.505 - Math.log10(slider.getValue()+1)/4));
+				} catch (ExpressionParseException | UndefinedVariableException ex) {
+					ex.printStackTrace();
+				}
+				a.actionPerformed(new ActionEvent(new Function[]{oldFunc, wrapFunction},0,""));
+				}
 			}
 		});
+//		comboBox.addFocusListener(new FocusListener() {
+//			
+//			@Override
+//			public void focusLost(FocusEvent arg0) {
+//				a.actionPerformed(new ActionEvent("",FunctionLabel.HIDEEDIT,""));
+//			}
+//			
+//			@Override
+//			public void focusGained(FocusEvent arg0) {
+//				// TODO Auto-generated method stub
+//				
+//			}
+//		});
 		
-		this.colorList = colorList;
+		slider = new JSlider();
+		slider.setValue(GuiUtil.getSliderValue(f.getStepsize(),f.getBounds()));
+		slider.setPreferredSize(new Dimension(150,20));
+		GridBagConstraints gbc_slider = new GridBagConstraints();
+		gbc_slider.insets = new Insets(0, 0, 5, 5);
+		gbc_slider.gridx = 2;
+		gbc_slider.gridy = 1;
+		add(slider, gbc_slider);
+		slider.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+				Function wrapFunction = null;
+				if(GuiUtil.getStepsize(slider.getValue(), oldFunc.getBounds())[0] != oldFunc.getStepsize()){
+					try {
+						wrapFunction = new XYZFunction("y=x", (Color3f) colorList.get(comboBox.getSelectedIndex()), new float[]{-1,1,-1,1,-1,1}, GuiUtil.getStepsize(slider.getValue(), oldFunc.getBounds())[0]);
+					} catch (ExpressionParseException | UndefinedVariableException e) {
+						e.printStackTrace();
+					}
+					a.actionPerformed(new ActionEvent(new Function[]{oldFunc, wrapFunction},1,""));
+				}
+			}
+		});
+//		slider.addFocusListener(new FocusListener() {
+//
+//			@Override
+//			public void focusLost(FocusEvent arg0) {
+//				a.actionPerformed(new ActionEvent("",FunctionLabel.HIDEEDIT,""));
+//			}
+//			
+//			@Override
+//			public void focusGained(FocusEvent arg0) {
+//				// TODO Auto-generated method stub
+//				
+//			}
+//		});
+
 		this.oldFunc = f;
-		listeners = new ArrayList<ActionListener>();
 	}
 	
-	public void addActionListener(ActionListener a){
-		listeners.add(a);
-	}
-	
-	/*
-	 * All information is wrapped in a function object, which is passed to GUI.
-	 */
-	private void signalAll(){
-		for(ActionListener a : listeners){
-			try{
-					a.actionPerformed(new ActionEvent(new XYZFunction("y=x", (Color3f) colorList.get(comboBox.getSelectedIndex()), new float[]{-1,1,-1,1,-1,1}, Float.parseFloat(stepSize.getText())), 0, ""));
-			}
-			catch(Exception e){
-				e.printStackTrace();
-			}
-		}
+	public void updateFuncReference(Function f){
+		oldFunc = f;
 	}
 	
 }
