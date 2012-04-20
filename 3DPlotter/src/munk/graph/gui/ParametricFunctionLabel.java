@@ -147,12 +147,12 @@ public class ParametricFunctionLabel extends JPanel implements FunctionLabel{
 
 			@Override
 			public void focusLost(FocusEvent arg0) {
-				listener.actionPerformed(new ActionEvent(mother, FunctionLabel.HIDEEDIT, ""));
+				// Do nothing.
 			}
 
 			@Override
 			public void focusGained(FocusEvent arg0) {
-				listener.actionPerformed(new ActionEvent(mother, FunctionLabel.SPAWNEDIT, ""));
+				listener.actionPerformed(new ActionEvent(mother, FunctionLabel.UPDATEEDIT, ""));
 			}
 		};
 		exprFieldX.addFocusListener(editListener);
