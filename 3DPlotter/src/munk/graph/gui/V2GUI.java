@@ -549,7 +549,7 @@ public class V2GUI {
 				}
 				if(e.getID() == 1){
 					Function[] source = (Function[]) e.getSource();
-					stdEditOptionPanel.updateFuncReference(updatePlot(source[0], source[0].getExpression(), source[1].getColor(), source[1].getBounds(), source[1].getStepsize()));
+					updatePlot(source[0], source[0].getExpression(), source[1].getColor(), source[1].getBounds(), source[1].getStepsize());
 				}
 			}
 		});
@@ -779,7 +779,7 @@ public class V2GUI {
 				}
 				if(e.getID() == 1){
 					Function[] source = (Function[]) e.getSource();
-					paramEditOptionPanel.updateFuncReference(updatePlot(source[0], source[0].getExpression(), source[1].getColor(), source[1].getBounds(), source[1].getStepsize()));
+					updatePlot(source[0], source[0].getExpression(), source[1].getColor(), source[1].getBounds(), source[1].getStepsize());
 				}
 			}
 		});
@@ -899,7 +899,7 @@ public class V2GUI {
 	/*
 	 * Update a function.
 	 */
-	private Function updatePlot(Function oldFunc, String newExpr[], Color3f newColor, float[] bounds, float stepsize) {
+	private void updatePlot(Function oldFunc, String newExpr[], Color3f newColor, float[] bounds, float stepsize) {
 		// Try evaluating the function.
 		try {
 			Function newFunc = FunctionUtil.createFunction(newExpr, newColor, bounds, stepsize);
@@ -916,7 +916,12 @@ public class V2GUI {
 			plotter.removePlot(oldFunc);
 			spawnNewPlotterThread(newFunc);
 			frame.pack();
-			return newFunc;
+			
+			if (newFunc.getClass() == ParametricFunction.class) {
+				paramEditOptionPanel.updateFuncReference(newFunc);
+			} else {
+				stdEditOptionPanel.updateFuncReference(newFunc);
+			}
 		} 
 		// Catch error.
 		catch (ExpressionParseException e) {
@@ -932,7 +937,6 @@ public class V2GUI {
 			JLabel label = new JLabel(message,JLabel.CENTER);
 			JOptionPane.showMessageDialog(frame,label);
 		}
-		return null;
 	}
 
 	/*
