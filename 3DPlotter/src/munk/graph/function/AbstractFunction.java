@@ -82,17 +82,21 @@ public abstract class AbstractFunction implements Function{
 	
 	public void setGridAppearance() {
 		if (state != FILL.GRID)
+			state = FILL.GRID;
 			shape.setAppearance(new GridAppearance(color));
 	}
 	
 	public void setFillAppearance() {
 		if (state != FILL.FILL)
+			state = FILL.FILL;
 			shape.setAppearance(new ColorAppearance(color));
 	}
 	
 	public void setPointAppearance() {
-		if (state != FILL.FILL)
+		if (state != FILL.POINT) {
+			state = FILL.POINT;
 			shape.setAppearance(new PointAppearance(color));
+		}
 	}
 	
 	public boolean isVisible(){
