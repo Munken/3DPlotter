@@ -7,6 +7,8 @@ import java.util.regex.Pattern;
 import javax.media.j3d.*;
 import javax.vecmath.Color3f;
 
+import munk.graph.function.implicit.ImplicitIterativeFunction;
+
 import com.graphbuilder.math.*;
 
 public class FunctionUtil {

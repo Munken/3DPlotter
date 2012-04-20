@@ -9,6 +9,7 @@ import javax.swing.JTextField;
 
 import munk.graph.appearance.Colors;
 import munk.graph.function.*;
+import munk.graph.function.implicit.ImplicitIterativeFunction;
 import munk.graph.gui.Plotter3D;
 
 import com.graphbuilder.math.ExpressionParseException;
