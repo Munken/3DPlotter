@@ -1,8 +1,7 @@
 package munk.graph.plot.implicit;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.media.j3d.Shape3D;
 import javax.vecmath.Point3f;
@@ -10,7 +9,8 @@ import javax.vecmath.Point3f;
 import munk.graph.function.IllegalEquationException;
 import munk.graph.marching.*;
 
-import com.graphbuilder.math.*;
+import com.graphbuilder.math.ExpressionParseException;
+import com.graphbuilder.math.UndefinedVariableException;
 
 public class ImplicitIterative extends AbstractImplicit{
 	
@@ -26,17 +26,7 @@ public class ImplicitIterative extends AbstractImplicit{
 	private static final MarchingCubes MARCHER = new MarchingCubes();
 	private static final float ISOLEVEL = 0;
 	
-//	private List<MarchCell> cells;
-	private Queue<MarchCell> cells;
-
-	private AtomicInteger nThreadsDone = new AtomicInteger(0);
-
-	private List<Point3f>	triangles;
-	
-	private FuncMap fm;
-	private Expression ex;
-
-	private String	preParse;
+	private List<MarchCell> cells;
 	
 	public ImplicitIterative(String expression, 
 							 float xMin, float xMax, 
@@ -47,35 +37,25 @@ public class ImplicitIterative extends AbstractImplicit{
 		super(expression, xMin, xMax, yMin, yMax, zMin, zMax, stepsize, stepsize, stepsize);
 		this.stepsize = stepsize;
 		
-//		cells = new LinkedList<MarchCell>();
-		cells = new ConcurrentLinkedQueue<MarchCell>();
-		try {
-		preParse = preParse(expression);
-		ex = ExpressionTree.parse(preParse);
-		fm = new FuncMap();
-		fm.loadDefaultFunctions();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		cells = new LinkedList<MarchCell>();
 	}
 	
 	public  Shape3D plot() {
 		Point3f startCube =  findStartCube(xStepsize, yStepsize, zStepsize);
 		
-		triangles = new ArrayList<Point3f>();
 		if (startCube != null) {
 			marchCubes(startCube);
 		}
 		else 
 			return null;
 		
-		Shape3D shape = buildGeomtryFromTriangles(triangles);
-		triangles = null;
+		Shape3D shape = buildGeomtryFromTriangles();
 		
 		return shape;
 	}
 	
 	private void marchCubes(Point3f startcube) {
+
 		newTriangles = initTriangleArray(MarchingCubes.MAX_TRIANGLES_RETURNED);
 		visited = new boolean[zLength][yLength][xLength];
 		
@@ -86,92 +66,25 @@ public class ImplicitIterative extends AbstractImplicit{
 		
 		addStartCells(startCell);
 		
-		int nThreads = Runtime.getRuntime().availableProcessors();
-//		nThreads = 10;
-		List<Thread> threads = new ArrayList<Thread>(nThreads);
-		List<List<Point3f>> triLists = new ArrayList<List<Point3f>>(); 
-		
-		for (int i = 0; i < nThreads; i++) {
-			List<Point3f> newList = new ArrayList<Point3f>(10000);
-			triLists.add(newList);
-			Thread t = new Thread(createNewThread(nThreads, newList));
-			threads.add(t);
-			t.start();
+		while (cells.size() > 0) {
+			// Next cell to process
+			MarchCell next = cells.remove(0);
+
+			// How many triangles do we need for this cell
+			int nTriangles = MARCHER.marchCube(next, newTriangles, ISOLEVEL);
+			
+			if (nTriangles > 0) {
+				addTriangles(nTriangles, newTriangles);
+				
+				// Add the triangles from this cell and add neighbours
+				marchNext(next);
+			}
 		}
-		waitForThreads(threads);
-		threads = null;
 		visited = null;
 		
-		for (List<Point3f> list : triLists) {
-			triangles.addAll(list);
-		}
-	}
-
-	private Runnable createNewThread(final int nThreads, final List<Point3f> list) {
-		return new Runnable() {
-			
-
-			public void run() {
-				try {
-					Triangle[] newTri = initTriangleArray(MarchingCubes.MAX_TRIANGLES_RETURNED);;
-					VarMap vm = new VarMap();
-					
-					Expression ex = ExpressionTree.parse(preParse);
-					
-					while (true) {
-						// Next cell to process
-						MarchCell next;
-						while ((next = cells.poll()) != null) {
-							
-							// How many triangles do we need for this cell
-							int nTriangles = MARCHER.marchCube(next, newTri, ISOLEVEL);
-
-							if (nTriangles > 0) {
-								addTriangles(nTriangles, newTri, list);
-
-								// Add the triangles from this cell and add neighbours
-								marchNext(next, vm, ex);
-							}
-						}
-						nThreadsDone.getAndIncrement();
-
-						while (cells.peek() == null) {
-							try {
-								Thread.sleep(5);
-								if (nThreadsDone.get() == nThreads) {
-									return;
-								}
-
-
-							} catch (InterruptedException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						}
-						
-						nThreadsDone.getAndDecrement();
-					}
-				} catch (ExpressionParseException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		};
 	}
 	
-	private void waitForThreads(List<Thread> threads) {
-		for (Thread t : threads) {
-			try {
-				t.join();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		
-	}
-	
-	private void marchNext(MarchCell next, VarMap vm, Expression ex) {
+	private void marchNext(MarchCell next) {
 		float[] values = next.getValues();
 		Point3f[] corners = next.getCorners();
 		int x = next.getX();
@@ -179,22 +92,22 @@ public class ImplicitIterative extends AbstractImplicit{
 		int z = next.getZ();
 		
 		switch (next.getMarchFace()) {
-			case MarchCell.FACE_0: marchFace0(values, corners, x, y, z, vm, ex); 
+			case MarchCell.FACE_0: marchFace0(values, corners, x, y, z); 
 			break;
 		
-			case MarchCell.FACE_1: marchFace1(values, corners, x, y, z, vm, ex); 
+			case MarchCell.FACE_1: marchFace1(values, corners, x, y, z); 
 			break;	
 
-			case MarchCell.FACE_2: marchFace2(values, corners, x, y, z, vm, ex);
+			case MarchCell.FACE_2: marchFace2(values, corners, x, y, z);
 			break;
 
-			case MarchCell.FACE_3: marchFace3(values, corners, x, y, z, vm, ex);
+			case MarchCell.FACE_3: marchFace3(values, corners, x, y, z);
 			break;
 
-			case MarchCell.FACE_4: marchFace4(values, corners, x, y, z, vm, ex);
+			case MarchCell.FACE_4: marchFace4(values, corners, x, y, z);
 			break;
 
-			case MarchCell.FACE_5: marchFace5(values, corners, x, y, z, vm, ex);
+			case MarchCell.FACE_5: marchFace5(values, corners, x, y, z);
 			break;
 		}
 	}
@@ -207,13 +120,12 @@ public class ImplicitIterative extends AbstractImplicit{
 		int y = startCell.getY();
 		int z = startCell.getZ();
 		
-		VarMap vm = new VarMap();
-		addFace0(values, corners, x, y, z, vm, ex);
-		addFace1(values, corners, x, y, z, vm, ex);
-		addFace2(values, corners, x, y, z, vm, ex);
-		addFace3(values, corners, x, y, z, vm, ex);
-		addFace4(values, corners, x, y, z, vm, ex);
-		addFace5(values, corners, x, y, z, vm, ex);
+		addFace0(values, corners, x, y, z);
+		addFace1(values, corners, x, y, z);
+		addFace2(values, corners, x, y, z);
+		addFace3(values, corners, x, y, z);
+		addFace4(values, corners, x, y, z);
+		addFace5(values, corners, x, y, z);
 	}
 
 	private MarchCell initStartCube(Point3f startcube, int startX, int startY, int startZ) {
@@ -320,16 +232,16 @@ public class ImplicitIterative extends AbstractImplicit{
 		return null;
 	}
 
-	private void marchFace0(float[] values, Point3f[] corners, int x, int y, int z, VarMap vm, Expression ex) {
-		addFace0(values, corners, x, y, z, vm, ex);
-		addFace1(values, corners, x, y, z, vm, ex);
-//		addFace2(values, corners, x, y, z, vm, ex);
-		addFace3(values, corners, x, y, z, vm, ex);
-		addFace4(values, corners, x, y, z, vm, ex);
-		addFace5(values, corners, x, y, z, vm, ex);
+	private void marchFace0(float[] values, Point3f[] corners, int x, int y, int z) {
+		addFace0(values, corners, x, y, z);
+		addFace1(values, corners, x, y, z);
+//		addFace2(values, corners, x, y, z);
+		addFace3(values, corners, x, y, z);
+		addFace4(values, corners, x, y, z);
+		addFace5(values, corners, x, y, z);
 	}
 	
-	private void addFace0(float[] prevValues, Point3f[] prevCorners, int x, int y, int z, VarMap vm, Expression ex) {
+	private void addFace0(float[] prevValues, Point3f[] prevCorners, int x, int y, int z) {
 		y--;
 		
 		if (!validPosition(x, y, z) || isVisited(x, y, z))
@@ -351,37 +263,37 @@ public class ImplicitIterative extends AbstractImplicit{
 		Point3f corner0 = new Point3f(corners[3]);
 		corner0.y -= yStepsize;
 		corners[0] = corner0;
-		values[0] = value(corner0, vm, ex);
+		values[0] = value(corner0);
 		
 		Point3f corner1 = new Point3f(corners[2]);
 		corner1.y -= yStepsize;
 		corners[1] = corner1;
-		values[1] = value(corner1, vm, ex);
+		values[1] = value(corner1);
 		
 		Point3f corner4 = new Point3f(corners[7]);
 		corner4.y -= yStepsize;
 		corners[4] = corner4;
-		values[4] = value(corner4, vm, ex);
+		values[4] = value(corner4);
 		
 		Point3f corner5 = new Point3f(corners[6]);
 		corner5.y -= yStepsize;
 		corners[5] = corner5;
-		values[5] = value(corner5, vm, ex);
+		values[5] = value(corner5);
 		
 		cells.add(new MarchCell(corners, values, x, y, z, MarchCell.FACE_0));
 	}
 	
-	private void marchFace1(float[] values, Point3f[] corners, int x, int y, int z, VarMap vm, Expression ex) {
+	private void marchFace1(float[] values, Point3f[] corners, int x, int y, int z) {
 
-		addFace0(values, corners, x, y, z, vm, ex);
-		addFace1(values, corners, x, y, z, vm, ex);
-		addFace2(values, corners, x, y, z, vm, ex);
-//		addFace3(values, corners, x, y, z, vm, ex);
-		addFace4(values, corners, x, y, z, vm, ex);
-		addFace5(values, corners, x, y, z, vm, ex);
+		addFace0(values, corners, x, y, z);
+		addFace1(values, corners, x, y, z);
+		addFace2(values, corners, x, y, z);
+//		addFace3(values, corners, x, y, z);
+		addFace4(values, corners, x, y, z);
+		addFace5(values, corners, x, y, z);
 	}
 	
-	private void addFace1(float[] prevValues, Point3f[] prevCorners, int x, int y, int z, VarMap vm, Expression ex) {
+	private void addFace1(float[] prevValues, Point3f[] prevCorners, int x, int y, int z) {
 		x++;
 		
 		if (!validPosition(x, y, z) || isVisited(x, y, z))
@@ -403,37 +315,37 @@ public class ImplicitIterative extends AbstractImplicit{
 		Point3f corner1 = new Point3f(corners[0]);
 		corner1.x += xStepsize;
 		corners[1] = corner1;
-		values[1] = value(corner1, vm, ex);
+		values[1] = value(corner1);
 		
 		Point3f corner2 = new Point3f(corners[3]);
 		corner2.x += xStepsize;
 		corners[2] = corner2;
-		values[2] = value(corner2, vm, ex);
+		values[2] = value(corner2);
 		
 		Point3f corner5 = new Point3f(corners[4]);
 		corner5.x += xStepsize;
 		corners[5] = corner5;
-		values[5] = value(corner5, vm, ex);
+		values[5] = value(corner5);
 		
 		Point3f corner6 = new Point3f(corners[7]);
 		corner6.x += xStepsize;
 		corners[6] = corner6;
-		values[6] = value(corner6, vm, ex);
+		values[6] = value(corner6);
 		
 		cells.add(new MarchCell(corners, values, x, y, z, MarchCell.FACE_1));
 	}
 	
-	private void marchFace2(float[] values, Point3f[] corners, int x, int y, int z, VarMap vm, Expression ex) {
+	private void marchFace2(float[] values, Point3f[] corners, int x, int y, int z) {
 
-//		addFace0(values, corners, x, y, z, vm, ex);
-		addFace1(values, corners, x, y, z, vm, ex);
-		addFace2(values, corners, x, y, z, vm, ex);
-		addFace3(values, corners, x, y, z, vm, ex);
-		addFace4(values, corners, x, y, z, vm, ex);
-		addFace5(values, corners, x, y, z, vm, ex);
+//		addFace0(values, corners, x, y, z);
+		addFace1(values, corners, x, y, z);
+		addFace2(values, corners, x, y, z);
+		addFace3(values, corners, x, y, z);
+		addFace4(values, corners, x, y, z);
+		addFace5(values, corners, x, y, z);
 	}
 	
-	private void addFace2(float[] prevValues, Point3f[] prevCorners, int x, int y, int z, VarMap vm, Expression ex) {
+	private void addFace2(float[] prevValues, Point3f[] prevCorners, int x, int y, int z) {
 		y++;
 		
 		if (!validPosition(x, y, z) || isVisited(x, y, z))
@@ -455,37 +367,37 @@ public class ImplicitIterative extends AbstractImplicit{
 		Point3f corner2 = new Point3f(corners[1]);
 		corner2.y += xStepsize;
 		corners[2] = corner2;
-		values[2] = value(corner2, vm, ex);
+		values[2] = value(corner2);
 		
 		Point3f corner3 = new Point3f(corners[0]);
 		corner3.y += xStepsize;
 		corners[3] = corner3;
-		values[3] = value(corner3, vm, ex);
+		values[3] = value(corner3);
 		
 		Point3f corner6 = new Point3f(corners[5]);
 		corner6.y += xStepsize;
 		corners[6] = corner6;
-		values[6] = value(corner6, vm, ex);
+		values[6] = value(corner6);
 		
 		Point3f corner7 = new Point3f(corners[4]);
 		corner7.y += xStepsize;
 		corners[7] = corner7;
-		values[7] = value(corner7, vm, ex);
+		values[7] = value(corner7);
 		
 		cells.add(new MarchCell(corners, values, x, y, z, MarchCell.FACE_2));
 	}
 	
-	private void marchFace3(float[] values, Point3f[] corners, int x, int y, int z, VarMap vm, Expression ex) {
+	private void marchFace3(float[] values, Point3f[] corners, int x, int y, int z) {
 
-		addFace0(values, corners, x, y, z, vm, ex);
-//		addFace1(values, corners, x, y, z, vm, ex);
-		addFace2(values, corners, x, y, z, vm, ex);
-		addFace3(values, corners, x, y, z, vm, ex);
-		addFace4(values, corners, x, y, z, vm, ex);
-		addFace5(values, corners, x, y, z, vm, ex);
+		addFace0(values, corners, x, y, z);
+//		addFace1(values, corners, x, y, z);
+		addFace2(values, corners, x, y, z);
+		addFace3(values, corners, x, y, z);
+		addFace4(values, corners, x, y, z);
+		addFace5(values, corners, x, y, z);
 	}
 	
-	private void addFace3(float[] prevValues, Point3f[] prevCorners, int x, int y, int z, VarMap vm, Expression ex) {
+	private void addFace3(float[] prevValues, Point3f[] prevCorners, int x, int y, int z) {
 		x--;
 		
 		if (!validPosition(x, y, z) || isVisited(x, y, z))
@@ -507,37 +419,37 @@ public class ImplicitIterative extends AbstractImplicit{
 		Point3f corner0 = new Point3f(corners[1]);
 		corner0.x -= xStepsize;
 		corners[0] = corner0;
-		values[0] = value(corner0, vm, ex);
+		values[0] = value(corner0);
 		
 		Point3f corner3 = new Point3f(corners[2]);
 		corner3.x -= xStepsize;
 		corners[3] = corner3;
-		values[3] = value(corner3, vm, ex);
+		values[3] = value(corner3);
 		
 		Point3f corner4 = new Point3f(corners[5]);
 		corner4.x -= xStepsize;
 		corners[4] = corner4;
-		values[4] = value(corner4, vm, ex);
+		values[4] = value(corner4);
 		
 		Point3f corner7 = new Point3f(corners[6]);
 		corner7.x -= xStepsize;
 		corners[7] = corner7;
-		values[7] = value(corner7, vm, ex);
+		values[7] = value(corner7);
 		
 		cells.add(new MarchCell(corners, values, x, y, z, MarchCell.FACE_3));
 	}
 	
-	private void marchFace4(float[] values, Point3f[] corners, int x, int y, int z, VarMap vm, Expression ex) {
+	private void marchFace4(float[] values, Point3f[] corners, int x, int y, int z) {
 
-		addFace0(values, corners, x, y, z, vm, ex);
-		addFace1(values, corners, x, y, z, vm, ex);
-		addFace2(values, corners, x, y, z, vm, ex);
-		addFace3(values, corners, x, y, z, vm, ex);
-		addFace4(values, corners, x, y, z, vm, ex);
-//		addFace5(values, corners, x, y, z, vm, ex);
+		addFace0(values, corners, x, y, z);
+		addFace1(values, corners, x, y, z);
+		addFace2(values, corners, x, y, z);
+		addFace3(values, corners, x, y, z);
+		addFace4(values, corners, x, y, z);
+//		addFace5(values, corners, x, y, z);
 	}
 	
-	private void addFace4(float[] prevValues, Point3f[] prevCorners, int x, int y, int z, VarMap vm, Expression ex) {
+	private void addFace4(float[] prevValues, Point3f[] prevCorners, int x, int y, int z) {
 		z++;
 		
 		if (!validPosition(x, y, z) || isVisited(x, y, z))
@@ -559,37 +471,37 @@ public class ImplicitIterative extends AbstractImplicit{
 		Point3f corner4 = new Point3f(corners[0]);
 		corner4.z += zStepsize;
 		corners[4] = corner4;
-		values[4] = value(corner4, vm, ex);
+		values[4] = value(corner4);
 		
 		Point3f corner5 = new Point3f(corners[1]);
 		corner5.z += zStepsize;
 		corners[5] = corner5;
-		values[5] = value(corner5, vm, ex);
+		values[5] = value(corner5);
 		
 		Point3f corner6 = new Point3f(corners[2]);
 		corner6.z += zStepsize;
 		corners[6] = corner6;
-		values[6] = value(corner6, vm, ex);
+		values[6] = value(corner6);
 		
 		Point3f corner7 = new Point3f(corners[3]);
 		corner7.z += zStepsize;
 		corners[7] = corner7;
-		values[7] = value(corner7, vm, ex);
+		values[7] = value(corner7);
 		
 		cells.add(new MarchCell(corners, values, x, y, z, MarchCell.FACE_4));
 	}
 	
-	private void marchFace5(float[] values, Point3f[] corners, int x, int y, int z, VarMap vm, Expression ex) {
+	private void marchFace5(float[] values, Point3f[] corners, int x, int y, int z) {
 
-		addFace0(values, corners, x, y, z, vm, ex);
-		addFace1(values, corners, x, y, z, vm, ex);
-		addFace2(values, corners, x, y, z, vm, ex);
-		addFace3(values, corners, x, y, z, vm, ex);
-//		addFace4(values, corners, x, y, z, vm, ex);
-		addFace5(values, corners, x, y, z, vm, ex);
+		addFace0(values, corners, x, y, z);
+		addFace1(values, corners, x, y, z);
+		addFace2(values, corners, x, y, z);
+		addFace3(values, corners, x, y, z);
+//		addFace4(values, corners, x, y, z);
+		addFace5(values, corners, x, y, z);
 	}
 	
-	private void addFace5(float[] prevValues, Point3f[] prevCorners, int x, int y, int z, VarMap vm, Expression ex) {
+	private void addFace5(float[] prevValues, Point3f[] prevCorners, int x, int y, int z) {
 		z--;
 		
 		if (!validPosition(x, y, z) || isVisited(x, y, z))
@@ -611,22 +523,22 @@ public class ImplicitIterative extends AbstractImplicit{
 		Point3f corner0 = new Point3f(corners[4]);
 		corner0.z -= zStepsize;
 		corners[0] = corner0;
-		values[0] = value(corner0, vm, ex);
+		values[0] = value(corner0);
 		
 		Point3f corner1 = new Point3f(corners[5]);
 		corner1.z -= zStepsize;
 		corners[1] = corner1;
-		values[1] = value(corner1, vm, ex);
+		values[1] = value(corner1);
 		
 		Point3f corner2 = new Point3f(corners[6]);
 		corner2.z -= zStepsize;
 		corners[2] = corner2;
-		values[2] = value(corner2, vm, ex);
+		values[2] = value(corner2);
 		
 		Point3f corner3 = new Point3f(corners[7]);
 		corner3.z -= zStepsize;
 		corners[3] = corner3;
-		values[3] = value(corner3, vm, ex);
+		values[3] = value(corner3);
 		
 		cells.add(new MarchCell(corners, values, x, y, z, MarchCell.FACE_5));
 	}
@@ -636,69 +548,11 @@ public class ImplicitIterative extends AbstractImplicit{
 	}
 
 	private void markAsVisited(int x, int y, int z) {
-		synchronized (visited[z][y]) {
-			visited[z][y][x] = true;		
-		}
+		visited[z][y][x] = true;		
 	}
 
 	private boolean isVisited(int x, int y, int z) {
-		synchronized (visited[z][y]) {
-			return visited[z][y][x];
-		}
-	}
-	
-	
-	protected float value(Point3f point, VarMap vm, Expression ex) {
-		return value(point.x, point.y, point.z, vm, ex);
-	}
-	
-	protected float value(float x, float y, float z, VarMap vm, Expression ex) {
-//		return value(x, y, z);
-		vm.setValue("x", x);
-		vm.setValue("y", y);
-		vm.setValue("z", z);
-//		FuncMap fm = new FuncMap();
-//		fm.loadDefaultFunctions();
-		
-		return (float) ex.eval(vm, fm);
+		return visited[z][y][x];
 	}
 	
 }
-
-//private void marchCubes(Point3f startcube) {
-//
-//	newTriangles = initTriangleArray(MarchingCubes.MAX_TRIANGLES_RETURNED);
-//	visited = new boolean[zLength][yLength][xLength];
-//	
-//	MarchCell startCell = initStartCube(startcube, startX, startY, startZ);
-//	int nFacets = marchCube(startCell, newTriangles);
-//	if (nFacets > 0)
-//		addTriangles(nFacets, newTriangles);
-//	
-//	addStartCells(startCell);
-//	
-//	while (cells.size() > 0) {
-//		// Next cell to process
-//		MarchCell next = cells.remove(0);
-//
-//		// How many triangles do we need for this cell
-//		int nTriangles = MARCHER.marchCube(next, newTriangles, ISOLEVEL);
-//		
-//		if (nTriangles > 0) {
-//			addTriangles(nTriangles, newTriangles);
-//			
-//			// Add the triangles from this cell and add neighbours
-//			marchNext(next);
-//		}
-//	}
-//	visited = null;
-//	
-//}
-
-//private void markAsVisited(int x, int y, int z) {
-//	visited[z][y][x] = true;		
-//}
-//
-//private boolean isVisited(int x, int y, int z) {
-//	return visited[z][y][x];
-//}
