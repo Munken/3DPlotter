@@ -105,14 +105,17 @@ public class XYZPlotter {
 			}
 		}
 
-		GeometryArray quad = PlotUtil.buildQuadArray(points);
-		
-		shape = new Shape3D(quad);
+		if (points.length > 1) {
+			GeometryArray quad = PlotUtil.buildQuadArray(points);
 
-		TransformGroup result = new TransformGroup();
-		result.addChild(shape);
-		result.setTransform(rotation);
-		return result;
+			shape = new Shape3D(quad);
+
+			TransformGroup result = new TransformGroup();
+			result.addChild(shape);
+			result.setTransform(rotation);
+			return result;
+		} else 
+			return null;
 	}	
 	
 	private String preParse(String expr) {

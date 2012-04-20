@@ -152,13 +152,14 @@ public class Plotter3D extends JPanel{
 	
 	public void showPlot(Function function) {
 		BranchGroup bg = function.getPlot();
-		
-		boolean show = function.isVisible();
-		if (show) {
-			if (bg.getParent() == null) // Should be overkill. Lets keep for robustness
-				plots.addChild(bg);	
+		if (bg != null) {
+			boolean show = function.isVisible();
+			if (show) {
+				if (bg.getParent() == null) // Should be overkill. Lets keep for robustness
+					plots.addChild(bg);	
+			}
+			else bg.detach();
 		}
-		else bg.detach();
 	}
 	
 	protected void addLights(BranchGroup b) {
