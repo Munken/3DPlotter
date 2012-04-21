@@ -95,6 +95,10 @@ public class EditOptionPanel extends JPanel {
 		slider.setValue(GuiUtil.getSliderValue(f.getStepsize(),f.getBounds()));
 	}
 	
+	public void updateColors(){
+		comboBox.setModel(new JComboBox(colorList.getIconList()).getModel());
+	}
+	
 	public void initMode(){
 		slider.setEnabled(false);
 		comboBox.setEnabled(false);
