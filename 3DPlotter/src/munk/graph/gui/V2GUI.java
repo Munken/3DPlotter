@@ -564,7 +564,7 @@ public class V2GUI {
      	GridBagLayout gbl_paramFunctionPanel = new GridBagLayout();
      	gbl_paramFunctionPanel.columnWidths = new int[]{5, 25, 50, 50, 50, 25, 5, 0};
      	gbl_paramFunctionPanel.rowHeights = new int[]{5, 0, 0, 0, 0, 10, 5, 5, 0, 0, 0};
-     	gbl_paramFunctionPanel.columnWeights = new double[]{0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+     	gbl_paramFunctionPanel.columnWeights = new double[]{0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
      	gbl_paramFunctionPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
      	paramFuncTab.setLayout(gbl_paramFunctionPanel);
      	
@@ -808,6 +808,9 @@ public class V2GUI {
 		ActionListener listener = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Function sourceFunction = (Function) e.getSource();
+				if(e.getID() == FunctionLabel.UPDATE){
+					updatePlot(sourceFunction, new ZippedFunction(new String[]{e.getActionCommand()}, sourceFunction.getColor(), sourceFunction.getBounds(), sourceFunction.getStepsize(), sourceFunction.isSelected(), sourceFunction.isVisible(), sourceFunction.getView(), sourceFunction.getFastImplicit()));
+				}
 				if(e.getID() == FunctionLabel.UPDATEEDIT){
 					stdEditOptionPanel.updateFuncReference(sourceFunction);
 				}
@@ -832,6 +835,9 @@ public class V2GUI {
 		ActionListener listener = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Function sourceFunction = (Function) e.getSource();
+				if(e.getID() == FunctionLabel.UPDATE){
+					updatePlot(sourceFunction, new ZippedFunction(e.getActionCommand().split(","), sourceFunction.getColor(), sourceFunction.getBounds(), sourceFunction.getStepsize(), sourceFunction.isSelected(), sourceFunction.isVisible(), sourceFunction.getView(), sourceFunction.getFastImplicit()));
+				}
 				if(e.getID() == FunctionLabel.UPDATEEDIT){
 					paramEditOptionPanel.updateFuncReference(sourceFunction);
 				}

@@ -108,7 +108,7 @@ public class StdFunctionLabel extends JPanel implements FunctionLabel{
 					if (!exprField.getText().equals(mother.getExpression()[0])) {
 						
 						if(e.getKeyCode() == KeyEvent.VK_ENTER){
-							listener.actionPerformed(new ActionEvent(mother, 0, exprField.getText()));
+							listener.actionPerformed(new ActionEvent(mother, FunctionLabel.UPDATE, exprField.getText()));
 							
 							if(exprField.getText().equals(mother.getExpression()[0])){
 								exprField.setBackground(NORMAL_COLOR);
