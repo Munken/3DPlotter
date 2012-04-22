@@ -27,7 +27,7 @@ public class XYZFunction extends AbstractFunction {
 	
 	public XYZFunction(String[] expr, Color3f color, float[] bounds, float[] stepsizes) 
 			throws ExpressionParseException, UndefinedVariableException{
-		super(expr,color,bounds, stepsize,
+		super(expr,color,bounds, stepsizes,
 				new XYZPlotter(expr[0], bounds[0], bounds[1], bounds[2], bounds[3], stepsizes));
 	}
 	

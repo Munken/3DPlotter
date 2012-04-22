@@ -21,16 +21,24 @@ public abstract class AbstractFunction implements Function{
 	private float stepsize;
 	private FILL state;
 	private Plotter	plotter;
+	private float[]	stepsizes;
 
 	public AbstractFunction(String[] expr, Color3f color, float[] bounds, float stepsize, Plotter plotter) {
+		this(expr, color, bounds, new float[] {stepsize, stepsize}, plotter);
+	}
+	
+	public AbstractFunction(String[] expr, Color3f color, float[] bounds, float[] stepsizes, Plotter plotter) {
 		this.expr = expr;
 		this.plotter = plotter;
 		this.visible = true;
 		this.selected = false;
 		this.color = color;
 		this.bounds = bounds;
-		this.stepsize = stepsize;
+		this.stepsizes = stepsizes;
 		state = FILL.FILL;
+		
+		// TODO remove thiø
+		this.stepsize = stepsizes[0];
 	}
 	
 	private BranchGroup setApperancePackInBranchGroup(Color3f color2, Shape3D shape2, Node handle) {
@@ -62,6 +70,10 @@ public abstract class AbstractFunction implements Function{
 	
 	public float getStepsize() {
 		return stepsize;
+	}
+	
+	public float[] getStepsizes() {
+		return stepsizes;
 	}
 
 	public String[] getExpression(){

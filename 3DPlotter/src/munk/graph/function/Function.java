@@ -31,6 +31,8 @@ public interface Function {
 	
 	public float getStepsize();
 	
+	public float[] getStepsizes();
+	
 	public void cancel();
 
 }
