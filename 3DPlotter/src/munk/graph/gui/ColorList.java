@@ -8,6 +8,7 @@ import javax.vecmath.Color3f;
 
 import munk.graph.IO.ObjectReader;
 import munk.graph.IO.ObjectWriter;
+import munk.graph.appearance.Colors;
 import munk.graph.function.Function;
 
 @SuppressWarnings("serial")
@@ -25,6 +26,13 @@ public class ColorList extends ArrayList<Color3f> {
 			add(new Color3f(1, 0, 0)); 			//RED
 			add(new Color3f(0, .0749f, 1)); 	//SKYBLUE
 			add(new Color3f(0, 1, 0)); 			//GREEN
+			add(Colors.CYAN);
+			add(Colors.ORANGE);
+			add(Colors.INDIGO);
+			add(Colors.MAGENTA);
+			add(Colors.PINK);
+			add(Colors.TURQUISE);
+			add(Colors.YELLOW);
 		}
 	}
 

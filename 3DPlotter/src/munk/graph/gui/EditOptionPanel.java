@@ -52,7 +52,7 @@ public class EditOptionPanel extends JPanel {
 		add(resolution, gbc_lblStepSize);
 		
 		slider = new JSlider();
-		slider.setPreferredSize(new Dimension(150,20));
+		slider.setPreferredSize(new Dimension(150,30));
 		GridBagConstraints gbc_slider = new GridBagConstraints();
 		gbc_slider.gridwidth = 8;
 		gbc_slider.insets = new Insets(0, 0, 5, 5);
@@ -69,6 +69,10 @@ public class EditOptionPanel extends JPanel {
 				}
 			}
 		});
+		
+		slider.setMajorTickSpacing(20);
+//		slider.setPaintTicks(true);
+		slider.setPaintLabels(true);
 		
 		comboBox = new JComboBox(colorList.getIconList());
 		GridBagConstraints gbc_comboBox = new GridBagConstraints();
@@ -140,6 +144,7 @@ public class EditOptionPanel extends JPanel {
 				if(!selectedColor.equals(oldFunc.getColor()) && comboBox.isEnabled()){
 					notifyColorUpdated(selectedColor);
 					if(comboBox.isEnabled() && !selectedColor.equals(oldFunc.getColor())){
+						System.out.println("Color update");
 						oldFunc.setColor(selectedColor);
 					}
 				}
