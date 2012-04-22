@@ -42,8 +42,8 @@ public class V2GUI {
 	private JPanel optionPanel, canvasPanel;
 	private JTabbedPane tabbedPane;
 	private JDialog colorDialog;
-	private JDialog editDialog;
-	private EditOptionPanel editOptionPanel;
+	private EditOptionPanel stdEditOptionPanel;
+	private EditOptionPanel paramEditOptionPanel;
 
 	// Non-GUI variables.
 	private Plotter3D plotter;
@@ -352,7 +352,7 @@ public class V2GUI {
      	tabbedPane.addTab("Standard equations", stdFuncTab);
      	GridBagLayout gbl_functionPanel = new GridBagLayout();
      	gbl_functionPanel.columnWidths = new int[]{5, 25, 50, 50, 30, 25, 5, 0};
-     	gbl_functionPanel.rowHeights = new int[]{10, 0, 0, 145, 0, 10, 5, 5, 50, 0, 0};
+     	gbl_functionPanel.rowHeights = new int[]{10, 0, 0, 145, 0, 10, 5, 5, 0, 0, 0};
      	gbl_functionPanel.columnWeights = new double[]{0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
      	gbl_functionPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
      	stdFuncTab.setLayout(gbl_functionPanel);
@@ -539,16 +539,22 @@ public class V2GUI {
      	gbc_panel.gridy = 0;
      	stdFuncOuterPanel.add(stdFuncInnerPanel, gbc_panel);
      	stdFuncInnerPanel.setLayout(new BoxLayout(stdFuncInnerPanel, BoxLayout.Y_AXIS));
-     	
-     	stdSelectedPanel = new JPanel();
-		stdSelectedPanel.setBorder(null);
+
+     	stdEditOptionPanel = new EditOptionPanel(colorList, null, new ActionListener() {
+     		@Override
+     		public void actionPerformed(ActionEvent e) { 	
+     			Function reference = (Function) e.getSource();
+     			ZippedFunction zip = new ZippedFunction(reference.getExpression(),reference.getColor(), reference.getBounds(),GuiUtil.getStepsize(e.getID(), reference.getBounds())[0], reference.isSelected(), reference.isVisible(),reference.getView(), reference.getFastImplicit());
+     			updatePlot(reference, zip);
+     		}
+     	});
      	GridBagConstraints gbc_panel_1 = new GridBagConstraints();
      	gbc_panel_1.fill = GridBagConstraints.BOTH;
      	gbc_panel_1.gridwidth = 5;
      	gbc_panel_1.insets = new Insets(0, 0, 5, 5);
      	gbc_panel_1.gridx = 1;
      	gbc_panel_1.gridy = 8;
-     	stdFuncTab.add(stdSelectedPanel, gbc_panel_1);
+     	stdFuncTab.add(stdEditOptionPanel, gbc_panel_1);
 	}
 	
 	private void initParamFunctionTab(){
@@ -758,17 +764,22 @@ public class V2GUI {
      	gbc_panel_param.gridy = 0;
      	paramFuncOuterPanel.add(paramFuncInnerPanel, gbc_panel_param);
      	paramFuncInnerPanel.setLayout(new BoxLayout(paramFuncInnerPanel, BoxLayout.Y_AXIS));
-     	
-     	paramSelectedPanel = new JPanel();
+
+		paramEditOptionPanel = new EditOptionPanel(colorList, null, new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {		
+     			Function reference = (Function) e.getSource();
+     			ZippedFunction zip = new ZippedFunction(reference.getExpression(),reference.getColor(), reference.getBounds(),GuiUtil.getStepsize(e.getID(), reference.getBounds())[0], reference.isSelected(), reference.isVisible(),reference.getView(), reference.getFastImplicit());
+     			updatePlot(reference, zip);
+			}
+		});
      	GridBagConstraints gbc_panel_1 = new GridBagConstraints();
      	gbc_panel_1.gridwidth = 5;
      	gbc_panel_1.insets = new Insets(0, 0, 5, 5);
      	gbc_panel_1.fill = GridBagConstraints.BOTH;
      	gbc_panel_1.gridx = 1;
      	gbc_panel_1.gridy = 8;
-     	paramFuncTab.add(paramSelectedPanel, gbc_panel_1);
-     	
-     	//TODO: currentParamFunc panel to be added here,
+     	paramFuncTab.add(paramEditOptionPanel, gbc_panel_1);
 
 	}
 	
@@ -797,23 +808,16 @@ public class V2GUI {
 		ActionListener listener = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Function sourceFunction = (Function) e.getSource();
-				if(e.getID() == FunctionLabel.UPDATE){
-					String newExpr = e.getActionCommand();
-					updatePlot(sourceFunction, new String[]{newExpr}, sourceFunction.getColor(), sourceFunction.getBounds(), sourceFunction.getStepsize());
-				}
-				if(e.getID() == FunctionLabel.SPAWNEDIT){
-					hideEditPanel(stdSelectedPanel);
-					spawnEditPanel(sourceFunction, TYPE.STD);
+				if(e.getID() == FunctionLabel.UPDATEEDIT){
+					stdEditOptionPanel.updateFuncReference(sourceFunction);
 				}
 				if(e.getID() == FunctionLabel.DELETE){
 					deletePlot(sourceFunction);
+					stdEditOptionPanel.enableOptions(false);
 				}
 				if(e.getID() == FunctionLabel.VISIBILITY){
 					plotter.showPlot(sourceFunction);
 				}
-//				if(e.getID() == FunctionLabel.HIDEEDIT){
-//					hideEditPanel(stdSelectedPanel);
-//				}
 			}
 		};
 		StdFunctionLabel label = new StdFunctionLabel(newFunction, listener);
@@ -828,21 +832,15 @@ public class V2GUI {
 		ActionListener listener = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Function sourceFunction = (Function) e.getSource();
-				if(e.getID() == FunctionLabel.UPDATE){
-					String newExpr = e.getActionCommand();
-					updatePlot(sourceFunction, new String[]{newExpr}, sourceFunction.getColor(), sourceFunction.getBounds(), sourceFunction.getStepsize());
-				}
-				if(e.getID() == FunctionLabel.SPAWNEDIT){
-					spawnEditPanel(sourceFunction, TYPE.PARAM);
+				if(e.getID() == FunctionLabel.UPDATEEDIT){
+					paramEditOptionPanel.updateFuncReference(sourceFunction);
 				}
 				if(e.getID() == FunctionLabel.DELETE){
 					deletePlot(sourceFunction);
+					paramEditOptionPanel.enableOptions(false);
 				}
 				if(e.getID() == FunctionLabel.VISIBILITY){
 					plotter.showPlot(sourceFunction);
-				}
-				if(e.getID() == FunctionLabel.HIDEEDIT){
-					hideEditPanel(paramSelectedPanel);
 				}
 			}
 		};
@@ -876,17 +874,15 @@ public class V2GUI {
 			JLabel label = new JLabel(message,JLabel.CENTER);
 			JOptionPane.showMessageDialog(frame,label);
 		} 
-		
-
 	}
-
+	
 	/*
 	 * Update a function.
 	 */
-	private Function updatePlot(Function oldFunc, String newExpr[], Color3f newColor, float[] bounds, float stepsize) {
+	private Function updatePlot(Function oldFunc, ZippedFunction zip) {
 		// Try evaluating the function.
 		try {
-			Function newFunc = FunctionUtil.createFunction(newExpr, newColor, bounds, stepsize);
+			Function newFunc = FunctionUtil.loadFunction(zip);
 			
 			if (oldFunc.getClass() == ParametricFunction.class) {
 				paramFuncList.set(paramFuncList.indexOf(oldFunc), newFunc);
@@ -900,6 +896,11 @@ public class V2GUI {
 			plotter.removePlot(oldFunc);
 			spawnNewPlotterThread(newFunc);
 			frame.pack();
+			if (newFunc.getClass() == ParametricFunction.class) {
+				paramEditOptionPanel.updateFuncReference(newFunc);
+			} else {
+				stdEditOptionPanel.updateFuncReference(newFunc);
+			}
 			return newFunc;
 		} 
 		// Catch error.
@@ -962,45 +963,6 @@ public class V2GUI {
 		}
 		return bounds;
 	}
-	
-	/*
-	 * Spawn edit panel as part of GUI main frame.
-	 */
-	private void spawnEditPanel(Function f, TYPE type){
-		targetPanel = null;
-		if(type == TYPE.PARAM){
-			targetPanel = paramSelectedPanel;
-		}
-		else if(type == TYPE.STD){
-			targetPanel = stdSelectedPanel;
-		}
-		editOptionPanel = new EditOptionPanel(colorList, f, new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if(e.getID() == 0){
-					Function[] source = (Function[]) e.getSource();
-					source[0].setColor(source[1].getColor());
-				}
-				if(e.getID() == 1){
-					Function[] source = (Function[]) e.getSource();
-					editOptionPanel.updateFuncReference(updatePlot(source[0], source[0].getExpression(), source[1].getColor(), source[1].getBounds(), source[1].getStepsize()));
-				}
-				if(e.getID() == FunctionLabel.HIDEEDIT){
-					hideEditPanel(targetPanel);
-				}
-			}
-		});
-		targetPanel.add(editOptionPanel);
-	}
-
-	private void hideEditPanel(JPanel targetPanel){
-		double xRelative = MouseInfo.getPointerInfo().getLocation().getX() - targetPanel.getLocationOnScreen().getX();
-		double yRelative = MouseInfo.getPointerInfo().getLocation().getY() - targetPanel.getLocationOnScreen().getY();
-		if(!targetPanel.contains((int) xRelative, (int) yRelative)){
-			targetPanel.removeAll();
-			targetPanel.repaint();
-		}
-	}
 
 	/*
 	 * Spawn simple color chooser.
@@ -1019,6 +981,8 @@ public class V2GUI {
 				}
 				else if(!colorList.contains(e.getSource())){
 					colorList.add((Color3f) e.getSource());
+					stdEditOptionPanel.updateColors();
+					paramEditOptionPanel.updateColors();
 				}
 			}
 		});
@@ -1107,22 +1071,15 @@ public class V2GUI {
 				}
 				//Read new functions from zipped object.
 				for(int i = 0; i < importLists[0].length; i++){
-					addPlot(importLists[0][i].getExpression(), importLists[0][i].getColor(), importLists[0][i].getBounds(), importLists[0][i].getStepsize());
-					stdFuncList.get(i).setSelected(importLists[0][i].isSelected());
-					stdFuncList.get(i).setVisible(importLists[0][i].isVisible());
+					addXYZPlot(FunctionUtil.loadFunction(importLists[0][i]));
 				}
 				for(int i = 0; i < importLists[1].length; i++){
-					addPlot(importLists[1][i].getExpression(), importLists[1][i].getColor(), importLists[1][i].getBounds(), importLists[1][i].getStepsize());
-					paramFuncList.get(i).setSelected(importLists[1][i].isSelected());
-					paramFuncList.get(i).setVisible(importLists[1][i].isVisible());
+					addParametricPlot(FunctionUtil.loadFunction(importLists[1][i]));
 				}
 			}
-			catch(IOException | ClassCastException | ClassNotFoundException ex){
+			catch(IOException | ClassCastException | ClassNotFoundException | ExpressionParseException | IllegalArgumentException | UndefinedVariableException | IllegalEquationException ex){
 				JOptionPane.showMessageDialog(frame,new JLabel("Unable to import workspace from file.",JLabel.CENTER));
-			}
+			} 
 		}
 	}
-	
-
-	
 }

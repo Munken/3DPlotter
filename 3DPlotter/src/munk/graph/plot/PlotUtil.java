@@ -23,7 +23,11 @@ public class PlotUtil {
 	
 	public static GeometryArray buildQuadArray(Point3f[][] points) {
 		int ySize = points.length;
-		int xSize = points[1].length;
+		int xSize = points[0].length;
+		if (ySize <= 1 || xSize <= 1)
+			return null;
+		
+		
 		
 		QuadArray quad = new QuadArray (4 * (xSize - 1) * (ySize - 1), QuadArray.COORDINATES);
 		Vector3f normal = new Vector3f ();

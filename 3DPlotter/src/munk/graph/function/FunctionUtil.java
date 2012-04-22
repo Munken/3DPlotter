@@ -68,7 +68,16 @@ public class FunctionUtil {
 				bounds[i] = tmp;
 			}
 		}
-		
+
+		return result;
+	}
+
+	public static Function loadFunction(ZippedFunction zip) throws ExpressionParseException, IllegalEquationException, UndefinedVariableException{
+		Function result = createFunction(zip.getExpression(), zip.getColor(), zip.getBounds(), zip.getStepsize());
+		result.setSelected(zip.isSelected());
+		result.setVisible(zip.isVisible());
+		result.setFastImplicit(zip.getFastImplicit());
+		result.setView(zip.getState());
 		return result;
 	}
 	
@@ -123,7 +132,7 @@ public class FunctionUtil {
 		ZippedFunction[] zippedList = new ZippedFunction[list.size()];
 		for(int i = 0; i < list.size(); i++){
 			Function f = list.get(i);
-			zippedList[i] = new ZippedFunction(f.getExpression(), f.getColor(), f.getBounds(), f.getStepsize(), f.isSelected(), f.isVisible());
+			zippedList[i] = new ZippedFunction(f.getExpression(), f.getColor(), f.getBounds(), f.getStepsize(), f.isSelected(), f.isVisible(), f.getView(), f.getFastImplicit());
 		}
 		return zippedList;
 	}

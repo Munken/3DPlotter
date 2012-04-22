@@ -20,6 +20,7 @@ public abstract class AbstractFunction implements Function{
 	private float stepsize;
 	private boolean havePlotted;
 	private FILL state;
+	private boolean fasterImplicit;
 
 	public AbstractFunction(String[] expr, Color3f color, float[] bounds, float stepsize) {
 		this.expr = expr;
@@ -28,6 +29,7 @@ public abstract class AbstractFunction implements Function{
 		this.color = color;
 		this.bounds = bounds;
 		this.stepsize = stepsize;
+		this.fasterImplicit = true;
 		state = FILL.FILL;
 	}
 	
@@ -69,37 +71,40 @@ public abstract class AbstractFunction implements Function{
 	public void setColor(Color3f color) {
 		this.color = color;
 		if (shape != null) {
-			Appearance app = null;
-			
-			if (state == FILL.FILL)
-				app = new ColorAppearance(color);
-			else if (state == FILL.GRID)
-				app = new GridAppearance(color);
-			else 
-				app = new PointAppearance(color);
-			
-			shape.setAppearance(app);
+			setApperance();
 		}
 	}
 	
-	public void setGridAppearance() {
-		if (state != FILL.GRID)
-			state = FILL.GRID;
-			shape.setAppearance(new GridAppearance(color));
-	}
-	
-	public void setFillAppearance() {
-		if (state != FILL.FILL)
-			state = FILL.FILL;
-			shape.setAppearance(new ColorAppearance(color));
-	}
-	
-	public void setPointAppearance() {
-		if (state != FILL.POINT) {
-			state = FILL.POINT;
-			shape.setAppearance(new PointAppearance(color));
+	public void setView(FILL state){
+		this.state = state;
+		if(shape != null){
+			this.state = state;
+			setApperance();
 		}
 	}
+	
+	public FILL getView(){
+		return state;
+	}
+	
+//	public void setGridAppearance() {
+//		if (state != FILL.GRID)
+//			state = FILL.GRID;
+//			shape.setAppearance(new GridAppearance(color));
+//	}
+//	
+//	public void setFillAppearance() {
+//		if (state != FILL.FILL)
+//			state = FILL.FILL;
+//			shape.setAppearance(new ColorAppearance(color));
+//	}
+//	
+//	public void setPointAppearance() {
+//		if (state != FILL.POINT) {
+//			state = FILL.POINT;
+//			shape.setAppearance(new PointAppearance(color));
+//		}
+//	}
 	
 	public boolean isVisible(){
 		return visible;
@@ -119,6 +124,25 @@ public abstract class AbstractFunction implements Function{
 
 	public float[] getBounds() {
 		return bounds;
+	}
+
+	public void setApperance(){
+		Appearance app = null;
+		if(state == FILL.POINT) 
+			app = new PointAppearance(color);
+		else if(state == FILL.GRID) 
+			app = new GridAppearance(color);
+		else
+			app = new ColorAppearance(color);
+		shape.setAppearance(app);
+	}
+	
+	public void setFastImplicit(boolean b){
+		fasterImplicit = b;
+	}
+	
+	public boolean getFastImplicit(){
+		return fasterImplicit;
 	}
 
 }
