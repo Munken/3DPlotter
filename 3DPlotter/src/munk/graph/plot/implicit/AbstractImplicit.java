@@ -10,12 +10,13 @@ import javax.vecmath.Point3f;
 
 import munk.graph.function.IllegalEquationException;
 import munk.graph.marching.*;
+import munk.graph.plot.AbstractPlotter;
 
 import com.graphbuilder.math.*;
 import com.sun.j3d.utils.geometry.GeometryInfo;
 import com.sun.j3d.utils.geometry.NormalGenerator;
 
-public abstract class AbstractImplicit implements ImplicitPlotter {
+public abstract class AbstractImplicit extends AbstractPlotter implements ImplicitPlotter {
 	
 	private static Pattern PATTERN = Pattern.compile("([^=]+)=([^=]+)$");
 	protected float xMin;
@@ -79,6 +80,7 @@ public abstract class AbstractImplicit implements ImplicitPlotter {
 		if (plot == null) {
 			triangles = new ArrayList<Point3f>(30000);
 			plot = plot();
+			setShape(plot);
 			triangles = null;
 		}
 		
