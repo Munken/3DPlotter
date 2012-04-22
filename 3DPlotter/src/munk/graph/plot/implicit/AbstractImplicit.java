@@ -78,7 +78,7 @@ public abstract class AbstractImplicit extends AbstractPlotter implements Implic
 	
 	public Shape3D getPlot() {
 		if (plot == null) {
-			triangles = new ArrayList<Point3f>(30000);
+			
 			plot = plot();
 			setShape(plot);
 			triangles = null;
@@ -90,11 +90,15 @@ public abstract class AbstractImplicit extends AbstractPlotter implements Implic
 	protected abstract Shape3D plot();
 	
 	protected Shape3D buildGeomtryFromTriangles() {
+		return buildGeomtryFromTriangles(triangles);
+	}
+	
+	protected Shape3D buildGeomtryFromTriangles(List<Point3f> vertices) {
 		// Build geometry from triangles
 		if (triangles.size() >= 3) {
 			GeometryInfo gi = new GeometryInfo(GeometryInfo.TRIANGLE_ARRAY);
-			Point3f[] points = new Point3f[triangles.size()];
-			gi.setCoordinates((Point3f[]) triangles.toArray(points));
+			Point3f[] points = new Point3f[vertices.size()];
+			gi.setCoordinates((Point3f[]) vertices.toArray(points));
 			
 			NormalGenerator ng = new NormalGenerator();
 			ng.generateNormals(gi);
@@ -157,11 +161,18 @@ public abstract class AbstractImplicit extends AbstractPlotter implements Implic
 	}
 	
 	protected void addTriangles(int nFacets, Triangle[] newTriangles) {
+		if (triangles == null)
+			triangles = new ArrayList<Point3f>(30000);
+		
+		addTriangles(nFacets, newTriangles, triangles);
+	}
+	
+	protected void addTriangles(int nFacets, Triangle[] newTriangles, List<Point3f> list) {
 		for (int q = 0; q < nFacets; q++) {
 			Triangle tri = newTriangles[q];
 			for (Point3f vertex : tri) {
 				Point3f newVertex = (Point3f) vertex.clone();
-				triangles.add(newVertex);
+				list.add(newVertex);
 			}
 		}
 	}
@@ -182,7 +193,7 @@ public abstract class AbstractImplicit extends AbstractPlotter implements Implic
 		return result;
 	}
 	
-	private String preParse(String expr) throws IllegalEquationException {
+	protected String preParse(String expr) throws IllegalEquationException {
 		Matcher m = PATTERN.matcher(expr);
 		boolean matches = m.matches();
 		if (!matches)
