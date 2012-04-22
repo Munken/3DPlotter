@@ -22,6 +22,7 @@ public abstract class AbstractFunction implements Function{
 	private FILL state;
 	private Plotter	plotter;
 	private float[]	stepsizes;
+	private boolean fasterImplicit;
 
 	public AbstractFunction(String[] expr, Color3f color, float[] bounds, float stepsize, Plotter plotter) {
 		this(expr, color, bounds, new float[] {stepsize, stepsize}, plotter);
@@ -87,36 +88,20 @@ public abstract class AbstractFunction implements Function{
 	public void setColor(Color3f color) {
 		this.color = color;
 		if (shape != null) {
-			Appearance app = null;
-			
-			if (state == FILL.FILL)
-				app = new ColorAppearance(color);
-			else if (state == FILL.GRID)
-				app = new GridAppearance(color);
-			else 
-				app = new PointAppearance(color);
-			
-			shape.setAppearance(app);
+			setApperance();
 		}
 	}
 	
-	public void setGridAppearance() {
-		if (state != FILL.GRID)
-			state = FILL.GRID;
-			shape.setAppearance(new GridAppearance(color));
-	}
-	
-	public void setFillAppearance() {
-		if (state != FILL.FILL)
-			state = FILL.FILL;
-			shape.setAppearance(new ColorAppearance(color));
-	}
-	
-	public void setPointAppearance() {
-		if (state != FILL.POINT) {
-			state = FILL.POINT;
-			shape.setAppearance(new PointAppearance(color));
+	public void setView(FILL state){
+		this.state = state;
+		if(shape != null){
+			this.state = state;
+			setApperance();
 		}
+	}
+	
+	public FILL getView(){
+		return state;
 	}
 	
 	public boolean isVisible(){
@@ -144,4 +129,41 @@ public abstract class AbstractFunction implements Function{
 			plotter.cancel();
 	}
 
+	public void setApperance(){
+		Appearance app = null;
+		if(state == FILL.POINT) 
+			app = new PointAppearance(color);
+		else if(state == FILL.GRID) 
+			app = new GridAppearance(color);
+		else
+			app = new ColorAppearance(color);
+		shape.setAppearance(app);
+	}
+	
+	public void setFastImplicit(boolean b){
+		fasterImplicit = b;
+	}
+	
+	public boolean getFastImplicit(){
+		return fasterImplicit;
+	}
+
+//	public void setGridAppearance() {
+//	if (state != FILL.GRID)
+//		state = FILL.GRID;
+//		shape.setAppearance(new GridAppearance(color));
+//}
+//
+//public void setFillAppearance() {
+//	if (state != FILL.FILL)
+//		state = FILL.FILL;
+//		shape.setAppearance(new ColorAppearance(color));
+//}
+//
+//public void setPointAppearance() {
+//	if (state != FILL.POINT) {
+//		state = FILL.POINT;
+//		shape.setAppearance(new PointAppearance(color));
+//	}
+//}
 }

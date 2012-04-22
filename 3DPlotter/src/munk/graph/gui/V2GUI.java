@@ -542,19 +542,6 @@ public class V2GUI {
      	stdFuncOuterPanel.add(stdFuncInnerPanel, gbc_panel);
      	stdFuncInnerPanel.setLayout(new BoxLayout(stdFuncInnerPanel, BoxLayout.Y_AXIS));
      	
-//		stdEditOptionPanel = new EditOptionPanel(colorList, null, new ActionListener() {
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//				if(e.getID() == 0){
-//					Function[] source = (Function[]) e.getSource();
-//					source[0].setColor(source[1].getColor());
-//				}
-//				if(e.getID() == 1){
-//					Function[] source = (Function[]) e.getSource();
-//					updatePlot(source[0], source[0].getExpression(), source[1].getColor(), source[1].getBounds(), source[1].getStepsizes());
-//				}
-//			}
-//		});
 		EditOptionPanel editPanel = new EditOptionPanel(colorList, null);
 		editPanel.addFunctionListener(createColorStepsizeFunctionListener());
 		stdEditOptionPanel = editPanel;
@@ -593,7 +580,7 @@ public class V2GUI {
      	GridBagLayout gbl_paramFunctionPanel = new GridBagLayout();
      	gbl_paramFunctionPanel.columnWidths = new int[]{5, 25, 50, 50, 50, 25, 5, 0};
      	gbl_paramFunctionPanel.rowHeights = new int[]{5, 0, 0, 0, 0, 10, 5, 5, 0, 0, 0};
-     	gbl_paramFunctionPanel.columnWeights = new double[]{0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+     	gbl_paramFunctionPanel.columnWeights = new double[]{0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
      	gbl_paramFunctionPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
      	paramFuncTab.setLayout(gbl_paramFunctionPanel);
      	
@@ -912,7 +899,7 @@ public class V2GUI {
 					
 				} else if (action == FunctionEvent.ACTION.DELETE){
 					deletePlot(func);
-					stdEditOptionPanel.initMode();
+					stdEditOptionPanel.setEnabled(false);
 					
 				} else if (action == FunctionEvent.ACTION.UPDATE) {
 					updatePlot(func, e.getNewExpr(), e.getColor(), e.getBounds(), e.getStepsizes());
@@ -1120,19 +1107,15 @@ public class V2GUI {
 				}
 				//Read new functions from zipped object.
 				for(int i = 0; i < importLists[0].length; i++){
-					addPlot(importLists[0][i].getExpression(), importLists[0][i].getColor(), importLists[0][i].getBounds(), importLists[0][i].getStepsize());
-					stdFuncList.get(i).setSelected(importLists[0][i].isSelected());
-					stdFuncList.get(i).setVisible(importLists[0][i].isVisible());
+					addXYZPlot(FunctionUtil.loadFunction(importLists[0][i]));
 				}
 				for(int i = 0; i < importLists[1].length; i++){
-					addPlot(importLists[1][i].getExpression(), importLists[1][i].getColor(), importLists[1][i].getBounds(), importLists[1][i].getStepsize());
-					paramFuncList.get(i).setSelected(importLists[1][i].isSelected());
-					paramFuncList.get(i).setVisible(importLists[1][i].isVisible());
+					addParametricPlot(FunctionUtil.loadFunction(importLists[1][i]));
 				}
 			}
-			catch(IOException | ClassCastException | ClassNotFoundException ex){
+			catch(IOException | ClassCastException | ClassNotFoundException | ExpressionParseException | IllegalArgumentException | UndefinedVariableException | IllegalEquationException ex){
 				JOptionPane.showMessageDialog(frame,new JLabel("Unable to import workspace from file.",JLabel.CENTER));
-			}
+			} 
 		}
 	}
 }
