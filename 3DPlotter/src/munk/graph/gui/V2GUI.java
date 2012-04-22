@@ -828,7 +828,7 @@ public class V2GUI {
 		});
 	}
 	
-	private void addXYZPlot(Function newFunction) {
+	private void addXYZPlot(final Function newFunction) {
 		stdFuncList.add(newFunction);
 		StdFunctionLabel label = new StdFunctionLabel(newFunction);
 		
@@ -853,6 +853,16 @@ public class V2GUI {
 					
 			}
 		});
+		label.addFocusListener(new FocusAdapter() {
+			
+			@Override
+			public void focusGained(FocusEvent e) {
+				stdEditOptionPanel.updateFuncReference(newFunction);
+	
+			}
+		});
+		
+		
 		stdFuncInnerPanel.add(label);
 		map.put(newFunction, label);
 		doPlot(newFunction);
@@ -914,14 +924,6 @@ public class V2GUI {
 				addXYZPlot(newFunction);
 			}
 			
-			FunctionLabel label = map.get(newFunction);
-			label.addFocusListener(new FocusAdapter() {
-				
-				@Override
-				public void focusGained(FocusEvent e) {
-					stdEditOptionPanel.updateFuncReference(newFunction);
-				}
-			});
 			
 		} catch (ExpressionParseException | IllegalEquationException | UndefinedVariableException e) {
 			String message = e.getMessage();

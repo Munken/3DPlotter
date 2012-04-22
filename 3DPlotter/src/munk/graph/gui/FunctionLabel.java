@@ -20,6 +20,6 @@ public interface FunctionLabel {
 	public void setMother(Function f);
 	public void setIndeterminate(boolean b);
 	
-	public void addFocusListener(FocusListener f);
+	
 	
 }

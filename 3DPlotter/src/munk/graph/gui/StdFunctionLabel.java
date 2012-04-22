@@ -86,12 +86,26 @@ public class StdFunctionLabel extends JPanel implements FunctionLabel{
 		});
 	}
 
+	
 	/*
 	 * WHITE: Equation evaluated.
 	 * YELLOW: Equation not evaluated.
 	 * RED: Evaluation failed.
 	 */
 	private void addTextChangeListener() {
+		
+		exprField.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusGained(FocusEvent e) {
+				// TODO Auto-generated method stub
+				FocusListener[] listeners = getFocusListeners();
+				
+				for (FocusListener l : listeners) {
+					l.focusGained(e);
+				}
+			}
+			
+		});
 		
 		// Evaluation.
 		exprField.addKeyListener(new KeyAdapter() {
