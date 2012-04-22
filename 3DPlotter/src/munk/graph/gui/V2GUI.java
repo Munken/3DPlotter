@@ -827,7 +827,7 @@ public class V2GUI {
 				}
 				if(e.getID() == FunctionLabel.DELETE){
 					deletePlot(sourceFunction);
-					stdEditOptionPanel.initMode();
+					stdEditOptionPanel.enableOptions(false);
 				}
 				if(e.getID() == FunctionLabel.VISIBILITY){
 					plotter.showPlot(sourceFunction);
@@ -855,7 +855,7 @@ public class V2GUI {
 				}
 				if(e.getID() == FunctionLabel.DELETE){
 					deletePlot(sourceFunction);
-					paramEditOptionPanel.initMode();
+					paramEditOptionPanel.enableOptions(false);
 				}
 				if(e.getID() == FunctionLabel.VISIBILITY){
 					plotter.showPlot(sourceFunction);
