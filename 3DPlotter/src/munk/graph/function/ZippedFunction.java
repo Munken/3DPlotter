@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 import javax.vecmath.Color3f;
 
+import munk.graph.function.AbstractFunction.FILL;
+
 public class ZippedFunction implements Serializable {
 
 	private static final long serialVersionUID = 6392346219383074768L;
@@ -13,14 +15,18 @@ public class ZippedFunction implements Serializable {
 	private Boolean visible; 
 	private float[] bounds;
 	private float stepsize;
+	private FILL state;
+	private boolean fastImplicit;
 	
-	public ZippedFunction(String[] expr, Color3f color, float[] bounds, float stepsize, boolean selected, boolean visible) {
+	public ZippedFunction(String[] expr, Color3f color, float[] bounds, float stepsize, boolean selected, boolean visible, FILL state, boolean fastImplicit) {
 		this.expr = expr;
 		this.visible = visible;
 		this.selected = selected;
 		this.color = color;
 		this.bounds = bounds;
 		this.stepsize = stepsize;
+		this.state = state;
+		this.fastImplicit = fastImplicit;
 	}
 	
 	public String[] getExpression(){
@@ -47,14 +53,11 @@ public class ZippedFunction implements Serializable {
 		return bounds;
 	}
 	
-	@Override
-	public String toString() {
-		String result = "Wrap: [";
-		for (String str : expr) {
-			result += str + ", ";
-		}
-		
-		result = result.substring(0, result.length() - 2) + "]";
-		return result;
+	public FILL getState(){
+		return state;
+	}
+	
+	public boolean getFastImplicit(){
+		return fastImplicit;
 	}
 }

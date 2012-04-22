@@ -16,7 +16,6 @@ public interface FunctionLabel {
 	static final int FOCUS_GAINED = 1;
 	static final int DELETE = 2;
 	static final int VISIBILITY = 3;
-	static final int HIDEEDIT = 4;
 	
 	public void setMother(Function f);
 	public void setIndeterminate(boolean b);
