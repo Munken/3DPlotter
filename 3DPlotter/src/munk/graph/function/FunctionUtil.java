@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 import javax.media.j3d.*;
 import javax.vecmath.Color3f;
 
-import munk.graph.appearance.ColorAppearance;
+import munk.graph.function.implicit.ImplicitMultiFunction;
 
 import com.graphbuilder.math.*;
 
@@ -17,7 +17,7 @@ public class FunctionUtil {
 	private static Pattern SEPARATION = Pattern.compile("^ *([xyz]) *=(?:(?!(?:(\\1|=))).)*$");
 	
 	public static BranchGroup setApperancePackInBranchGroup(Color3f color, Shape3D shape, Node handle) {
-		shape.setAppearance(new ColorAppearance(color));
+//		shape.setAppearance(new ColorAppearance(color));
 		shape.setCapability(Shape3D.ALLOW_APPEARANCE_WRITE);
 
 		BranchGroup bg = new BranchGroup();
@@ -57,7 +57,7 @@ public class FunctionUtil {
 		if (isXYZExpression(expr)) {
 			result = new XYZFunction(expressions, color, bounds, stepsize);
 		} else {
-			result = new ImplicitIterativeFunction(expressions, color, bounds, stepsize);
+			result = new ImplicitMultiFunction(expressions, color, bounds, stepsize);
 		}
 		
 		

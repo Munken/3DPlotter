@@ -44,12 +44,16 @@ public class ColorList extends ArrayList<Color3f> {
 	/*
 	 * Return the next available color. If none are, return the one least in use.
 	 */
-	public Color3f getNextAvailableColor(List<Function> functionList){
+//	public Color3f getNextAvailableColor(List<Function> functions){
+//		return getNextAvailableColor(functions);
+//	}
+	
+	public Color3f getNextAvailableColor(Iterable<Function> functions) {
 		int[] frequence = new int[this.size()];
 		ArrayList<Integer> indexList = new ArrayList<Integer>();
 		for(int i = 0; i < this.size() ; i++){
 			frequence[i]=0;
-			for(Function f : functionList){
+			for(Function f : functions){
 				if(f.getColor().equals(this.get(i))) frequence[i]++;
 			}
 			indexList.add(frequence[i]);
