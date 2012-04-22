@@ -41,6 +41,10 @@ public interface Function {
 	public void setFastImplicit(boolean b);
 	
 	public boolean getFastImplicit();
+	
+	public float[] getStepsizes();
+	
+	public void cancel();
 
 }
 
