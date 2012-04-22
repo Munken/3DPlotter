@@ -54,7 +54,7 @@ public class ParametricFunction extends AbstractFunction {
 	
 	@Override
 	protected BranchGroup plot() {
-		Shape3D shape = pp.getPlot();
+		Shape3D shape = pp.getShape();
 		pp = null;
 		
 		if (shape != null) {

@@ -58,7 +58,7 @@ public class Parametric2D extends AbstractParametric{
 	}
 
 	@Override
-	public Shape3D getPlot() {
+	protected Shape3D plot() {
 		int tLength = (int) Math.ceil((tMax - tMin) / stepsize) + 1;
 		int uLength = (int) Math.ceil((uMax - uMin) / stepsize) + 1;
 		
@@ -77,7 +77,9 @@ public class Parametric2D extends AbstractParametric{
 		
 		GeometryArray quad = PlotUtil.buildQuadArray(points);
 		
-		return new Shape3D(quad);
+		Shape3D shape = new Shape3D(quad);
+		setShape(shape);
+		return shape;
 	}
 	
 

@@ -43,7 +43,7 @@ public class Parametric1D extends AbstractParametric{
 		this(xExpr, yExpr, zExpr, tMin, tMax, 0.1f);
 	}
 	
-	public Shape3D getPlot() {
+	protected Shape3D plot() {
 		int length = (int) Math.ceil((tMax - tMin) / stepsize) + 1;
 		
 		float t = tMin;
@@ -58,7 +58,9 @@ public class Parametric1D extends AbstractParametric{
 		
 		LineArray la = PlotUtil.buildLineArray(points);
 		
-		return new Shape3D(la);
+		Shape3D shape = new Shape3D(la);
+		setShape(shape);
+		return shape;
 	}
 	
 

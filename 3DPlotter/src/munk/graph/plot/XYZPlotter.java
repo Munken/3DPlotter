@@ -12,7 +12,7 @@ import javax.vecmath.Point3f;
 
 import com.graphbuilder.math.*;
 
-public class XYZPlotter {
+public class XYZPlotter extends AbstractPlotter {
 	
 	private static Pattern PATTERN = Pattern.compile(" *([xyz]) *=([^=]+)$|([^=]+)= *([xyz]) *");
 	private static final Transform3D ROT_Y;
@@ -86,7 +86,7 @@ public class XYZPlotter {
 		return plot; 
 	}
 
-	private TransformGroup plot() {
+	protected TransformGroup plot() {
 		int xSize = (int) ((xMax - xMin) / stepsize) + 1;
 		int ySize = (int) ((yMax - yMin) / stepsize) + 1;
 		
@@ -113,6 +113,7 @@ public class XYZPlotter {
 			TransformGroup result = new TransformGroup();
 			result.addChild(shape);
 			result.setTransform(rotation);
+			setShape(shape);
 			return result;
 		} else 
 			return null;

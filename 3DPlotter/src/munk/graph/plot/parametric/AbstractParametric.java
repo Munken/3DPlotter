@@ -1,12 +1,11 @@
 package munk.graph.plot.parametric;
 
-import javax.media.j3d.Shape3D;
-
 import munk.graph.function.IllegalEquationException;
+import munk.graph.plot.AbstractPlotter;
 
 import com.graphbuilder.math.*;
 
-public abstract class AbstractParametric implements ParametricPlotter{
+public abstract class AbstractParametric extends AbstractPlotter implements ParametricPlotter{
 	
 	private VarMap vm;
 	private FuncMap fm;
@@ -65,6 +64,6 @@ public abstract class AbstractParametric implements ParametricPlotter{
 		return (float) ex.eval(vm, fm);
 	}
 	
-	public abstract Shape3D getPlot();
+
 
 }
