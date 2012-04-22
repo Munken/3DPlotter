@@ -30,6 +30,10 @@ public interface Function {
 	public void setSelected(boolean b);
 	
 	public float getStepsize();
+	
+	public float[] getStepsizes();
+	
+	public void cancel();
 
 }
 

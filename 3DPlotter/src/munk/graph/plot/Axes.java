@@ -113,6 +113,7 @@ public class Axes {
 
 	}
 	
+	@SuppressWarnings("unused")
 	private TransformGroup addText(float xMax, float yMax, float zMax, float radius) {
 		Font3D font = new Font3D(new Font("Test", Font.PLAIN, 1),  new FontExtrusion()); 
 		Text3D xLabel = new Text3D(font, "X");

@@ -4,6 +4,7 @@ import javax.media.j3d.*;
 import javax.vecmath.Color3f;
 
 import munk.graph.appearance.*;
+import munk.graph.plot.Plotter;
 
 public abstract class AbstractFunction implements Function{
 	
@@ -18,34 +19,51 @@ public abstract class AbstractFunction implements Function{
 	private float[] bounds;
 	private Shape3D shape;
 	private float stepsize;
-	private boolean havePlotted;
 	private FILL state;
+	private Plotter	plotter;
+	private float[]	stepsizes;
 
-	public AbstractFunction(String[] expr, Color3f color, float[] bounds, float stepsize) {
+	public AbstractFunction(String[] expr, Color3f color, float[] bounds, float stepsize, Plotter plotter) {
+		this(expr, color, bounds, new float[] {stepsize, stepsize}, plotter);
+	}
+	
+	public AbstractFunction(String[] expr, Color3f color, float[] bounds, float[] stepsizes, Plotter plotter) {
 		this.expr = expr;
+		this.plotter = plotter;
 		this.visible = true;
 		this.selected = false;
 		this.color = color;
 		this.bounds = bounds;
-		this.stepsize = stepsize;
+		this.stepsizes = stepsizes;
 		state = FILL.FILL;
+		
+		// TODO remove thiø
+		this.stepsize = stepsizes[0];
 	}
 	
-	/*
-	 * Implemented differently for each function type.
-	 */
-	protected abstract BranchGroup plot() ;
-	
+	private BranchGroup setApperancePackInBranchGroup(Color3f color2, Shape3D shape2, Node handle) {
+		shape.setCapability(Shape3D.ALLOW_APPEARANCE_WRITE);
+
+		BranchGroup bg = new BranchGroup();
+		bg.setCapability(BranchGroup.ALLOW_DETACH);
+		bg.addChild(handle);
+		bg.compile();
+		return bg;
+	}
+
 	/*
 	 * Lazy evaluation of plotting.
 	 */
 	public BranchGroup getPlot() {
-		if(plot == null && !havePlotted){
-						
-			plot = plot();
+		if(plotter != null){
+			Node handle = plotter.getPlot();
+			shape = plotter.getShape();
+			plotter = null;
+			
+			if (shape != null) 
+				plot = setApperancePackInBranchGroup(getColor(), shape, handle);
+
 			setColor(color);
-			havePlotted = true;
-						
 		}
 		return plot;
 	}
@@ -54,10 +72,10 @@ public abstract class AbstractFunction implements Function{
 		return stepsize;
 	}
 	
-	protected void setShape(Shape3D shape){
-		this.shape = shape;
+	public float[] getStepsizes() {
+		return stepsizes;
 	}
-	
+
 	public String[] getExpression(){
 		return expr;
 	}
@@ -121,15 +139,9 @@ public abstract class AbstractFunction implements Function{
 		return bounds;
 	}
 	
-	@Override
-	public String toString() {
-		String result = "[";
-		for (String str : expr) {
-			result += str + ", ";
-		}
-		
-		result = result.substring(0, result.length() - 2) + "]";
-		return result;
+	public void cancel() {
+		if (plotter != null)
+			plotter.cancel();
 	}
 
 }

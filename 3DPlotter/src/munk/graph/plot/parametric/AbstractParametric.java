@@ -1,12 +1,11 @@
 package munk.graph.plot.parametric;
 
-import javax.media.j3d.Shape3D;
-
 import munk.graph.function.IllegalEquationException;
+import munk.graph.plot.AbstractPlotter;
 
 import com.graphbuilder.math.*;
 
-public abstract class AbstractParametric implements ParametricPlotter{
+public abstract class AbstractParametric extends AbstractPlotter implements ParametricPlotter{
 	
 	private VarMap vm;
 	private FuncMap fm;
@@ -15,7 +14,7 @@ public abstract class AbstractParametric implements ParametricPlotter{
 	private Expression zNode;
 	
 	public AbstractParametric(String xExpr, String yExpr, String zExpr, 
-									String[] variables, float[] startValues, float stepSize) 
+									String[] variables, float[] startValues) 
 											throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
 		if (variables.length != startValues.length) {
 			throw new IllegalEquationException("There must be an equal amount of startvalues and variables");
@@ -39,12 +38,6 @@ public abstract class AbstractParametric implements ParametricPlotter{
 		zNode.ensureVariablesDefined(vm);
 	}
 	
-	public AbstractParametric(String xExpr, String yExpr, String zExpr,
-									String[] variables, float[] startValues) 
-											throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
-		this(xExpr, yExpr, zExpr, variables, startValues, 0.1f);
-	}
-	
 	public void setVariable(String var, float value) {
 		vm.setValue(var, value);
 	}
@@ -65,6 +58,6 @@ public abstract class AbstractParametric implements ParametricPlotter{
 		return (float) ex.eval(vm, fm);
 	}
 	
-	public abstract Shape3D getPlot();
+
 
 }

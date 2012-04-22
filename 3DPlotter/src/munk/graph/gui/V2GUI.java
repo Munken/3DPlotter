@@ -14,6 +14,8 @@ import javax.vecmath.Color3f;
 
 import munk.graph.IO.*;
 import munk.graph.function.*;
+import munk.graph.gui.listener.FunctionEvent;
+import munk.graph.gui.listener.FunctionListener;
 
 import com.graphbuilder.math.*;
 
@@ -376,7 +378,7 @@ public class V2GUI {
      		public void keyPressed(KeyEvent e) {
      			if (e.getKeyCode() == KeyEvent.VK_ENTER && stdFuncInput.isFocusOwner()) {
      				try {
-						addPlot(new String[]{stdFuncInput.getText()},colorList.getNextAvailableColor(stdFuncList), getBounds(TYPE.STD), GuiUtil.getStepsize(slider.getValue(),getBounds(TYPE.STD))[0]);
+						addPlot(new String[]{stdFuncInput.getText()},colorList.getNextAvailableColor(stdFuncList), getBounds(TYPE.STD), GuiUtil.getStepsize(slider.getValue(),getBounds(TYPE.STD)));
 					} catch (ExpressionParseException e1) {
 						JOptionPane.showMessageDialog(frame,new JLabel(e1.getMessage(),JLabel.CENTER));
 					}
@@ -540,19 +542,24 @@ public class V2GUI {
      	stdFuncOuterPanel.add(stdFuncInnerPanel, gbc_panel);
      	stdFuncInnerPanel.setLayout(new BoxLayout(stdFuncInnerPanel, BoxLayout.Y_AXIS));
      	
-		stdEditOptionPanel = new EditOptionPanel(colorList, null, new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if(e.getID() == 0){
-					Function[] source = (Function[]) e.getSource();
-					source[0].setColor(source[1].getColor());
-				}
-				if(e.getID() == 1){
-					Function[] source = (Function[]) e.getSource();
-					updatePlot(source[0], source[0].getExpression(), source[1].getColor(), source[1].getBounds(), source[1].getStepsize());
-				}
-			}
-		});
+//		stdEditOptionPanel = new EditOptionPanel(colorList, null, new ActionListener() {
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				if(e.getID() == 0){
+//					Function[] source = (Function[]) e.getSource();
+//					source[0].setColor(source[1].getColor());
+//				}
+//				if(e.getID() == 1){
+//					Function[] source = (Function[]) e.getSource();
+//					updatePlot(source[0], source[0].getExpression(), source[1].getColor(), source[1].getBounds(), source[1].getStepsizes());
+//				}
+//			}
+//		});
+		EditOptionPanel editPanel = new EditOptionPanel(colorList, null);
+		editPanel.addFunctionListener(createColorStepsizeFunctionListener());
+		stdEditOptionPanel = editPanel;
+
+     	
      	GridBagConstraints gbc_panel_1 = new GridBagConstraints();
      	gbc_panel_1.fill = GridBagConstraints.BOTH;
      	gbc_panel_1.gridwidth = 5;
@@ -560,6 +567,23 @@ public class V2GUI {
      	gbc_panel_1.gridx = 1;
      	gbc_panel_1.gridy = 8;
      	stdFuncTab.add(stdEditOptionPanel, gbc_panel_1);
+	}
+
+	private FunctionListener createColorStepsizeFunctionListener() {
+		return new FunctionListener() {
+			
+			@Override
+			public void functionChanged(FunctionEvent e) {
+				Function func = e.getOldFunction();
+				
+				if(e.getAction() == FunctionEvent.ACTION.COLOR_CHANGE){
+					func.setColor(e.getColor());
+					
+				} else if(e.getAction() == FunctionEvent.ACTION.STEPSIZE_CHANGED){
+					updatePlot(func, func.getExpression(), func.getColor(), func.getBounds(), e.getStepsizes());
+				}
+			}
+		};
 	}
 	
 	private void initParamFunctionTab(){
@@ -642,7 +666,7 @@ public class V2GUI {
      			String[] paramExpr = new String[]{inputX.getText(),inputY.getText(),inputZ.getText()};
      			if (e.getKeyCode() == KeyEvent.VK_ENTER && (inputX.isFocusOwner() || inputY.isFocusOwner() || inputZ.isFocusOwner())) {
      				try {
-	    				addPlot(paramExpr,colorList.getNextAvailableColor(paramFuncList), getBounds(TYPE.PARAM), GuiUtil.getStepsize(paramSlider.getValue(),getBounds(TYPE.PARAM))[0]);
+	    				addPlot(paramExpr,colorList.getNextAvailableColor(paramFuncList), getBounds(TYPE.PARAM), GuiUtil.getStepsize(paramSlider.getValue(),getBounds(TYPE.PARAM)));
 					} catch (ExpressionParseException e1) {
 						JOptionPane.showMessageDialog(frame,new JLabel(e1.getMessage(),JLabel.CENTER));
 					}
@@ -770,19 +794,10 @@ public class V2GUI {
      	paramFuncOuterPanel.add(paramFuncInnerPanel, gbc_panel_param);
      	paramFuncInnerPanel.setLayout(new BoxLayout(paramFuncInnerPanel, BoxLayout.Y_AXIS));
      	
-		paramEditOptionPanel = new EditOptionPanel(colorList, null, new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if(e.getID() == 0){
-					Function[] source = (Function[]) e.getSource();
-					source[0].setColor(source[1].getColor());
-				}
-				if(e.getID() == 1){
-					Function[] source = (Function[]) e.getSource();
-					updatePlot(source[0], source[0].getExpression(), source[1].getColor(), source[1].getBounds(), source[1].getStepsize());
-				}
-			}
-		});
+		EditOptionPanel editOptionPanel = new EditOptionPanel(colorList, null);
+		editOptionPanel.addFunctionListener(createColorStepsizeFunctionListener());
+		paramEditOptionPanel = editOptionPanel; 
+		
      	GridBagConstraints gbc_panel_1 = new GridBagConstraints();
      	gbc_panel_1.gridwidth = 5;
      	gbc_panel_1.insets = new Insets(0, 0, 5, 5);
@@ -813,93 +828,105 @@ public class V2GUI {
 		});
 	}
 	
-	private void addXYZPlot(Function newFunction) {
+	private FunctionLabel addXYZPlot(final Function newFunction) {
 		stdFuncList.add(newFunction);
-		ActionListener listener = new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				Function sourceFunction = (Function) e.getSource();
-				if(e.getID() == FunctionLabel.UPDATE){
-					String newExpr = e.getActionCommand();
-					updatePlot(sourceFunction, new String[]{newExpr}, sourceFunction.getColor(), sourceFunction.getBounds(), sourceFunction.getStepsize());
-				}
-				if(e.getID() == FunctionLabel.UPDATEEDIT){
-					stdEditOptionPanel.updateFuncReference(sourceFunction);
-				}
-				if(e.getID() == FunctionLabel.DELETE){
-					deletePlot(sourceFunction);
-					stdEditOptionPanel.initMode();
-				}
-				if(e.getID() == FunctionLabel.VISIBILITY){
-					plotter.showPlot(sourceFunction);
-				}
+		StdFunctionLabel label = new StdFunctionLabel(newFunction);
+		
+		label.addFocusListener(new FocusAdapter() {
+			
+			@Override
+			public void focusGained(FocusEvent e) {
+				stdEditOptionPanel.updateFuncReference(newFunction);
+	
 			}
-		};
-		StdFunctionLabel label = new StdFunctionLabel(newFunction, listener);
+		});
+		
 		stdFuncInnerPanel.add(label);
-		map.put(newFunction, label);
-		doPlot(newFunction);
+		return label;
 	}
 	
-	private void addParametricPlot(Function newFunction) {
+	private FunctionLabel addParametricPlot(final Function newFunction) {
 		paramFuncList.add(newFunction);
 		
-		ActionListener listener = new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				Function sourceFunction = (Function) e.getSource();
-				if(e.getID() == FunctionLabel.UPDATE){
-					String newExpr = e.getActionCommand();
-					updatePlot(sourceFunction, new String[]{newExpr}, sourceFunction.getColor(), sourceFunction.getBounds(), sourceFunction.getStepsize());
-				}
-				if(e.getID() == FunctionLabel.UPDATEEDIT){
-					paramEditOptionPanel.updateFuncReference(sourceFunction);
-				}
-				if(e.getID() == FunctionLabel.DELETE){
-					deletePlot(sourceFunction);
-					paramEditOptionPanel.initMode();
-				}
-				if(e.getID() == FunctionLabel.VISIBILITY){
-					plotter.showPlot(sourceFunction);
-				}
-			}
-		};
-
-		ParametricFunctionLabel label = new ParametricFunctionLabel(newFunction, listener);
-		paramFuncInnerPanel.add(label);
-		map.put(newFunction, label);
-
-		doPlot(newFunction);
-	}
+		ParametricFunctionLabel label = new ParametricFunctionLabel(newFunction);
+		
+		label.addFocusListener(new FocusAdapter() {
+			
+			@Override
+			public void focusGained(FocusEvent e) {
+				paramEditOptionPanel.updateFuncReference(newFunction);
 	
-	private void doPlot(Function function) {
-		spawnNewPlotterThread(function);
-		frame.pack();
+			}
+		});
+		paramFuncInnerPanel.add(label);
+		return label;
 	}
 
+	
 	/*
 	 * Add new plot.
 	 */
 	private void addPlot(String[] expr, Color3f color, float[] bounds, float stepSize) {
+		addPlot(expr, color, bounds, new float[] {stepSize, stepSize, stepSize});
+	}
+
+	
+	/*
+	 * Add new plot.
+	 */
+	private void addPlot(String[] expr, Color3f color, float[] bounds, float[] stepSize) {
 		// Create the function.
 		try {
 			Function newFunction = FunctionUtil.createFunction(expr,color,bounds,stepSize);
+			FunctionLabel label = null;
+			
 			if (newFunction.getClass() == ParametricFunction.class) {
-				addParametricPlot(newFunction);
+				label = addParametricPlot(newFunction);
 			} else {
-				addXYZPlot(newFunction);
+				label = addXYZPlot(newFunction);
 			}
+			
+			label.addFunctionListener(createFunctionListener());
+			
+			map.put(newFunction, label);
+			spawnNewPlotterThread(newFunction);
+			frame.pack();
 		} catch (ExpressionParseException | IllegalEquationException | UndefinedVariableException e) {
 			String message = e.getMessage();
 			JLabel label = new JLabel(message,JLabel.CENTER);
 			JOptionPane.showMessageDialog(frame,label);
 		} 
 		
-
 	}
-
+	
+	private FunctionListener createFunctionListener() {
+		return new FunctionListener() {
+			
+			@Override
+			public void functionChanged(FunctionEvent e) {
+				FunctionEvent.ACTION action = e.getAction();
+				Function func = e.getOldFunction();
+				
+				if (action == FunctionEvent.ACTION.VISIBILITY) {
+					plotter.showPlot(func);
+					
+				} else if (action == FunctionEvent.ACTION.DELETE){
+					deletePlot(func);
+					stdEditOptionPanel.initMode();
+					
+				} else if (action == FunctionEvent.ACTION.UPDATE) {
+					updatePlot(func, e.getNewExpr(), e.getColor(), e.getBounds(), e.getStepsizes());
+					
+				} 
+				
+			}
+		};
+	}
+	
 	/*
 	 * Update a function.
 	 */
-	private void updatePlot(Function oldFunc, String newExpr[], Color3f newColor, float[] bounds, float stepsize) {
+	private void updatePlot(Function oldFunc, String newExpr[], Color3f newColor, float[] bounds, float[] stepsize) {
 		// Try evaluating the function.
 		try {
 			Function newFunc = FunctionUtil.createFunction(newExpr, newColor, bounds, stepsize);
@@ -943,6 +970,7 @@ public class V2GUI {
 	 * Delete a function.
 	 */
 	private void deletePlot(Function f) {
+		f.cancel();
 		plotter.removePlot(f);
 		if (f.getClass() == ParametricFunction.class) {
 			int index = paramFuncList.indexOf(f);
@@ -1000,6 +1028,8 @@ public class V2GUI {
 				}
 				else if(!colorList.contains(e.getSource())){
 					colorList.add((Color3f) e.getSource());
+					stdEditOptionPanel.updateColors();
+					paramEditOptionPanel.updateColors();
 				}
 			}
 		});
@@ -1027,7 +1057,9 @@ public class V2GUI {
 			
 			@Override
 			protected void done() {
-				map.get(function).setIndeterminate(false);
+				FunctionLabel label = map.get(function);
+				if (label != null)
+					label.setIndeterminate(false);
 			}
 			
 		};
@@ -1103,7 +1135,4 @@ public class V2GUI {
 			}
 		}
 	}
-	
-
-	
 }
