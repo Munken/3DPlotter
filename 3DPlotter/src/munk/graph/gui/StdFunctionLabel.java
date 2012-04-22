@@ -138,12 +138,7 @@ public class StdFunctionLabel extends JPanel implements FunctionLabel{
 		});
 	}
 
-	protected void notifyPlotUpdate(String text) {
-		FunctionEvent ev = new FunctionEvent(mother, new String[] {text}, 
-												mother.getColor(), mother.getBounds(), 
-												mother.getStepsizes(), FunctionEvent.ACTION.UPDATE);
-		notifyListeners(ev);
-	}
+
 
 	public void setMother(Function f){
 		mother = f;
@@ -167,6 +162,18 @@ public class StdFunctionLabel extends JPanel implements FunctionLabel{
 	
 	public void addFunctionListener(FunctionListener l) {
 		listeners.add(l);
+	}
+	
+	private void notifyPlotUpdate(String... text) {
+		FunctionEvent ev = new FunctionEvent(mother, text, 
+												mother.getColor(), mother.getBounds(), 
+												mother.getStepsizes(), FunctionEvent.ACTION.UPDATE);
+		notifyListeners(ev);
+	}
+	
+	@Override
+	public void addFocusListener(FocusListener l) {
+		super.addFocusListener(l);
 	}
 	
 }

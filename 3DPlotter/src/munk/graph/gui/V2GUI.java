@@ -828,11 +828,79 @@ public class V2GUI {
 		});
 	}
 	
-	private void addXYZPlot(final Function newFunction) {
+	private FunctionLabel addXYZPlot(final Function newFunction) {
 		stdFuncList.add(newFunction);
 		StdFunctionLabel label = new StdFunctionLabel(newFunction);
 		
-		label.addFunctionListener(new FunctionListener() {
+		label.addFocusListener(new FocusAdapter() {
+			
+			@Override
+			public void focusGained(FocusEvent e) {
+				stdEditOptionPanel.updateFuncReference(newFunction);
+	
+			}
+		});
+		
+		stdFuncInnerPanel.add(label);
+		return label;
+	}
+	
+	private FunctionLabel addParametricPlot(final Function newFunction) {
+		paramFuncList.add(newFunction);
+		
+		ParametricFunctionLabel label = new ParametricFunctionLabel(newFunction);
+		
+		label.addFocusListener(new FocusAdapter() {
+			
+			@Override
+			public void focusGained(FocusEvent e) {
+				paramEditOptionPanel.updateFuncReference(newFunction);
+	
+			}
+		});
+		paramFuncInnerPanel.add(label);
+		return label;
+	}
+
+	
+	/*
+	 * Add new plot.
+	 */
+	private void addPlot(String[] expr, Color3f color, float[] bounds, float stepSize) {
+		addPlot(expr, color, bounds, new float[] {stepSize, stepSize, stepSize});
+	}
+
+	
+	/*
+	 * Add new plot.
+	 */
+	private void addPlot(String[] expr, Color3f color, float[] bounds, float[] stepSize) {
+		// Create the function.
+		try {
+			Function newFunction = FunctionUtil.createFunction(expr,color,bounds,stepSize);
+			FunctionLabel label = null;
+			
+			if (newFunction.getClass() == ParametricFunction.class) {
+				label = addParametricPlot(newFunction);
+			} else {
+				label = addXYZPlot(newFunction);
+			}
+			
+			label.addFunctionListener(createFunctionListener());
+			
+			map.put(newFunction, label);
+			spawnNewPlotterThread(newFunction);
+			frame.pack();
+		} catch (ExpressionParseException | IllegalEquationException | UndefinedVariableException e) {
+			String message = e.getMessage();
+			JLabel label = new JLabel(message,JLabel.CENTER);
+			JOptionPane.showMessageDialog(frame,label);
+		} 
+		
+	}
+	
+	private FunctionListener createFunctionListener() {
+		return new FunctionListener() {
 			
 			@Override
 			public void functionChanged(FunctionEvent e) {
@@ -850,88 +918,9 @@ public class V2GUI {
 					updatePlot(func, e.getNewExpr(), e.getColor(), e.getBounds(), e.getStepsizes());
 					
 				} 
-					
-			}
-		});
-		label.addFocusListener(new FocusAdapter() {
-			
-			@Override
-			public void focusGained(FocusEvent e) {
-				stdEditOptionPanel.updateFuncReference(newFunction);
-	
-			}
-		});
-		
-		
-		stdFuncInnerPanel.add(label);
-		map.put(newFunction, label);
-		doPlot(newFunction);
-	}
-	
-	private void addParametricPlot(Function newFunction) {
-		paramFuncList.add(newFunction);
-		
-		ActionListener listener = new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				Function sourceFunction = (Function) e.getSource();
-				if(e.getID() == FunctionLabel.UPDATE){
-					String newExpr = e.getActionCommand();
-					updatePlot(sourceFunction, new String[]{newExpr}, sourceFunction.getColor(), sourceFunction.getBounds(), sourceFunction.getStepsizes());
-				}
-				if(e.getID() == FunctionLabel.FOCUS_GAINED){
-					paramEditOptionPanel.updateFuncReference(sourceFunction);
-				}
-				if(e.getID() == FunctionLabel.DELETE){
-					deletePlot(sourceFunction);
-					paramEditOptionPanel.initMode();
-				}
-				if(e.getID() == FunctionLabel.VISIBILITY){
-					plotter.showPlot(sourceFunction);
-				}
+				
 			}
 		};
-
-		ParametricFunctionLabel label = new ParametricFunctionLabel(newFunction, listener);
-		paramFuncInnerPanel.add(label);
-		map.put(newFunction, label);
-
-		doPlot(newFunction);
-	}
-	
-	private void doPlot(Function function) {
-		spawnNewPlotterThread(function);
-		frame.pack();
-	}
-
-	/*
-	 * Add new plot.
-	 */
-	private void addPlot(String[] expr, Color3f color, float[] bounds, float stepSize) {
-		addPlot(expr, color, bounds, new float[] {stepSize, stepSize, stepSize});
-	}
-
-	
-	/*
-	 * Add new plot.
-	 */
-	private void addPlot(String[] expr, Color3f color, float[] bounds, float[] stepSize) {
-		// Create the function.
-		try {
-			final Function newFunction = FunctionUtil.createFunction(expr,color,bounds,stepSize);
-			if (newFunction.getClass() == ParametricFunction.class) {
-				addParametricPlot(newFunction);
-			} else {
-				addXYZPlot(newFunction);
-			}
-			
-			
-		} catch (ExpressionParseException | IllegalEquationException | UndefinedVariableException e) {
-			String message = e.getMessage();
-			JLabel label = new JLabel(message,JLabel.CENTER);
-			JOptionPane.showMessageDialog(frame,label);
-		} 
-		
-
 	}
 	
 	/*

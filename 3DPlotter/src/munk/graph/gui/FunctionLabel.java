@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.event.FocusListener;
 
 import munk.graph.function.Function;
+import munk.graph.gui.listener.FunctionListener;
 
 public interface FunctionLabel {
 
@@ -19,7 +20,7 @@ public interface FunctionLabel {
 	
 	public void setMother(Function f);
 	public void setIndeterminate(boolean b);
-	
-	
+	public void addFunctionListener(FunctionListener l);
+	public void addFocusListener(FocusListener l);
 	
 }
