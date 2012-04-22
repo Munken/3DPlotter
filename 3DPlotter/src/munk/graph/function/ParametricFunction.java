@@ -31,10 +31,25 @@ public class ParametricFunction extends AbstractFunction {
 	 */
 	public ParametricFunction(String[] expressions, Color3f color, float[] bounds, float stepsize) throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
 		super(expressions, color, bounds, stepsize, 
-				createPlotter(expressions, bounds, stepsize));
+				createPlotter(expressions, bounds, new float[] {stepsize}));
 	}
 	
-	private static ParametricPlotter createPlotter(String[] expressions, float[] bounds, float stepsize) throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
+	/**
+	 * 
+	 * @param expressions The x, y and z expression. Length must be 3!
+	 * @param color The color of the function as a Color3f
+	 * @param bounds The bounds for the variables [v1Min, v1Max, v2Min, v2Max] or [v1Min, v1Max].
+	 * @param stepsizes
+	 * @throws ExpressionParseException If you math sucks
+	 * @throws IllegalEquationException 
+	 * @throws UndefinedVariableException 
+	 */
+	public ParametricFunction(String[] expressions, Color3f color, float[] bounds, float[] stepsizes) throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
+		super(expressions, color, bounds, stepsizes, 
+				createPlotter(expressions, bounds, stepsizes));
+	}
+	
+	private static ParametricPlotter createPlotter(String[] expressions, float[] bounds, float[] stepsize) throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
 		String[] varNames = FunctionUtil.variableNames(expressions);
 		int nVariables = varNames.length;
 		

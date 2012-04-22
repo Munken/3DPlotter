@@ -376,7 +376,7 @@ public class V2GUI {
      		public void keyPressed(KeyEvent e) {
      			if (e.getKeyCode() == KeyEvent.VK_ENTER && stdFuncInput.isFocusOwner()) {
      				try {
-						addPlot(new String[]{stdFuncInput.getText()},colorList.getNextAvailableColor(stdFuncList), getBounds(TYPE.STD), GuiUtil.getStepsize(slider.getValue(),getBounds(TYPE.STD))[0]);
+						addPlot(new String[]{stdFuncInput.getText()},colorList.getNextAvailableColor(stdFuncList), getBounds(TYPE.STD), GuiUtil.getStepsize(slider.getValue(),getBounds(TYPE.STD)));
 					} catch (ExpressionParseException e1) {
 						JOptionPane.showMessageDialog(frame,new JLabel(e1.getMessage(),JLabel.CENTER));
 					}
@@ -549,7 +549,7 @@ public class V2GUI {
 				}
 				if(e.getID() == 1){
 					Function[] source = (Function[]) e.getSource();
-					updatePlot(source[0], source[0].getExpression(), source[1].getColor(), source[1].getBounds(), source[1].getStepsize());
+					updatePlot(source[0], source[0].getExpression(), source[1].getColor(), source[1].getBounds(), source[1].getStepsizes());
 				}
 			}
 		});
@@ -642,7 +642,7 @@ public class V2GUI {
      			String[] paramExpr = new String[]{inputX.getText(),inputY.getText(),inputZ.getText()};
      			if (e.getKeyCode() == KeyEvent.VK_ENTER && (inputX.isFocusOwner() || inputY.isFocusOwner() || inputZ.isFocusOwner())) {
      				try {
-	    				addPlot(paramExpr,colorList.getNextAvailableColor(paramFuncList), getBounds(TYPE.PARAM), GuiUtil.getStepsize(paramSlider.getValue(),getBounds(TYPE.PARAM))[0]);
+	    				addPlot(paramExpr,colorList.getNextAvailableColor(paramFuncList), getBounds(TYPE.PARAM), GuiUtil.getStepsize(paramSlider.getValue(),getBounds(TYPE.PARAM)));
 					} catch (ExpressionParseException e1) {
 						JOptionPane.showMessageDialog(frame,new JLabel(e1.getMessage(),JLabel.CENTER));
 					}
@@ -779,7 +779,7 @@ public class V2GUI {
 				}
 				if(e.getID() == 1){
 					Function[] source = (Function[]) e.getSource();
-					updatePlot(source[0], source[0].getExpression(), source[1].getColor(), source[1].getBounds(), source[1].getStepsize());
+					updatePlot(source[0], source[0].getExpression(), source[1].getColor(), source[1].getBounds(), source[1].getStepsizes());
 				}
 			}
 		});
@@ -820,7 +820,7 @@ public class V2GUI {
 				Function sourceFunction = (Function) e.getSource();
 				if(e.getID() == FunctionLabel.UPDATE){
 					String newExpr = e.getActionCommand();
-					updatePlot(sourceFunction, new String[]{newExpr}, sourceFunction.getColor(), sourceFunction.getBounds(), sourceFunction.getStepsize());
+					updatePlot(sourceFunction, new String[]{newExpr}, sourceFunction.getColor(), sourceFunction.getBounds(), sourceFunction.getStepsizes());
 				}
 				if(e.getID() == FunctionLabel.UPDATEEDIT){
 					stdEditOptionPanel.updateFuncReference(sourceFunction);
@@ -848,7 +848,7 @@ public class V2GUI {
 				Function sourceFunction = (Function) e.getSource();
 				if(e.getID() == FunctionLabel.UPDATE){
 					String newExpr = e.getActionCommand();
-					updatePlot(sourceFunction, new String[]{newExpr}, sourceFunction.getColor(), sourceFunction.getBounds(), sourceFunction.getStepsize());
+					updatePlot(sourceFunction, new String[]{newExpr}, sourceFunction.getColor(), sourceFunction.getBounds(), sourceFunction.getStepsizes());
 				}
 				if(e.getID() == FunctionLabel.UPDATEEDIT){
 					paramEditOptionPanel.updateFuncReference(sourceFunction);
@@ -879,6 +879,14 @@ public class V2GUI {
 	 * Add new plot.
 	 */
 	private void addPlot(String[] expr, Color3f color, float[] bounds, float stepSize) {
+		addPlot(expr, color, bounds, new float[] {stepSize, stepSize, stepSize});
+	}
+
+	
+	/*
+	 * Add new plot.
+	 */
+	private void addPlot(String[] expr, Color3f color, float[] bounds, float[] stepSize) {
 		// Create the function.
 		try {
 			Function newFunction = FunctionUtil.createFunction(expr,color,bounds,stepSize);
@@ -895,11 +903,15 @@ public class V2GUI {
 		
 
 	}
-
+	
+	private void updatePlot(Function oldFunc, String newExpr[], Color3f newColor, float[] bounds, float stepsize) {
+		updatePlot(oldFunc, newExpr, newColor, bounds, new float[] {stepsize, stepsize, stepsize});
+	}
+	
 	/*
 	 * Update a function.
 	 */
-	private void updatePlot(Function oldFunc, String newExpr[], Color3f newColor, float[] bounds, float stepsize) {
+	private void updatePlot(Function oldFunc, String newExpr[], Color3f newColor, float[] bounds, float[] stepsize) {
 		// Try evaluating the function.
 		try {
 			Function newFunc = FunctionUtil.createFunction(newExpr, newColor, bounds, stepsize);

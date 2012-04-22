@@ -10,6 +10,9 @@ import munk.graph.function.IllegalEquationException;
 import munk.graph.marching.MarchingCubes;
 import munk.graph.marching.Triangle;
 
+/**
+ * Be adviced these plotter are not maintained !
+ */
 public class ImplicitRecursive extends AbstractImplicit{
 	
 	private float stepsize;

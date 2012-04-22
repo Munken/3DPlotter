@@ -23,25 +23,21 @@ public class Parametric1D extends AbstractParametric{
 	// Mother constructor
 	public Parametric1D(String xExpr, String yExpr, String zExpr, 
 							float tMin, float tMax, 
-							String varName, float stepSize) 
+							String varName, float[] stepSize) 
 									throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
-		super(xExpr, yExpr, zExpr, new String[] {varName}, new float[] {tMin}, stepSize);
+		super(xExpr, yExpr, zExpr, new String[] {varName}, new float[] {tMin});
 		this.tMin = tMin;
 		this.tMax = tMax;
-		stepsize = stepSize;
+		stepsize = stepSize[0];
 		variable = varName;
 	}
 	
 	public Parametric1D(String xExpr, String yExpr, String zExpr, 
-							float tMin, float tMax, float stepSize) 
+							float tMin, float tMax, float[] stepSize) 
 									throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
 		this(xExpr, yExpr, zExpr, tMin, tMax, STD_VAR_NAMES, stepSize);
 	}
-	
-	public Parametric1D(String xExpr, String yExpr, String zExpr, float tMin, float tMax) 
-									throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
-		this(xExpr, yExpr, zExpr, tMin, tMax, 0.1f);
-	}
+
 	
 	protected Shape3D plot() {
 		int length = (int) Math.ceil((tMax - tMin) / stepsize) + 1;

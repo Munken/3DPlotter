@@ -18,13 +18,13 @@ public class ImplicitMultiFunction extends AbstractFunction {
 
 	public ImplicitMultiFunction(String expr, Color3f color, float[] bounds, float stepsize) 
 												throws ExpressionParseException, IllegalEquationException, UndefinedVariableException{
-		this(expressionArray(expr),color,bounds, stepsize);
+		this(expressionArray(expr),color,bounds, new float[] {stepsize, stepsize, stepsize});
 	}
 	
-	public ImplicitMultiFunction(String[] expr, Color3f color, float[] bounds, float stepsize) 
+	public ImplicitMultiFunction(String[] expr, Color3f color, float[] bounds, float[] stepsizes) 
 												throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
-		super(expr,color,bounds, stepsize, new ImplicitMulti(expr[0], 
-				bounds[0], bounds[1], bounds[2], bounds[3], bounds[4], bounds[5], stepsize));
+		super(expr,color,bounds, stepsizes, new ImplicitMulti(expr[0], 
+				bounds[0], bounds[1], bounds[2], bounds[3], bounds[4], bounds[5], stepsizes));
 	}
 	
 }

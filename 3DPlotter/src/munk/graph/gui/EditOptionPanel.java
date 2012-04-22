@@ -51,7 +51,10 @@ public class EditOptionPanel extends JPanel {
 				Color3f selectedColor = (Color3f) colorList.get(comboBox.getSelectedIndex());
 				if(comboBox.isEnabled() && !selectedColor.equals(oldFunc.getColor())){
 				try {
-					wrapFunction = new XYZFunction("y=x", (Color3f) colorList.get(comboBox.getSelectedIndex()), new float[]{-1,1,-1,1,-1,1}, (float) (0.505 - Math.log10(slider.getValue()+1)/4));
+					wrapFunction = new XYZFunction(
+							new String[] {"y=x"}, (Color3f) colorList.get(comboBox.getSelectedIndex()), 
+							oldFunc.getBounds(), oldFunc.getStepsizes());
+					
 				} catch (ExpressionParseException | UndefinedVariableException ex) {
 					ex.printStackTrace();
 				}
@@ -75,7 +78,7 @@ public class EditOptionPanel extends JPanel {
 				Function wrapFunction = null;
 				if(slider.isEnabled() && GuiUtil.getStepsize(slider.getValue(), oldFunc.getBounds())[0] != oldFunc.getStepsize()){
 					try {
-						wrapFunction = new XYZFunction("y=x", (Color3f) colorList.get(comboBox.getSelectedIndex()), oldFunc.getBounds(), GuiUtil.getStepsize(slider.getValue(), oldFunc.getBounds())[0]);
+						wrapFunction = new XYZFunction(new String[] {"y=x"}, (Color3f) colorList.get(comboBox.getSelectedIndex()), oldFunc.getBounds(), GuiUtil.getStepsize(slider.getValue(), oldFunc.getBounds()));
 					} catch (ExpressionParseException | UndefinedVariableException e) {
 						e.printStackTrace();
 					}

@@ -14,7 +14,7 @@ public abstract class AbstractParametric extends AbstractPlotter implements Para
 	private Expression zNode;
 	
 	public AbstractParametric(String xExpr, String yExpr, String zExpr, 
-									String[] variables, float[] startValues, float stepSize) 
+									String[] variables, float[] startValues) 
 											throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
 		if (variables.length != startValues.length) {
 			throw new IllegalEquationException("There must be an equal amount of startvalues and variables");
@@ -36,12 +36,6 @@ public abstract class AbstractParametric extends AbstractPlotter implements Para
 		xNode.ensureVariablesDefined(vm);
 		yNode.ensureVariablesDefined(vm);
 		zNode.ensureVariablesDefined(vm);
-	}
-	
-	public AbstractParametric(String xExpr, String yExpr, String zExpr,
-									String[] variables, float[] startValues) 
-											throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
-		this(xExpr, yExpr, zExpr, variables, startValues, 0.1f);
 	}
 	
 	public void setVariable(String var, float value) {

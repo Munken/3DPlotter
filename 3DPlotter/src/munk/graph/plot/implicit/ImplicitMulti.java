@@ -37,16 +37,6 @@ public class ImplicitMulti extends AbstractImplicit{
 	private String	preParse;
 	
 	public ImplicitMulti(String expression, 
-							 float xMin, float xMax, 
-							 float yMin, float yMax, 
-							 float zMin, float zMax, 
-							 float stepsize) throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
-		
-		this(expression, xMin, xMax, yMin, yMax, zMin, zMax, new float[] {stepsize, stepsize, stepsize});
-
-	}
-	
-	public ImplicitMulti(String expression, 
 			 float xMin, float xMax, 
 			 float yMin, float yMax, 
 			 float zMin, float zMax, 

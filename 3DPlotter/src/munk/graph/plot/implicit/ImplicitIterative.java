@@ -12,6 +12,9 @@ import munk.graph.marching.*;
 import com.graphbuilder.math.ExpressionParseException;
 import com.graphbuilder.math.UndefinedVariableException;
 
+/**
+ * Be adviced these plotter are not maintained !
+ */
 public class ImplicitIterative extends AbstractImplicit{
 	
 	private float stepsize;

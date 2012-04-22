@@ -57,7 +57,7 @@ public class FunctionUtil {
 		if (isXYZExpression(expr)) {
 			result = new XYZFunction(expressions, color, bounds, stepsize);
 		} else {
-			result = new ImplicitMultiFunction(expressions, color, bounds, stepsize);
+			result = new ImplicitMultiFunction(expressions, color, bounds, new float[] {stepsize, stepsize, stepsize});
 		}
 		
 		
@@ -87,7 +87,7 @@ public class FunctionUtil {
 										float[] bounds, float[] stepsizes) 
 												throws ExpressionParseException, IllegalEquationException, UndefinedVariableException{
 		if (expressions.length == 3) {
-			return new ParametricFunction(expressions, color, bounds, stepsize);
+			return new ParametricFunction(expressions, color, bounds, stepsizes);
 		} 
 		
 		String expr = expressions[0];
@@ -95,9 +95,9 @@ public class FunctionUtil {
 		
 		Function result = null;
 		if (isXYZExpression(expr)) {
-			result = new XYZFunction(expressions, color, bounds, stepsize);
+			result = new XYZFunction(expressions, color, bounds, stepsizes);
 		} else {
-			result = new ImplicitMultiFunction(expressions, color, bounds, stepsize);
+			result = new ImplicitMultiFunction(expressions, color, bounds, stepsizes);
 		}
 		
 		
