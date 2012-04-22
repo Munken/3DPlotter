@@ -138,7 +138,7 @@ public class V2GUI {
 		
      	//TODO: TAG
 		try {
-			addPlot(new String[]{"y = sin(x*5)*cos(z*5)"}, colorList.getNextAvailableColor(stdFuncList), new float[]{-1,1,-1,1,-1,1}, GuiUtil.getStepsize(slider.getValue(), getBounds(TYPE.STD))[0]);
+			addPlot(new String[]{"y = sin(x*5)*cos(z*5)"}, colorList.getNextAvailableColor(stdFuncList), new float[]{-1,1,-1,1,-1,1}, GuiUtil.getStepsize(slider.getValue(), getBounds(TYPE.STD)));
 		} catch (ExpressionParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -849,13 +849,13 @@ public class V2GUI {
 		return label;
 	}
 
-	
-	/*
-	 * Add new plot.
-	 */
-	private void addPlot(String[] expr, Color3f color, float[] bounds, float stepSize) {
-		addPlot(expr, color, bounds, new float[] {stepSize, stepSize, stepSize});
-	}
+//	
+//	/*
+//	 * Add new plot.
+//	 */
+//	private void addPlot(String[] expr, Color3f color, float[] bounds, float stepSize) {
+//		addPlot(expr, color, bounds, new float[] {stepSize, stepSize, stepSize});
+//	}
 
 	
 	/*
@@ -865,25 +865,29 @@ public class V2GUI {
 		// Create the function.
 		try {
 			Function newFunction = FunctionUtil.createFunction(expr,color,bounds,stepSize);
-			FunctionLabel label = null;
-			
-			if (newFunction.getClass() == ParametricFunction.class) {
-				label = addParametricPlot(newFunction);
-			} else {
-				label = addXYZPlot(newFunction);
-			}
-			
-			label.addFunctionListener(createFunctionListener());
-			
-			map.put(newFunction, label);
-			spawnNewPlotterThread(newFunction);
-			frame.pack();
+			addPlot(newFunction);
 		} catch (ExpressionParseException | IllegalEquationException | UndefinedVariableException e) {
 			String message = e.getMessage();
 			JLabel label = new JLabel(message,JLabel.CENTER);
 			JOptionPane.showMessageDialog(frame,label);
 		} 
 		
+	}
+	
+	private void addPlot(Function function) {
+		FunctionLabel label = null;
+		
+		if (function.getClass() == ParametricFunction.class) {
+			label = addParametricPlot(function);
+		} else {
+			label = addXYZPlot(function);
+		}
+		
+		label.addFunctionListener(createFunctionListener());
+		
+		map.put(function, label);
+		spawnNewPlotterThread(function);
+		frame.pack();
 	}
 	
 	private FunctionListener createFunctionListener() {
@@ -899,7 +903,6 @@ public class V2GUI {
 					
 				} else if (action == FunctionEvent.ACTION.DELETE){
 					deletePlot(func);
-					stdEditOptionPanel.setEnabled(false);
 					
 				} else if (action == FunctionEvent.ACTION.UPDATE) {
 					updatePlot(func, e.getNewExpr(), e.getColor(), e.getBounds(), e.getStepsizes());
@@ -917,6 +920,7 @@ public class V2GUI {
 		// Try evaluating the function.
 		try {
 			Function newFunc = FunctionUtil.createFunction(newExpr, newColor, bounds, stepsize);
+			newFunc.setView(oldFunc.getView());
 			
 			if (oldFunc.getClass() == ParametricFunction.class) {
 				paramFuncList.set(paramFuncList.indexOf(oldFunc), newFunc);
@@ -1092,25 +1096,22 @@ public class V2GUI {
 			try{
 				ZippedFunction[][] importLists = (ZippedFunction[][]) ObjectReader.ObjectFromFile(inputFile);
 				// Determine if current workspace should be erased.
-				boolean eraseWorkspace = (0 == 
-						JOptionPane.showOptionDialog(frame, 
+				boolean eraseWorkspace = (map.size() == 0) ||
+						(0 == JOptionPane.showOptionDialog(frame, 
 								"Would you like to erase current workspace during import?",
 								"Import Dialog", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null));
 
 				if(eraseWorkspace){
-					for(int i = stdFuncList.size()-1; i >= 0; i--){
-						deletePlot(stdFuncList.get(i));
-					}
-					for(int i = paramFuncList.size()-1; i >= 0; i--){
-						deletePlot(paramFuncList.get(i));
+					for (Function f : map.keySet()) {
+						deletePlot(f);
 					}
 				}
 				//Read new functions from zipped object.
-				for(int i = 0; i < importLists[0].length; i++){
-					addXYZPlot(FunctionUtil.loadFunction(importLists[0][i]));
-				}
-				for(int i = 0; i < importLists[1].length; i++){
-					addParametricPlot(FunctionUtil.loadFunction(importLists[1][i]));
+				for(int i = 0; i < importLists.length; i++){
+					ZippedFunction[] current = importLists[i];
+					for (int j = 0; j < current.length; j++) {
+						addPlot(FunctionUtil.loadFunction(current[j]));
+					}
 				}
 			}
 			catch(IOException | ClassCastException | ClassNotFoundException | ExpressionParseException | IllegalArgumentException | UndefinedVariableException | IllegalEquationException ex){
