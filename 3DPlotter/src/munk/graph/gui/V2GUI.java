@@ -396,9 +396,9 @@ public class V2GUI {
      	stdFuncTab.add(optionPanel, gbc_optionPanel);
      	GridBagLayout gbl_panel = new GridBagLayout();
      	gbl_panel.columnWidths = new int[]{0, 15, 15, 30, 30, 0, 0};
-     	gbl_panel.rowHeights = new int[]{10, 0, 0, 0, 5, 0, 0};
+     	gbl_panel.rowHeights = new int[]{10, 0, 0, 0, 5, 0, 10, 0};
      	gbl_panel.columnWeights = new double[]{1.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
-     	gbl_panel.rowWeights = new double[]{1.0, 0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
+     	gbl_panel.rowWeights = new double[]{1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE};
      	optionPanel.setLayout(gbl_panel);
 
      	// The limit data.
@@ -497,7 +497,7 @@ public class V2GUI {
      	lblStepSize.setHorizontalAlignment(SwingConstants.CENTER);
      	GridBagConstraints gbc_lblStepSize = new GridBagConstraints();
      	gbc_lblStepSize.anchor = GridBagConstraints.EAST;
-     	gbc_lblStepSize.insets = new Insets(0, 0, 0, 5);
+     	gbc_lblStepSize.insets = new Insets(0, 0, 5, 5);
      	gbc_lblStepSize.gridx = 1;
      	gbc_lblStepSize.gridy = 5;
      	optionPanel.add(lblStepSize, gbc_lblStepSize);
@@ -507,7 +507,7 @@ public class V2GUI {
      	GridBagConstraints gbc_slider = new GridBagConstraints();
      	gbc_slider.gridwidth = 3;
      	gbc_slider.fill = GridBagConstraints.HORIZONTAL;
-     	gbc_slider.insets = new Insets(0, 0, 0, 5);
+     	gbc_slider.insets = new Insets(0, 0, 5, 5);
      	gbc_slider.gridx = 2;
      	gbc_slider.gridy = 5;
      	optionPanel.add(slider, gbc_slider);
@@ -564,7 +564,7 @@ public class V2GUI {
      	GridBagLayout gbl_paramFunctionPanel = new GridBagLayout();
      	gbl_paramFunctionPanel.columnWidths = new int[]{5, 25, 50, 50, 50, 25, 5, 0};
      	gbl_paramFunctionPanel.rowHeights = new int[]{5, 0, 0, 0, 0, 10, 5, 5, 0, 0, 0};
-     	gbl_paramFunctionPanel.columnWeights = new double[]{0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+     	gbl_paramFunctionPanel.columnWeights = new double[]{0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
      	gbl_paramFunctionPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
      	paramFuncTab.setLayout(gbl_paramFunctionPanel);
      	
@@ -808,6 +808,9 @@ public class V2GUI {
 		ActionListener listener = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Function sourceFunction = (Function) e.getSource();
+				if(e.getID() == FunctionLabel.UPDATE){
+					updatePlot(sourceFunction, new ZippedFunction(new String[]{e.getActionCommand()}, sourceFunction.getColor(), sourceFunction.getBounds(), sourceFunction.getStepsize(), sourceFunction.isSelected(), sourceFunction.isVisible(), sourceFunction.getView(), sourceFunction.getFastImplicit()));
+				}
 				if(e.getID() == FunctionLabel.UPDATEEDIT){
 					stdEditOptionPanel.updateFuncReference(sourceFunction);
 				}
@@ -832,6 +835,9 @@ public class V2GUI {
 		ActionListener listener = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Function sourceFunction = (Function) e.getSource();
+				if(e.getID() == FunctionLabel.UPDATE){
+					updatePlot(sourceFunction, new ZippedFunction(e.getActionCommand().split(","), sourceFunction.getColor(), sourceFunction.getBounds(), sourceFunction.getStepsize(), sourceFunction.isSelected(), sourceFunction.isVisible(), sourceFunction.getView(), sourceFunction.getFastImplicit()));
+				}
 				if(e.getID() == FunctionLabel.UPDATEEDIT){
 					paramEditOptionPanel.updateFuncReference(sourceFunction);
 				}

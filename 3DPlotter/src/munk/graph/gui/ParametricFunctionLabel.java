@@ -173,7 +173,7 @@ public class ParametricFunctionLabel extends JPanel implements FunctionLabel{
 						if(e.getKeyCode() == KeyEvent.VK_ENTER){
 							// Inform the listeners
 							String expressionString = exprFieldX.getText() + "," + exprFieldY.getText() + "," + exprFieldZ.getText();
-							listener.actionPerformed(new ActionEvent(mother, 0, expressionString));
+							listener.actionPerformed(new ActionEvent(mother, FunctionLabel.UPDATE, expressionString));
 							
 							// Update the colors
 							if(exprFieldX.getText().equals(mother.getExpression()[0]) 
