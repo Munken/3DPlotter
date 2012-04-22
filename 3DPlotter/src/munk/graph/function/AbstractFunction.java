@@ -4,6 +4,7 @@ import javax.media.j3d.*;
 import javax.vecmath.Color3f;
 
 import munk.graph.appearance.*;
+import munk.graph.plot.Plotter;
 
 public abstract class AbstractFunction implements Function{
 	
@@ -18,11 +19,12 @@ public abstract class AbstractFunction implements Function{
 	private float[] bounds;
 	private Shape3D shape;
 	private float stepsize;
-	private boolean havePlotted;
 	private FILL state;
+	private Plotter	plotter;
 
-	public AbstractFunction(String[] expr, Color3f color, float[] bounds, float stepsize) {
+	public AbstractFunction(String[] expr, Color3f color, float[] bounds, float stepsize, Plotter plotter) {
 		this.expr = expr;
+		this.plotter = plotter;
 		this.visible = true;
 		this.selected = false;
 		this.color = color;
@@ -31,21 +33,29 @@ public abstract class AbstractFunction implements Function{
 		state = FILL.FILL;
 	}
 	
-	/*
-	 * Implemented differently for each function type.
-	 */
-	protected abstract BranchGroup plot() ;
-	
+	private BranchGroup setApperancePackInBranchGroup(Color3f color2, Shape3D shape2, Node handle) {
+		shape.setCapability(Shape3D.ALLOW_APPEARANCE_WRITE);
+
+		BranchGroup bg = new BranchGroup();
+		bg.setCapability(BranchGroup.ALLOW_DETACH);
+		bg.addChild(handle);
+		bg.compile();
+		return bg;
+	}
+
 	/*
 	 * Lazy evaluation of plotting.
 	 */
 	public BranchGroup getPlot() {
-		if(plot == null && !havePlotted){
-						
-			plot = plot();
+		if(plotter != null){
+			Node handle = plotter.getPlot();
+			shape = plotter.getShape();
+			plotter = null;
+			
+			if (shape != null) 
+				plot = setApperancePackInBranchGroup(getColor(), shape, handle);
+
 			setColor(color);
-			havePlotted = true;
-						
 		}
 		return plot;
 	}
@@ -53,11 +63,7 @@ public abstract class AbstractFunction implements Function{
 	public float getStepsize() {
 		return stepsize;
 	}
-	
-	protected void setShape(Shape3D shape){
-		this.shape = shape;
-	}
-	
+
 	public String[] getExpression(){
 		return expr;
 	}
@@ -119,6 +125,11 @@ public abstract class AbstractFunction implements Function{
 
 	public float[] getBounds() {
 		return bounds;
+	}
+	
+	public void cancel() {
+		if (plotter != null)
+			plotter.cancel();
 	}
 
 }

@@ -1,8 +1,6 @@
 package munk.graph.function;
 
 
-import javax.media.j3d.BranchGroup;
-import javax.media.j3d.Shape3D;
 import javax.vecmath.Color3f;
 
 import munk.graph.plot.parametric.*;
@@ -15,8 +13,6 @@ import com.graphbuilder.math.UndefinedVariableException;
  */
 public class ParametricFunction extends AbstractFunction {
 	
-	private ParametricPlotter pp;
-	private String[] varNames;
 
 	public ParametricFunction(String xExpr, String yExpr, String zExpr, Color3f color, float[] bounds, float stepsize) 
 								throws ExpressionParseException, IllegalEquationException, UndefinedVariableException{
@@ -34,9 +30,12 @@ public class ParametricFunction extends AbstractFunction {
 	 * @throws UndefinedVariableException 
 	 */
 	public ParametricFunction(String[] expressions, Color3f color, float[] bounds, float stepsize) throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
-		super(expressions, color, bounds, stepsize);
-		
-		varNames = FunctionUtil.variableNames(expressions);
+		super(expressions, color, bounds, stepsize, 
+				createPlotter(expressions, bounds, stepsize));
+	}
+	
+	private static ParametricPlotter createPlotter(String[] expressions, float[] bounds, float stepsize) throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
+		String[] varNames = FunctionUtil.variableNames(expressions);
 		int nVariables = varNames.length;
 		
 		String xExpr = expressions[0];
@@ -44,26 +43,15 @@ public class ParametricFunction extends AbstractFunction {
 		String zExpr = expressions[2];
 		
 		if (nVariables == 1) {
-			pp = new Parametric1D(xExpr, yExpr, zExpr, bounds[0], bounds[1], varNames[0], stepsize);
+			return new Parametric1D(xExpr, yExpr, zExpr, bounds[0], bounds[1], varNames[0], stepsize);
 		} else if (nVariables == 2){
-			pp = new Parametric2D(xExpr, yExpr, zExpr, bounds[0], bounds[1], bounds[2], bounds[3], varNames, stepsize);
+			return new Parametric2D(xExpr, yExpr, zExpr, bounds[0], bounds[1], bounds[2], bounds[3], varNames, stepsize);
 		} else {
 			throw new IllegalEquationException("There must be one or two variables in the expression!");
 		}
 	}
 	
-	@Override
-	protected BranchGroup plot() {
-		Shape3D shape = pp.getShape();
-		pp = null;
-		
-		if (shape != null) {
-			BranchGroup bg = FunctionUtil.setApperancePackInBranchGroup(getColor(), shape, shape);
-			setShape(shape);
-			return bg;
-		} else 
-			return null;
-	}
+
 	
 	private static String[] expressionArray(String... expr) {
 		return expr;

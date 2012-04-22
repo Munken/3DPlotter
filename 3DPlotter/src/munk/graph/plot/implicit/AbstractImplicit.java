@@ -84,7 +84,7 @@ public abstract class AbstractImplicit extends AbstractPlotter implements Implic
 			triangles = null;
 		}
 		
-		return plot;
+		return (!isCancelled()) ? plot : null;
 	}
 	
 	protected abstract Shape3D plot();
@@ -95,7 +95,7 @@ public abstract class AbstractImplicit extends AbstractPlotter implements Implic
 	
 	protected Shape3D buildGeomtryFromTriangles(List<Point3f> vertices) {
 		// Build geometry from triangles
-		if (triangles.size() >= 3) {
+		if (triangles.size() >= 3 && triangles.size() % 3 == 0) {
 			GeometryInfo gi = new GeometryInfo(GeometryInfo.TRIANGLE_ARRAY);
 			Point3f[] points = new Point3f[vertices.size()];
 			gi.setCoordinates((Point3f[]) vertices.toArray(points));

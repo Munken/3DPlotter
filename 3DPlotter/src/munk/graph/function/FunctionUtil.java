@@ -72,6 +72,46 @@ public class FunctionUtil {
 		return result;
 	}
 	
+	/**
+	 * Determine function type and return the correct function.
+	 * @param expressions
+	 * @param color
+	 * @param bounds
+	 * @param stepsize
+	 * @return
+	 * @throws ExpressionParseException 
+	 * @throws IllegalEquationException The non-parametric expressions must be of the form \<Expression\> = \<Expression\>
+	 * @throws UndefinedVariableException 
+	 */
+	public static Function createFunction(String[] expressions, Color3f color,
+										float[] bounds, float[] stepsizes) 
+												throws ExpressionParseException, IllegalEquationException, UndefinedVariableException{
+		if (expressions.length == 3) {
+			return new ParametricFunction(expressions, color, bounds, stepsize);
+		} 
+		
+		String expr = expressions[0];
+		
+		
+		Function result = null;
+		if (isXYZExpression(expr)) {
+			result = new XYZFunction(expressions, color, bounds, stepsize);
+		} else {
+			result = new ImplicitMultiFunction(expressions, color, bounds, stepsize);
+		}
+		
+		
+		for (int i = 0; i < bounds.length; i+=2) {
+			if (bounds[i] > bounds[i+1]) {
+				float tmp = bounds[i+1];
+				bounds[i+1] = bounds[i];
+				bounds[i] = tmp;
+			}
+		}
+		
+		return result;
+	}
+	
 	private static boolean isXYZExpression(String expr) {
 		Matcher m = SEPARATION.matcher(expr);
 		

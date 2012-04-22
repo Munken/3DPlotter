@@ -943,6 +943,7 @@ public class V2GUI {
 	 * Delete a function.
 	 */
 	private void deletePlot(Function f) {
+		f.cancel();
 		plotter.removePlot(f);
 		if (f.getClass() == ParametricFunction.class) {
 			int index = paramFuncList.indexOf(f);
@@ -1029,7 +1030,9 @@ public class V2GUI {
 			
 			@Override
 			protected void done() {
-				map.get(function).setIndeterminate(false);
+				FunctionLabel label = map.get(function);
+				if (label != null)
+					label.setIndeterminate(false);
 			}
 			
 		};

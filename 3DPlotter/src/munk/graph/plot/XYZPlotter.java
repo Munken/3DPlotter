@@ -19,8 +19,9 @@ public class XYZPlotter extends AbstractPlotter {
 	private static final Transform3D ROT_X;
 	private Transform3D rotation;
 	
-	private float stepsize = 0.05f;
-
+	private float	xStepsize;
+	private float	yStepsize;
+	
 	private float	xMin;
 	private float	xMax;
 	private float	yMin;
@@ -37,8 +38,9 @@ public class XYZPlotter extends AbstractPlotter {
 	
 	private Shape3D shape;
 	private TransformGroup plot;
+
 	
-	public XYZPlotter(String expr, float xMin, float xMax, float yMin, float yMax) 
+	private XYZPlotter(String expr, float xMin, float xMax, float yMin, float yMax) 
 							throws ExpressionParseException, UndefinedVariableException{
 		this.xMin = xMin;
 		this.xMax = xMax;
@@ -58,10 +60,16 @@ public class XYZPlotter extends AbstractPlotter {
 		expression.ensureVariablesDefined(vm);
 	}
 	
-	public XYZPlotter(String expr, float xMin, float xMax, float yMin, float yMax, float stepSize) 
+	public XYZPlotter(String expr, float xMin, float xMax, float yMin, float yMax, float xStepsize, float yStepsize) 
 							throws ExpressionParseException, UndefinedVariableException{
 		this(expr, xMin, xMax, yMin, yMax);
-		stepsize = stepSize;
+		this.xStepsize = xStepsize;
+		this.yStepsize = yStepsize;
+	}
+	
+	public XYZPlotter(String expr, float xMin, float xMax, float yMin, float yMax, float[] stepsizes) 
+			throws ExpressionParseException, UndefinedVariableException{
+		this(expr, xMin, xMax, yMin, yMax, stepsizes[0], stepsizes[1]);
 	}
 	
 	static {
@@ -87,11 +95,11 @@ public class XYZPlotter extends AbstractPlotter {
 	}
 
 	protected TransformGroup plot() {
-		int xSize = (int) ((xMax - xMin) / stepsize) + 1;
-		int ySize = (int) ((yMax - yMin) / stepsize) + 1;
+		int xSize = (int) ((xMax - xMin) / xStepsize) + 1;
+		int ySize = (int) ((yMax - yMin) / yStepsize) + 1;
 		
-		float[] xValues = initAxisArray(xMin, xSize, stepsize);
-		float[] yValues = initAxisArray(yMin, ySize, stepsize);
+		float[] xValues = initAxisArray(xMin, xSize, xStepsize);
+		float[] yValues = initAxisArray(yMin, ySize, yStepsize);
 		
 		Point3f[][] points = new Point3f[ySize][xSize];
 		

@@ -14,8 +14,6 @@ import com.graphbuilder.math.*;
 
 public class ImplicitMulti extends AbstractImplicit{
 	
-	private float stepsize;
-	
 	private int startX;
 	private int startY;
 	private int startZ;
@@ -44,20 +42,28 @@ public class ImplicitMulti extends AbstractImplicit{
 							 float zMin, float zMax, 
 							 float stepsize) throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
 		
-		super(expression, xMin, xMax, yMin, yMax, zMin, zMax, stepsize, stepsize, stepsize);
-		this.stepsize = stepsize;
+		this(expression, xMin, xMax, yMin, yMax, zMin, zMax, new float[] {stepsize, stepsize, stepsize});
+
+	}
+	
+	public ImplicitMulti(String expression, 
+			 float xMin, float xMax, 
+			 float yMin, float yMax, 
+			 float zMin, float zMax, 
+			 float[] stepsizes) throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
+		super(expression, xMin, xMax, yMin, yMax, zMin, zMax, stepsizes[0], stepsizes[1], stepsizes[2]);
 		
-//		cells = new LinkedList<MarchCell>();
 		cells = new ConcurrentLinkedQueue<MarchCell>();
 		try {
-		preParse = preParse(expression);
-		ex = ExpressionTree.parse(preParse);
-		fm = new FuncMap();
-		fm.loadDefaultFunctions();
+			preParse = preParse(expression);
+			ex = ExpressionTree.parse(preParse);
+			fm = new FuncMap();
+			fm.loadDefaultFunctions();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
+	
 	
 	public  Shape3D plot() {
 		Point3f startCube =  findStartCube(xStepsize, yStepsize, zStepsize);
@@ -69,10 +75,14 @@ public class ImplicitMulti extends AbstractImplicit{
 		else 
 			return null;
 		
-		Shape3D shape = buildGeomtryFromTriangles(triangles);
+		Shape3D shape = null;
+		if (!isCancelled()) {
+			 shape = buildGeomtryFromTriangles(triangles);
+		}
+			
 		triangles = null;
 		
-		return shape;
+		return (!isCancelled()) ? shape : null;
 	}
 	
 	private void marchCubes(Point3f startcube) {
@@ -102,8 +112,10 @@ public class ImplicitMulti extends AbstractImplicit{
 		threads = null;
 		visited = null;
 		
-		for (List<Point3f> list : triLists) {
-			triangles.addAll(list);
+		if (!isCancelled()) {
+			for (List<Point3f> list : triLists) {
+				triangles.addAll(list);
+			}
 		}
 	}
 
@@ -118,10 +130,10 @@ public class ImplicitMulti extends AbstractImplicit{
 					
 					Expression ex = ExpressionTree.parse(preParse);
 					
-					while (true) {
+					while (!isCancelled()) {
 						// Next cell to process
 						MarchCell next;
-						while ((next = cells.poll()) != null) {
+						while ((next = cells.poll()) != null && !isCancelled()) {
 							
 							// How many triangles do we need for this cell
 							int nTriangles = MARCHER.marchCube(next, newTri, ISOLEVEL);
@@ -138,7 +150,7 @@ public class ImplicitMulti extends AbstractImplicit{
 						while (cells.peek() == null) {
 							try {
 								Thread.sleep(5);
-								if (nThreadsDone.get() == nThreads) {
+								if (nThreadsDone.get() == nThreads || !isCancelled()) {
 									return;
 								}
 
@@ -303,17 +315,17 @@ public class ImplicitMulti extends AbstractImplicit{
 						return new Point3f(x, y, z);
 					}
 					
-					x += stepsize;
+					x += xStepsize;
 				}
 				
-				y += stepsize;
+				y += yStepsize;
 			}
 			
 			float[][] tmp = upper;
 			upper = lower;
 			lower = tmp;
 			
-			z += stepsize;
+			z += zStepsize;
 		}
 			
 		
