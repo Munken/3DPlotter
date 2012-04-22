@@ -16,7 +16,7 @@ public class GridAppearance extends Appearance{
 
 		setColoringAttributes (
 				new ColoringAttributes (
-						color,ColoringAttributes.NICEST));
+						color,ColoringAttributes.FASTEST));
 		Material mat = new Material();
 		mat.setAmbientColor(color);
 		mat.setDiffuseColor(new Color3f(0.7f, 0.7f, 0.7f));
