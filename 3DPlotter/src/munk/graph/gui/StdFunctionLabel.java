@@ -80,7 +80,6 @@ public class StdFunctionLabel extends JPanel implements FunctionLabel{
 			public void actionPerformed(ActionEvent e) {
 				mother.setVisible(toggleButton.isSelected());
 				FunctionEvent ev = new FunctionEvent(mother, FunctionEvent.ACTION.VISIBILITY);
-				
 				notifyListeners(ev);
 			}
 		});

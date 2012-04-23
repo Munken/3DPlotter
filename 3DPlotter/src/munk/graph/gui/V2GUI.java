@@ -543,7 +543,7 @@ public class V2GUI {
      	stdFuncInnerPanel.setLayout(new BoxLayout(stdFuncInnerPanel, BoxLayout.Y_AXIS));
      	
 		EditOptionPanel editPanel = new EditOptionPanel(colorList, null);
-		editPanel.addFunctionListener(createColorStepsizeFunctionListener());
+		editPanel.addFunctionListener(createEditPanelListener());
 		stdEditOptionPanel = editPanel;
 
      	
@@ -556,16 +556,14 @@ public class V2GUI {
      	stdFuncTab.add(stdEditOptionPanel, gbc_panel_1);
 	}
 
-	private FunctionListener createColorStepsizeFunctionListener() {
+	private FunctionListener createEditPanelListener() {
 		return new FunctionListener() {
 			
 			@Override
 			public void functionChanged(FunctionEvent e) {
 				Function func = e.getOldFunction();
-				
-				if(e.getAction() == FunctionEvent.ACTION.COLOR_CHANGE){
-					func.setColor(e.getColor());
-					
+				if (e.getAction() == FunctionEvent.ACTION.VISIBILITY) {
+					plotter.showPlot(func);			
 				} else if(e.getAction() == FunctionEvent.ACTION.STEPSIZE_CHANGED){
 					updatePlot(func, func.getExpression(), func.getColor(), func.getBounds(), e.getStepsizes());
 				}
@@ -782,7 +780,7 @@ public class V2GUI {
      	paramFuncInnerPanel.setLayout(new BoxLayout(paramFuncInnerPanel, BoxLayout.Y_AXIS));
      	
 		EditOptionPanel editOptionPanel = new EditOptionPanel(colorList, null);
-		editOptionPanel.addFunctionListener(createColorStepsizeFunctionListener());
+		editOptionPanel.addFunctionListener(createEditPanelListener());
 		paramEditOptionPanel = editOptionPanel; 
 		
      	GridBagConstraints gbc_panel_1 = new GridBagConstraints();
@@ -876,21 +874,24 @@ public class V2GUI {
 	
 	private void addPlot(Function function) {
 		FunctionLabel label = null;
+		EditOptionPanel panel = null;
 		
 		if (function.getClass() == ParametricFunction.class) {
 			label = addParametricPlot(function);
+			panel = paramEditOptionPanel;
 		} else {
 			label = addXYZPlot(function);
+			panel = stdEditOptionPanel;
 		}
 		
-		label.addFunctionListener(createFunctionListener());
+		label.addFunctionListener(createFunctionListener(panel));
 		
 		map.put(function, label);
 		spawnNewPlotterThread(function);
 		frame.pack();
 	}
 	
-	private FunctionListener createFunctionListener() {
+	private FunctionListener createFunctionListener(final EditOptionPanel panel) {
 		return new FunctionListener() {
 			
 			@Override
@@ -902,11 +903,11 @@ public class V2GUI {
 					plotter.showPlot(func);
 					
 				} else if (action == FunctionEvent.ACTION.DELETE){
+					panel.enableOptions(false);
 					deletePlot(func);
 					
 				} else if (action == FunctionEvent.ACTION.UPDATE) {
 					updatePlot(func, e.getNewExpr(), e.getColor(), e.getBounds(), e.getStepsizes());
-					
 				} 
 				
 			}
