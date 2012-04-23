@@ -3,7 +3,6 @@ package munk.graph.function;
 import javax.media.j3d.BranchGroup;
 import javax.vecmath.Color3f;
 
-import munk.graph.appearance.*;
 import munk.graph.function.AbstractFunction.FILL;
 
 public interface Function {
@@ -19,9 +18,9 @@ public interface Function {
 	public void setColor(Color3f color);
 	
 //	public void setGridAppearance();
-//	
+	
 //	public void setPointAppearance();
-//	
+	
 //	public void setFillAppearance();
 	
 	public boolean isVisible();
@@ -34,6 +33,11 @@ public interface Function {
 	
 	public float getStepsize();
 	
+	public float[] getStepsizes();
+	
+	public void cancel();
+	
+		
 	public void setView(FILL state);
 	
 	public FILL getView();

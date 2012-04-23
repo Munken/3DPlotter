@@ -2,11 +2,14 @@ package munk.graph.gui;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.*;
+import java.util.List;
 
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
 
 import munk.graph.function.Function;
+import munk.graph.gui.listener.*;
 
 @SuppressWarnings("serial")
 public class ParametricFunctionLabel extends JPanel implements FunctionLabel{
@@ -22,10 +25,11 @@ public class ParametricFunctionLabel extends JPanel implements FunctionLabel{
 	private JLabel lblX;
 	private JLabel lblY;
 	private JLabel lblZ;
+	
+	private List<FunctionListener> listeners = new ArrayList<FunctionListener>();
 
-	public ParametricFunctionLabel (Function function, ActionListener a){
+	public ParametricFunctionLabel (Function function){
 		this.mother = function;
-		this.listener = a;
 		
 		// GUI representation
 		GridBagLayout gbl_fLabel = new GridBagLayout();
@@ -126,7 +130,8 @@ public class ParametricFunctionLabel extends JPanel implements FunctionLabel{
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				listener.actionPerformed(new ActionEvent(mother, 2, ""));
+				FunctionEvent ev = new FunctionEvent(mother, FunctionEvent.ACTION.DELETE);
+				notifyListeners(ev);
 			}
 		});
 	}
@@ -136,25 +141,28 @@ public class ParametricFunctionLabel extends JPanel implements FunctionLabel{
 		toggleButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				mother.setVisible(toggleButton.isSelected());
-				listener.actionPerformed(new ActionEvent(mother, 3, ""));
+				FunctionEvent ev = new FunctionEvent(mother, FunctionEvent.ACTION.VISIBILITY);
+				
+				notifyListeners(ev);
 			}
 		});
 	}
 
 	private void addTextChangeListener() {
 		// Edit panel.
-		FocusListener editListener = new FocusListener() {
-
+		FocusListener editListener = new FocusAdapter() {
 			@Override
-			public void focusLost(FocusEvent arg0) {
-				// Do nothing.
+			public void focusGained(FocusEvent e) {
+				// TODO Auto-generated method stub
+				FocusListener[] listeners = getFocusListeners();
+				
+				for (FocusListener l : listeners) {
+					l.focusGained(e);
+				}
 			}
-
-			@Override
-			public void focusGained(FocusEvent arg0) {
-				listener.actionPerformed(new ActionEvent(mother, FunctionLabel.UPDATEEDIT, ""));
-			}
+			
 		};
+		
 		exprFieldX.addFocusListener(editListener);
 		exprFieldY.addFocusListener(editListener);
 		exprFieldZ.addFocusListener(editListener);
@@ -174,6 +182,8 @@ public class ParametricFunctionLabel extends JPanel implements FunctionLabel{
 							// Inform the listeners
 							String expressionString = exprFieldX.getText() + "," + exprFieldY.getText() + "," + exprFieldZ.getText();
 							listener.actionPerformed(new ActionEvent(mother, FunctionLabel.UPDATE, expressionString));
+							// Inform the listeners					
+							notifyPlotUpdate(exprFieldX.getText(), exprFieldY.getText(), exprFieldZ.getText());
 							
 							// Update the colors
 							if(exprFieldX.getText().equals(mother.getExpression()[0]) 
@@ -218,5 +228,27 @@ public class ParametricFunctionLabel extends JPanel implements FunctionLabel{
 
 	public void setIndeterminate(boolean b) {
 		toggleButton.setIndeterminate(b);
+	}
+	
+	private void notifyListeners(FunctionEvent e) {
+		for (FunctionListener l : listeners) {
+			l.functionChanged(e);
+		}
+	}
+	
+	public void addFunctionListener(FunctionListener l) {
+		listeners.add(l);
+	}
+	
+	private void notifyPlotUpdate(String... text) {
+		FunctionEvent ev = new FunctionEvent(mother, text, 
+												mother.getColor(), mother.getBounds(), 
+												mother.getStepsizes(), FunctionEvent.ACTION.UPDATE);
+		notifyListeners(ev);
+	}
+	
+	@Override
+	public void addFocusListener(FocusListener l) {
+		super.addFocusListener(l);
 	}
 }

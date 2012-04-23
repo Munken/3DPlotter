@@ -1,15 +1,23 @@
 package munk.graph.gui;
 
+import static munk.graph.gui.GuiUtil.getStepsize;
+
 import java.awt.*;
 import java.awt.event.*;
+import java.util.*;
+import java.util.List;
 
 import javax.swing.*;
 import javax.vecmath.Color3f;
 
-import munk.graph.function.*;
+import munk.graph.function.Function;
+import munk.graph.function.XYZFunction;
+import munk.graph.gui.listener.FunctionEvent;
+import munk.graph.gui.listener.FunctionListener;
 import munk.graph.function.AbstractFunction.FILL;
 
-import com.graphbuilder.math.*;
+import com.graphbuilder.math.ExpressionParseException;
+import com.graphbuilder.math.UndefinedVariableException;
 
 @SuppressWarnings("serial")
 public class EditOptionPanel extends JPanel {
@@ -18,6 +26,7 @@ public class EditOptionPanel extends JPanel {
 	private JComboBox comboBox;
 	private JSlider slider;
 	private ColorList colorList;
+	private List<FunctionListener> listeners = new ArrayList<FunctionListener>();
 	private JRadioButton rdbtnGrid;
 	private JRadioButton rdbtnSolid;
 	private JRadioButton rdbtnPoint;
@@ -25,7 +34,7 @@ public class EditOptionPanel extends JPanel {
 	private JCheckBox chckbxFasterImplicits;
 	private JLabel resolution;
 	
-	public EditOptionPanel(final ColorList colorList, Function f, final ActionListener a){
+	public EditOptionPanel(final ColorList colorList, Function f) {
 		//setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[]{5, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0};
@@ -54,8 +63,11 @@ public class EditOptionPanel extends JPanel {
 
 			@Override
 			public void mouseReleased(MouseEvent arg0) {
-				a.actionPerformed(new ActionEvent(oldFunc,slider.getValue(),"",1));
+				float[] newStepsizes = getStepsize(slider.getValue(), oldFunc.getBounds());
+				if(slider.isEnabled() && !Arrays.equals(newStepsizes, oldFunc.getStepsizes())){
+					notifyStepsizeChanged(newStepsizes);
 				}
+			}
 		});
 		
 		comboBox = new JComboBox(colorList.getIconList());
@@ -121,12 +133,15 @@ public class EditOptionPanel extends JPanel {
 		gbc_chckbxFasterImplicits.gridy = 2;
 		add(chckbxFasterImplicits, gbc_chckbxFasterImplicits);
 		comboBox.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				Color3f selectedColor = (Color3f) colorList.get(comboBox.getSelectedIndex());
-				if(comboBox.isEnabled() && !selectedColor.equals(oldFunc.getColor())){
-				oldFunc.setColor(selectedColor);
+				if(!selectedColor.equals(oldFunc.getColor()) && comboBox.isEnabled()){
+					notifyColorUpdated(selectedColor);
+					if(comboBox.isEnabled() && !selectedColor.equals(oldFunc.getColor())){
+						oldFunc.setColor(selectedColor);
+					}
 				}
 			}
 		});
@@ -137,6 +152,8 @@ public class EditOptionPanel extends JPanel {
 		enableOptions(false);
 	}
 	
+
+
 	public void updateFuncReference(Function f){
 		enableOptions(true);
 		oldFunc = f;
@@ -167,4 +184,29 @@ public class EditOptionPanel extends JPanel {
 		// chckbxFasterImplicits.setEnabled(b);
 	}
 	
+	public void notifyColorUpdated(Color3f newColor) {
+		FunctionEvent e = new FunctionEvent(oldFunc, oldFunc.getExpression(), 
+												newColor, oldFunc.getBounds(), 
+												oldFunc.getStepsizes(), FunctionEvent.ACTION.COLOR_CHANGE);
+		notifyListeners(e);
+	}
+	
+	private void notifyStepsizeChanged(float[] newStepsizes) {
+		FunctionEvent e = new FunctionEvent(oldFunc, oldFunc.getExpression(), 
+				oldFunc.getColor(), oldFunc.getBounds(), 
+				newStepsizes, FunctionEvent.ACTION.STEPSIZE_CHANGED);
+		notifyListeners(e);
+	}
+	
+	private void notifyListeners(FunctionEvent e) {
+		for (FunctionListener l : listeners) {
+			l.functionChanged(e);
+		}
+	}
+	
+	public void addFunctionListener(FunctionListener l) {
+		listeners.add(l);
+	}
+		
 }
+

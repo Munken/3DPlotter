@@ -2,23 +2,25 @@ package munk.graph.gui;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.*;
+import java.util.List;
 
 import javax.swing.*;
 
 import munk.graph.function.Function;
+import munk.graph.gui.listener.*;
 
 @SuppressWarnings("serial")
 public class StdFunctionLabel extends JPanel implements FunctionLabel{
 	
-	ToggleButton toggleButton;
-	JTextField exprField;
-	Function mother;
-	ActionListener listener;
+	private ToggleButton toggleButton;
+	private JTextField exprField;
+	private Function mother;
 	private JButton btnDelete;
+	private List<FunctionListener> listeners = new ArrayList<FunctionListener>();
 
-	public StdFunctionLabel (Function function, ActionListener a){
+	public StdFunctionLabel (Function function){
 		this.mother = function;
-		this.listener = a;
 		
 		// GUI representation
 		GridBagLayout gbl_fLabel = new GridBagLayout();
@@ -63,7 +65,8 @@ public class StdFunctionLabel extends JPanel implements FunctionLabel{
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				listener.actionPerformed(new ActionEvent(mother, FunctionLabel.DELETE, exprField.getText()));
+				FunctionEvent ev = new FunctionEvent(mother, FunctionEvent.ACTION.DELETE);
+				notifyListeners(ev);
 			}
 		});
 	}
@@ -73,7 +76,9 @@ public class StdFunctionLabel extends JPanel implements FunctionLabel{
 		toggleButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				mother.setVisible(toggleButton.isSelected());
-				listener.actionPerformed(new ActionEvent(mother, FunctionLabel.VISIBILITY, ""));
+				FunctionEvent ev = new FunctionEvent(mother, FunctionEvent.ACTION.VISIBILITY);
+				
+				notifyListeners(ev);
 			}
 		});
 	}
@@ -84,18 +89,18 @@ public class StdFunctionLabel extends JPanel implements FunctionLabel{
 	 * RED: Evaluation failed.
 	 */
 	private void addTextChangeListener() {
-		// Edit panel.
-		exprField.addFocusListener(new FocusListener() {
-			
+		
+		exprField.addFocusListener(new FocusAdapter() {
 			@Override
-			public void focusLost(FocusEvent arg0) {
-				// Do nothing.
+			public void focusGained(FocusEvent e) {
+				// TODO Auto-generated method stub
+				FocusListener[] listeners = getFocusListeners();
+				
+				for (FocusListener l : listeners) {
+					l.focusGained(e);
+				}
 			}
 			
-			@Override
-			public void focusGained(FocusEvent arg0) {
-				listener.actionPerformed(new ActionEvent(mother, FunctionLabel.UPDATEEDIT, ""));
-			}
 		});
 		
 		// Evaluation.
@@ -108,7 +113,7 @@ public class StdFunctionLabel extends JPanel implements FunctionLabel{
 					if (!exprField.getText().equals(mother.getExpression()[0])) {
 						
 						if(e.getKeyCode() == KeyEvent.VK_ENTER){
-							listener.actionPerformed(new ActionEvent(mother, FunctionLabel.UPDATE, exprField.getText()));
+							notifyPlotUpdate(exprField.getText());
 							
 							if(exprField.getText().equals(mother.getExpression()[0])){
 								exprField.setBackground(NORMAL_COLOR);
@@ -141,6 +146,28 @@ public class StdFunctionLabel extends JPanel implements FunctionLabel{
 	@Override
 	public String toString() {
 		return exprField.getText();
+	}
+	
+	private void notifyListeners(FunctionEvent e) {
+		for (FunctionListener l : listeners) {
+			l.functionChanged(e);
+		}
+	}
+	
+	public void addFunctionListener(FunctionListener l) {
+		listeners.add(l);
+	}
+	
+	private void notifyPlotUpdate(String... text) {
+		FunctionEvent ev = new FunctionEvent(mother, text, 
+												mother.getColor(), mother.getBounds(), 
+												mother.getStepsizes(), FunctionEvent.ACTION.UPDATE);
+		notifyListeners(ev);
+	}
+	
+	@Override
+	public void addFocusListener(FocusListener l) {
+		super.addFocusListener(l);
 	}
 	
 }

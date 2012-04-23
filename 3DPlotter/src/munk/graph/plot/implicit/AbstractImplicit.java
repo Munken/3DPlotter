@@ -10,12 +10,13 @@ import javax.vecmath.Point3f;
 
 import munk.graph.function.IllegalEquationException;
 import munk.graph.marching.*;
+import munk.graph.plot.AbstractPlotter;
 
 import com.graphbuilder.math.*;
 import com.sun.j3d.utils.geometry.GeometryInfo;
 import com.sun.j3d.utils.geometry.NormalGenerator;
 
-public abstract class AbstractImplicit implements ImplicitPlotter {
+public abstract class AbstractImplicit extends AbstractPlotter implements ImplicitPlotter {
 	
 	private static Pattern PATTERN = Pattern.compile("([^=]+)=([^=]+)$");
 	protected float xMin;
@@ -79,10 +80,11 @@ public abstract class AbstractImplicit implements ImplicitPlotter {
 		if (plot == null) {
 			
 			plot = plot();
+			setShape(plot);
 			triangles = null;
 		}
 		
-		return plot;
+		return (!isCancelled()) ? plot : null;
 	}
 	
 	protected abstract Shape3D plot();
@@ -93,7 +95,7 @@ public abstract class AbstractImplicit implements ImplicitPlotter {
 	
 	protected Shape3D buildGeomtryFromTriangles(List<Point3f> vertices) {
 		// Build geometry from triangles
-		if (triangles.size() >= 3) {
+		if (triangles.size() >= 3 && triangles.size() % 3 == 0) {
 			GeometryInfo gi = new GeometryInfo(GeometryInfo.TRIANGLE_ARRAY);
 			Point3f[] points = new Point3f[vertices.size()];
 			gi.setCoordinates((Point3f[]) vertices.toArray(points));

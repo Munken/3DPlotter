@@ -1,9 +1,7 @@
 package munk.graph.function;
 
 import static munk.graph.function.FunctionUtil.expressionArray;
-import static munk.graph.function.FunctionUtil.setApperancePackInBranchGroup;
 
-import javax.media.j3d.*;
 import javax.vecmath.Color3f;
 
 import munk.graph.plot.XYZPlotter;
@@ -16,8 +14,6 @@ import com.graphbuilder.math.UndefinedVariableException;
  */
 public class XYZFunction extends AbstractFunction {
 
-	private XYZPlotter fp;
-
 	public XYZFunction(String expr, Color3f color, float[] bounds, float stepsize) 
 							throws ExpressionParseException, UndefinedVariableException{
 		this(expressionArray(expr),color,bounds, stepsize);
@@ -25,23 +21,28 @@ public class XYZFunction extends AbstractFunction {
 	
 	public XYZFunction(String[] expr, Color3f color, float[] bounds, float stepsize) 
 							throws ExpressionParseException, UndefinedVariableException{
-		super(expr,color,bounds, stepsize);
-		String expression = expr[0];
-		fp = new XYZPlotter(expression, bounds[0], bounds[1], bounds[2], bounds[3], stepsize);
+		super(expr,color,bounds, stepsize,
+				new XYZPlotter(expr[0], bounds[0], bounds[1], bounds[2], bounds[3], stepsize, stepsize));
 	}
 	
-	@Override
-	protected BranchGroup plot() {
-		TransformGroup tg = fp.getPlot();
-		Shape3D shape = fp.getShape();
-		
-		if (shape != null) {
-			BranchGroup bg = setApperancePackInBranchGroup(getColor(), shape, tg);
-			setShape(shape);
-			return bg;
-		} else 
-			return null;
+	public XYZFunction(String[] expr, Color3f color, float[] bounds, float[] stepsizes) 
+			throws ExpressionParseException, UndefinedVariableException{
+		super(expr,color,bounds, stepsizes,
+				new XYZPlotter(expr[0], bounds[0], bounds[1], bounds[2], bounds[3], stepsizes));
 	}
+	
+//	@Override
+//	protected BranchGroup plot() {
+//		TransformGroup tg = fp.getPlot();
+//		Shape3D shape = fp.getShape();
+//		
+//		if (shape != null) {
+//			BranchGroup bg = setApperancePackInBranchGroup(getColor(), shape, tg);
+//			setShape(shape);
+//			return bg;
+//		} else 
+//			return null;
+//	}
 	
 	@Override
 	public String toString() {

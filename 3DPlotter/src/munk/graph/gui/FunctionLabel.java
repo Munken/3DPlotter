@@ -1,8 +1,10 @@
 package munk.graph.gui;
 
 import java.awt.Color;
+import java.awt.event.FocusListener;
 
 import munk.graph.function.Function;
+import munk.graph.gui.listener.FunctionListener;
 
 public interface FunctionLabel {
 
@@ -11,11 +13,13 @@ public interface FunctionLabel {
 	static final Color  WARNING_COLOR = new Color(255, 215, 0); // Golden yellow
 	
 	static final int UPDATE = 0;
-	static final int UPDATEEDIT = 1;
+	static final int FOCUS_GAINED = 1;
 	static final int DELETE = 2;
 	static final int VISIBILITY = 3;
 	
 	public void setMother(Function f);
 	public void setIndeterminate(boolean b);
+	public void addFunctionListener(FunctionListener l);
+	public void addFocusListener(FocusListener l);
 	
 }

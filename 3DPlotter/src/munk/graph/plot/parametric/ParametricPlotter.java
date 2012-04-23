@@ -1,9 +1,10 @@
 package munk.graph.plot.parametric;
 
-import javax.media.j3d.Shape3D;
+import munk.graph.plot.Plotter;
 
-public interface ParametricPlotter {
+
+public interface ParametricPlotter extends Plotter {
 	
-	Shape3D getPlot();
-
+	
+	
 }

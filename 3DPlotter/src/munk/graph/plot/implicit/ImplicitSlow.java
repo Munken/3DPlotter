@@ -12,6 +12,9 @@ import com.graphbuilder.math.UndefinedVariableException;
 
 public class ImplicitSlow extends AbstractImplicit{
 	
+	/*
+	 * Be adviced these plotter are not maintained !
+	 */
 	public ImplicitSlow(String expr, 
 							float xMin, float xMax, 
 							float yMin,	float yMax, 
