@@ -34,7 +34,7 @@ public class EditOptionPanel extends JPanel {
 	private JCheckBox chckbxFasterImplicits;
 	private JLabel resolution;
 	
-	public EditOptionPanel(final ColorList colorList, Function f) {
+	public EditOptionPanel(final ColorList colorList, Function f, HashMap<Function, FunctionLabel> map) {
 		//setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[]{5, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0};
@@ -138,7 +138,6 @@ public class EditOptionPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				Color3f selectedColor = (Color3f) colorList.get(comboBox.getSelectedIndex());
 				if(!selectedColor.equals(oldFunc.getColor()) && comboBox.isEnabled()){
-					notifyColorUpdated(selectedColor);
 					if(comboBox.isEnabled() && !selectedColor.equals(oldFunc.getColor())){
 						oldFunc.setColor(selectedColor);
 					}
@@ -182,13 +181,6 @@ public class EditOptionPanel extends JPanel {
 		rdbtnPoint.setEnabled(b);
 		rdbtnSolid.setEnabled(b);
 		// chckbxFasterImplicits.setEnabled(b);
-	}
-	
-	public void notifyColorUpdated(Color3f newColor) {
-		FunctionEvent e = new FunctionEvent(oldFunc, oldFunc.getExpression(), 
-												newColor, oldFunc.getBounds(), 
-												oldFunc.getStepsizes(), FunctionEvent.ACTION.COLOR_CHANGE);
-		notifyListeners(e);
 	}
 	
 	private void notifyStepsizeChanged(float[] newStepsizes) {

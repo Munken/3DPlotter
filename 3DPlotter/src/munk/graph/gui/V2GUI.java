@@ -13,6 +13,7 @@ import javax.swing.event.*;
 import javax.vecmath.Color3f;
 
 import munk.graph.IO.*;
+import munk.graph.appearance.Colors;
 import munk.graph.function.*;
 import munk.graph.gui.listener.FunctionEvent;
 import munk.graph.gui.listener.FunctionListener;
@@ -28,6 +29,9 @@ import com.graphbuilder.math.*;
  */
 public class V2GUI {
 
+	static final Color	NORMAL_COLOR	= Color.WHITE;
+	static final Color SELECTED_COLOR = new Color(189, 214, 224);
+	
 	private static enum TYPE{PARAM, STD};
 	
 	private static final int CANVAS_INITIAL_WIDTH = 600;
@@ -71,7 +75,7 @@ public class V2GUI {
 	private JMenuItem mntmImportColors, mntmExportColors, mntmAddCustomColor;
 	private JTextField inputX, inputY, inputZ;
 	private JLabel lblX, lblY, lblZ;
-	
+	private FunctionLabel selectedLabel;
 	
 	// Plotter renderes
 	private ExecutorService plottingQueue = Executors.newSingleThreadExecutor(); // Only plot one at a time
@@ -386,6 +390,13 @@ public class V2GUI {
      			
      		}
      	});
+     	stdFuncInput.addFocusListener(new FocusAdapter() {
+			
+			@Override
+			public void focusGained(FocusEvent arg0) {
+				setSelected(null);
+			}
+		});
 
      	optionPanel = new JPanel();
      	optionPanel.setBorder(BorderFactory.createEtchedBorder());
@@ -542,7 +553,7 @@ public class V2GUI {
      	stdFuncOuterPanel.add(stdFuncInnerPanel, gbc_panel);
      	stdFuncInnerPanel.setLayout(new BoxLayout(stdFuncInnerPanel, BoxLayout.Y_AXIS));
      	
-		EditOptionPanel editPanel = new EditOptionPanel(colorList, null);
+		EditOptionPanel editPanel = new EditOptionPanel(colorList, null, map);
 		editPanel.addFunctionListener(createEditPanelListener());
 		stdEditOptionPanel = editPanel;
 
@@ -658,9 +669,19 @@ public class V2GUI {
      			}
      		}
      	};
+     	FocusListener focusListener = new FocusAdapter() {
+			
+			@Override
+			public void focusGained(FocusEvent arg0) {
+				setSelected(null);
+			}
+		};
      	inputX.addKeyListener(inputListener);
      	inputY.addKeyListener(inputListener);
      	inputZ.addKeyListener(inputListener);
+     	inputX.addFocusListener(focusListener);
+     	inputY.addFocusListener(focusListener);
+     	inputZ.addFocusListener(focusListener);
      	
      	panel = new JPanel();
      	panel.setBorder(BorderFactory.createEtchedBorder());
@@ -779,7 +800,7 @@ public class V2GUI {
      	paramFuncOuterPanel.add(paramFuncInnerPanel, gbc_panel_param);
      	paramFuncInnerPanel.setLayout(new BoxLayout(paramFuncInnerPanel, BoxLayout.Y_AXIS));
      	
-		EditOptionPanel editOptionPanel = new EditOptionPanel(colorList, null);
+		EditOptionPanel editOptionPanel = new EditOptionPanel(colorList, null, map);
 		editOptionPanel.addFunctionListener(createEditPanelListener());
 		paramEditOptionPanel = editOptionPanel; 
 		
@@ -813,19 +834,17 @@ public class V2GUI {
 		});
 	}
 	
-	private FunctionLabel addXYZPlot(final Function newFunction) {
+	private FunctionLabel addXYZPlot(Function newFunction) {
 		stdFuncList.add(newFunction);
-		StdFunctionLabel label = new StdFunctionLabel(newFunction);
+		final StdFunctionLabel label = new StdFunctionLabel(newFunction);
 		
 		label.addFocusListener(new FocusAdapter() {
 			
 			@Override
 			public void focusGained(FocusEvent e) {
-				stdEditOptionPanel.updateFuncReference(newFunction);
-	
+				setSelected(label);
 			}
 		});
-		
 		stdFuncInnerPanel.add(label);
 		return label;
 	}
@@ -833,28 +852,19 @@ public class V2GUI {
 	private FunctionLabel addParametricPlot(final Function newFunction) {
 		paramFuncList.add(newFunction);
 		
-		ParametricFunctionLabel label = new ParametricFunctionLabel(newFunction);
+		final ParametricFunctionLabel label = new ParametricFunctionLabel(newFunction);
 		
 		label.addFocusListener(new FocusAdapter() {
 			
 			@Override
 			public void focusGained(FocusEvent e) {
-				paramEditOptionPanel.updateFuncReference(newFunction);
+				setSelected(label);
 	
 			}
 		});
 		paramFuncInnerPanel.add(label);
 		return label;
 	}
-
-//	
-//	/*
-//	 * Add new plot.
-//	 */
-//	private void addPlot(String[] expr, Color3f color, float[] bounds, float stepSize) {
-//		addPlot(expr, color, bounds, new float[] {stepSize, stepSize, stepSize});
-//	}
-
 	
 	/*
 	 * Add new plot.
@@ -930,17 +940,12 @@ public class V2GUI {
 			}
 			FunctionLabel label = map.get(oldFunc);
 			label.setMother(newFunc);
+			setSelected(label);
 			map.remove(oldFunc);
 			map.put(newFunc, label);
 			plotter.removePlot(oldFunc);
 			spawnNewPlotterThread(newFunc);
 			frame.pack();
-			
-			if (newFunc.getClass() == ParametricFunction.class) {
-				paramEditOptionPanel.updateFuncReference(newFunc);
-			} else {
-				stdEditOptionPanel.updateFuncReference(newFunc);
-			}
 		} 
 		// Catch error.
 		catch (ExpressionParseException e) {
@@ -1118,6 +1123,33 @@ public class V2GUI {
 			catch(IOException | ClassCastException | ClassNotFoundException | ExpressionParseException | IllegalArgumentException | UndefinedVariableException | IllegalEquationException ex){
 				JOptionPane.showMessageDialog(frame,new JLabel("Unable to import workspace from file.",JLabel.CENTER));
 			} 
+		}
+	}
+
+	private void setSelected(FunctionLabel l){
+		if(selectedLabel != null){
+			selectedLabel.setSelected(false);
+		}
+		else{
+			stdFuncInput.setBackground(NORMAL_COLOR);
+			inputX.setBackground(NORMAL_COLOR);
+			inputY.setBackground(NORMAL_COLOR);
+			inputZ.setBackground(NORMAL_COLOR);
+		}
+		selectedLabel = l;
+		if(selectedLabel == null){
+			stdFuncInput.setBackground(SELECTED_COLOR);
+			inputX.setBackground(SELECTED_COLOR);
+			inputY.setBackground(SELECTED_COLOR);
+			inputZ.setBackground(SELECTED_COLOR);
+		}
+		else if(selectedLabel.getClass() == ParametricFunctionLabel.class){
+			paramEditOptionPanel.updateFuncReference(l.getMother());
+			l.setSelected(true);
+		}
+		else if(selectedLabel.getClass() == StdFunctionLabel.class){
+			stdEditOptionPanel.updateFuncReference(l.getMother());
+			l.setSelected(true);
 		}
 	}
 }

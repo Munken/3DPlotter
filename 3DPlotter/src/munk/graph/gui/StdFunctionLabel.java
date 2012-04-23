@@ -19,6 +19,7 @@ public class StdFunctionLabel extends JPanel implements FunctionLabel{
 	private Function mother;
 	private JButton btnDelete;
 	private List<FunctionListener> listeners = new ArrayList<FunctionListener>();
+	private boolean selected;
 
 	public StdFunctionLabel (Function function){
 		this.mother = function;
@@ -66,8 +67,6 @@ public class StdFunctionLabel extends JPanel implements FunctionLabel{
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-//				listener.actionPerformed(new ActionEvent(mother, FunctionLabel.DELETE, exprField.getText()));
-				
 				FunctionEvent ev = new FunctionEvent(mother, FunctionEvent.ACTION.DELETE);
 				notifyListeners(ev);
 			}
@@ -92,20 +91,20 @@ public class StdFunctionLabel extends JPanel implements FunctionLabel{
 	 * RED: Evaluation failed.
 	 */
 	private void addTextChangeListener() {
-		
+
 		exprField.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusGained(FocusEvent e) {
 				// TODO Auto-generated method stub
 				FocusListener[] listeners = getFocusListeners();
-				
+
 				for (FocusListener l : listeners) {
 					l.focusGained(e);
 				}
 			}
-			
+
 		});
-		
+
 		// Evaluation.
 		exprField.addKeyListener(new KeyAdapter() {
 
@@ -119,7 +118,12 @@ public class StdFunctionLabel extends JPanel implements FunctionLabel{
 							notifyPlotUpdate(exprField.getText());
 							
 							if(exprField.getText().equals(mother.getExpression()[0])){
-								exprField.setBackground(NORMAL_COLOR);
+								if(selected){
+									exprField.setBackground(SELECTED_COLOR);
+								}
+								else{
+									exprField.setBackground(NORMAL_COLOR);
+								}
 							}
 							else {
 								exprField.setBackground(FAILED_COLOR);
@@ -129,7 +133,12 @@ public class StdFunctionLabel extends JPanel implements FunctionLabel{
 							exprField.setBackground(WARNING_COLOR);
 						}
 					} else {
-						exprField.setBackground(NORMAL_COLOR);
+						if(selected){
+							exprField.setBackground(SELECTED_COLOR);
+						}
+						else{
+							exprField.setBackground(NORMAL_COLOR);
+						}
 					}
 
 				}
@@ -174,5 +183,19 @@ public class StdFunctionLabel extends JPanel implements FunctionLabel{
 	public void addFocusListener(FocusListener l) {
 		super.addFocusListener(l);
 	}
+
+	public void setSelected(boolean b){
+		selected = b;
+		if(selected){
+			exprField.setBackground(SELECTED_COLOR);
+		}
+		else{
+			exprField.setBackground(NORMAL_COLOR);
+		}
+	}
 	
+	public Function getMother(){
+		return mother;
+	}
+
 }
