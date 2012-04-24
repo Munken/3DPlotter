@@ -587,7 +587,7 @@ public class V2GUI {
     	// The parametric function list
      	paramFuncOuterPanel = new JPanel();
      	paramFuncPanelWrapper = new JScrollPane(paramFuncOuterPanel);
-     	paramFuncPanelWrapper.setBorder(null);
+     	paramFuncPanelWrapper.setBorder(BorderFactory.createEtchedBorder());
      	paramFuncPanelWrapper.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
      	GridBagConstraints gbc_paramFuncPanel = new GridBagConstraints();
      	gbc_paramFuncPanel.fill = GridBagConstraints.BOTH;
@@ -908,20 +908,25 @@ public class V2GUI {
 		}
 		else{
 			stdFuncInput.setBackground(NORMAL_COLOR);
-//			inputX.setBackground(NORMAL_COLOR);
-//			inputY.setBackground(NORMAL_COLOR);
-//			inputZ.setBackground(NORMAL_COLOR);
+			inputX.setBackground(NORMAL_COLOR);
+			inputY.setBackground(NORMAL_COLOR);
+			inputZ.setBackground(NORMAL_COLOR);
 		}
 		selectedLabel = l;
 		if(selectedLabel == null){
 			stdFuncInput.setBackground(SELECTED_COLOR);
-//			inputX.setBackground(SELECTED_COLOR);
-//			inputY.setBackground(SELECTED_COLOR);
-//			inputZ.setBackground(SELECTED_COLOR);
+			inputX.setBackground(SELECTED_COLOR);
+			inputY.setBackground(SELECTED_COLOR);
+			inputZ.setBackground(SELECTED_COLOR);
 		}
 		else if(selectedLabel.getClass() == ParametricFunctionLabel.class){
-			stdAppearancePanel.updateFuncReference(l.getMother());
-			// INPUT REFERENCE UPDATE HERE
+			try {
+			paramAppearancePanel.updateFuncReference(l.getMother());
+			paramGridOptionPanel.setGridBounds(l.getMother().getBounds());
+			paramGridOptionPanel.setSliders(l.getMother().getStepsizes());
+			} catch (ExpressionParseException e) {
+				e.printStackTrace();
+			}
 			l.setSelected(true);
 		}
 		else if(selectedLabel.getClass() == StdFunctionLabel.class){
