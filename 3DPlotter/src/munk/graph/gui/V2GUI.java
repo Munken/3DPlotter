@@ -583,6 +583,35 @@ public class V2GUI {
      	paramOptionPanel.setLayout(new BoxLayout(paramOptionPanel, BoxLayout.Y_AXIS));
      	paramOptionPanel.add(paramGridOptionPanel);
      	paramOptionPanel.add(paramAppearancePanel);
+     	
+    	// The parametric function list
+     	paramFuncOuterPanel = new JPanel();
+     	paramFuncPanelWrapper = new JScrollPane(paramFuncOuterPanel);
+     	paramFuncPanelWrapper.setBorder(BorderFactory.createEtchedBorder());
+     	paramFuncPanelWrapper.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+     	GridBagConstraints gbc_paramFuncPanel = new GridBagConstraints();
+     	gbc_paramFuncPanel.fill = GridBagConstraints.BOTH;
+     	gbc_paramFuncPanel.gridwidth = 5;
+     	gbc_paramFuncPanel.insets = new Insets(0, 0, 5, 5);
+     	gbc_paramFuncPanel.gridx = 1;
+     	gbc_paramFuncPanel.gridy = 6;
+     	paramFuncTab.add(paramFuncPanelWrapper, gbc_paramFuncPanel);
+     	GridBagLayout gbl_paramFuncPanel = new GridBagLayout();
+     	gbl_paramFuncPanel.columnWidths = new int[]{0, 0};
+     	gbl_paramFuncPanel.rowHeights = new int[]{0, 0};
+     	gbl_paramFuncPanel.columnWeights = new double[]{1.0, Double.MIN_VALUE};
+     	gbl_paramFuncPanel.rowWeights = new double[]{1.0, Double.MIN_VALUE};
+     	paramFuncOuterPanel.setLayout(gbl_paramFuncPanel);
+     	
+     	paramFuncInnerPanel = new JPanel();
+     	GridBagConstraints gbc_panel_param = new GridBagConstraints();
+     	gbc_panel_param.anchor = GridBagConstraints.NORTH;
+     	gbc_panel_param.fill = GridBagConstraints.HORIZONTAL;
+     	gbc_panel_param.gridx = 0;
+     	gbc_panel_param.gridy = 0;
+     	paramFuncOuterPanel.add(paramFuncInnerPanel, gbc_panel_param);
+     	paramFuncInnerPanel.setLayout(new BoxLayout(paramFuncInnerPanel, BoxLayout.Y_AXIS));
+     	
 	}
 	
 	private void autoResize(){
@@ -879,20 +908,25 @@ public class V2GUI {
 		}
 		else{
 			stdFuncInput.setBackground(NORMAL_COLOR);
-//			inputX.setBackground(NORMAL_COLOR);
-//			inputY.setBackground(NORMAL_COLOR);
-//			inputZ.setBackground(NORMAL_COLOR);
+			inputX.setBackground(NORMAL_COLOR);
+			inputY.setBackground(NORMAL_COLOR);
+			inputZ.setBackground(NORMAL_COLOR);
 		}
 		selectedLabel = l;
 		if(selectedLabel == null){
 			stdFuncInput.setBackground(SELECTED_COLOR);
-//			inputX.setBackground(SELECTED_COLOR);
-//			inputY.setBackground(SELECTED_COLOR);
-//			inputZ.setBackground(SELECTED_COLOR);
+			inputX.setBackground(SELECTED_COLOR);
+			inputY.setBackground(SELECTED_COLOR);
+			inputZ.setBackground(SELECTED_COLOR);
 		}
 		else if(selectedLabel.getClass() == ParametricFunctionLabel.class){
-			stdAppearancePanel.updateFuncReference(l.getMother());
-			// INPUT REFERENCE UPDATE HERE
+			try {
+			paramAppearancePanel.updateFuncReference(l.getMother());
+			paramGridOptionPanel.setGridBounds(l.getMother().getBounds());
+			paramGridOptionPanel.setSliders(l.getMother().getStepsizes());
+			} catch (ExpressionParseException e) {
+				e.printStackTrace();
+			}
 			l.setSelected(true);
 		}
 		else if(selectedLabel.getClass() == StdFunctionLabel.class){
