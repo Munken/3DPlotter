@@ -583,6 +583,7 @@ public class V2GUI {
      	paramOptionPanel.setLayout(new BoxLayout(paramOptionPanel, BoxLayout.Y_AXIS));
      	paramOptionPanel.add(paramGridOptionPanel);
      	paramOptionPanel.add(paramAppearancePanel);
+<<<<<<< HEAD
      	
     	// The parametric function list
      	paramFuncOuterPanel = new JPanel();
@@ -612,6 +613,8 @@ public class V2GUI {
      	paramFuncOuterPanel.add(paramFuncInnerPanel, gbc_panel_param);
      	paramFuncInnerPanel.setLayout(new BoxLayout(paramFuncInnerPanel, BoxLayout.Y_AXIS));
      	
+=======
+>>>>>>> refs/remotes/origin/GUI3
 	}
 	
 	private void autoResize(){
@@ -908,18 +911,19 @@ public class V2GUI {
 		}
 		else{
 			stdFuncInput.setBackground(NORMAL_COLOR);
-			inputX.setBackground(NORMAL_COLOR);
-			inputY.setBackground(NORMAL_COLOR);
-			inputZ.setBackground(NORMAL_COLOR);
+//			inputX.setBackground(NORMAL_COLOR);
+//			inputY.setBackground(NORMAL_COLOR);
+//			inputZ.setBackground(NORMAL_COLOR);
 		}
 		selectedLabel = l;
 		if(selectedLabel == null){
 			stdFuncInput.setBackground(SELECTED_COLOR);
-			inputX.setBackground(SELECTED_COLOR);
-			inputY.setBackground(SELECTED_COLOR);
-			inputZ.setBackground(SELECTED_COLOR);
+//			inputX.setBackground(SELECTED_COLOR);
+//			inputY.setBackground(SELECTED_COLOR);
+//			inputZ.setBackground(SELECTED_COLOR);
 		}
 		else if(selectedLabel.getClass() == ParametricFunctionLabel.class){
+<<<<<<< HEAD
 			try {
 			paramAppearancePanel.updateFuncReference(l.getMother());
 			paramGridOptionPanel.setGridBounds(l.getMother().getBounds());
@@ -927,6 +931,10 @@ public class V2GUI {
 			} catch (ExpressionParseException e) {
 				e.printStackTrace();
 			}
+=======
+			stdAppearancePanel.updateFuncReference(l.getMother());
+			// INPUT REFERENCE UPDATE HERE
+>>>>>>> refs/remotes/origin/GUI3
 			l.setSelected(true);
 		}
 		else if(selectedLabel.getClass() == StdFunctionLabel.class){
