@@ -45,11 +45,11 @@ public class V2GUI {
 	private JScrollPane stdFuncPanelWrapper;
 	private JPanel paramFuncTab, paramFuncOuterPanel, paramFuncInnerPanel;
 	private JScrollPane paramFuncPanelWrapper;
-	private JPanel optionPanel, canvasPanel;
+	private JPanel stdOptionPanel, canvasPanel;
 	private JTabbedPane tabbedPane;
 	private JDialog colorDialog;
-	private EditOptionPanel stdEditOptionPanel;
-	private EditOptionPanel paramEditOptionPanel;
+	private AppearanceOptionPanel stdEditOptionPanel;
+	private AppearanceOptionPanel paramEditOptionPanel;
 
 	// Non-GUI variables.
 	private Plotter3D plotter;
@@ -97,6 +97,12 @@ public class V2GUI {
 	// Fun
 	JPanel targetPanel;
 	
+ 	StdGridOptionPanel stdGridOptionPanel;
+ 	ParamGridOptionPanel paramGridOptionPanel;
+ 	AppearanceOptionPanel stdAppearancePanel;
+ 	AppearanceOptionPanel paramAppearancePanel;
+ 	private JPanel paramOptionPanel;
+	
 	/**
 	 * Launch the application.
 	 */
@@ -141,12 +147,12 @@ public class V2GUI {
      	initParamFunctionTab();
 		
      	//TODO: TAG
-		try {
-			addPlot(new String[]{"y = sin(x*5)*cos(z*5)"}, colorList.getNextAvailableColor(stdFuncList), new float[]{-1,1,-1,1,-1,1}, GuiUtil.getStepsize(slider.getValue(), getBounds(TYPE.STD)));
-		} catch (ExpressionParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			addPlot(new String[]{"y = sin(x*5)*cos(z*5)"}, colorList.getNextAvailableColor(stdFuncList), new float[]{-1,1,-1,1,-1,1}, GuiUtil.getStepsize(slider.getValue(), getBounds(TYPE.STD)));
+//		} catch (ExpressionParseException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		
      	// Finish up.
      	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -382,7 +388,7 @@ public class V2GUI {
      		public void keyPressed(KeyEvent e) {
      			if (e.getKeyCode() == KeyEvent.VK_ENTER && stdFuncInput.isFocusOwner()) {
      				try {
-						addPlot(new String[]{stdFuncInput.getText()},colorList.getNextAvailableColor(stdFuncList), getBounds(TYPE.STD), GuiUtil.getStepsize(slider.getValue(),getBounds(TYPE.STD)));
+						addPlot(new String[]{stdFuncInput.getText()},colorList.getNextAvailableColor(stdFuncList), stdGridOptionPanel.getGridBounds(), stdGridOptionPanel.getGridStepsize());
 					} catch (ExpressionParseException e1) {
 						JOptionPane.showMessageDialog(frame,new JLabel(e1.getMessage(),JLabel.CENTER));
 					}
@@ -398,133 +404,23 @@ public class V2GUI {
 			}
 		});
 
-     	optionPanel = new JPanel();
-     	optionPanel.setBorder(BorderFactory.createEtchedBorder());
+     	// OptionPanel
+     	stdOptionPanel = new JPanel();
+     	stdOptionPanel.setBorder(BorderFactory.createEtchedBorder());
      	GridBagConstraints gbc_optionPanel = new GridBagConstraints();
      	gbc_optionPanel.fill = GridBagConstraints.HORIZONTAL;
      	gbc_optionPanel.gridwidth = 5;
      	gbc_optionPanel.insets = new Insets(0, 0, 5, 5);
      	gbc_optionPanel.gridx = 1;
      	gbc_optionPanel.gridy = 3;
-     	stdFuncTab.add(optionPanel, gbc_optionPanel);
-     	GridBagLayout gbl_panel = new GridBagLayout();
-     	gbl_panel.columnWidths = new int[]{0, 15, 15, 30, 30, 0, 0};
-     	gbl_panel.rowHeights = new int[]{10, 0, 0, 0, 5, 0, 0};
-     	gbl_panel.columnWeights = new double[]{1.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
-     	gbl_panel.rowWeights = new double[]{1.0, 0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
-     	optionPanel.setLayout(gbl_panel);
-
-     	// The limit data.
-     	txtXmin = new JTextField();
-     	GridBagConstraints gbc_txtXmin = new GridBagConstraints();
-     	gbc_txtXmin.gridwidth = 2;
-     	gbc_txtXmin.fill = GridBagConstraints.HORIZONTAL;
-     	gbc_txtXmin.insets = new Insets(0, 0, 5, 5);
-     	gbc_txtXmin.gridx = 1;
-     	gbc_txtXmin.gridy = 1;
-     	optionPanel.add(txtXmin, gbc_txtXmin);
-     	txtXmin.setText("" + DEFAULT_BOUNDS[0]);
-     	txtXmin.setColumns(10);
-
-     	label_1 = new JLabel("< x <");
-     	GridBagConstraints gbc_label_1 = new GridBagConstraints();
-     	gbc_label_1.insets = new Insets(0, 0, 5, 5);
-     	gbc_label_1.gridx = 3;
-     	gbc_label_1.gridy = 1;
-     	optionPanel.add(label_1, gbc_label_1);
-
-     	txtXmax = new JTextField();
-     	GridBagConstraints gbc_txtXmax = new GridBagConstraints();
-     	gbc_txtXmax.fill = GridBagConstraints.HORIZONTAL;
-     	gbc_txtXmax.insets = new Insets(0, 0, 5, 5);
-     	gbc_txtXmax.gridx = 4;
-     	gbc_txtXmax.gridy = 1;
-     	optionPanel.add(txtXmax, gbc_txtXmax);
-     	txtXmax.setText("" + DEFAULT_BOUNDS[1]);
-     	txtXmax.setColumns(10);
-
-     	txtYmin = new JTextField();
-     	GridBagConstraints gbc_txtYmin = new GridBagConstraints();
-     	gbc_txtYmin.gridwidth = 2;
-     	gbc_txtYmin.fill = GridBagConstraints.HORIZONTAL;
-     	gbc_txtYmin.insets = new Insets(0, 0, 5, 5);
-     	gbc_txtYmin.gridx = 1;
-     	gbc_txtYmin.gridy = 2;
-     	optionPanel.add(txtYmin, gbc_txtYmin);
-     	txtYmin.setText("" + DEFAULT_BOUNDS[2]);
-     	txtYmin.setColumns(10);
-
-     	label_2 = new JLabel("< y <");
-     	GridBagConstraints gbc_label_2 = new GridBagConstraints();
-     	gbc_label_2.insets = new Insets(0, 0, 5, 5);
-     	gbc_label_2.gridx = 3;
-     	gbc_label_2.gridy = 2;
-     	optionPanel.add(label_2, gbc_label_2);
-
-     	txtYmax = new JTextField();
-     	GridBagConstraints gbc_txtYmax = new GridBagConstraints();
-     	gbc_txtYmax.fill = GridBagConstraints.HORIZONTAL;
-     	gbc_txtYmax.insets = new Insets(0, 0, 5, 5);
-     	gbc_txtYmax.gridx = 4;
-     	gbc_txtYmax.gridy = 2;
-     	optionPanel.add(txtYmax, gbc_txtYmax);
-     	txtYmax.setText("" + DEFAULT_BOUNDS[3]);
-     	txtYmax.setColumns(10);
-
-     	txtZmin = new JTextField();
-     	GridBagConstraints gbc_txtZmin = new GridBagConstraints();
-     	gbc_txtZmin.gridwidth = 2;
-     	gbc_txtZmin.fill = GridBagConstraints.HORIZONTAL;
-     	gbc_txtZmin.insets = new Insets(0, 0, 5, 5);
-     	gbc_txtZmin.gridx = 1;
-     	gbc_txtZmin.gridy = 3;
-     	optionPanel.add(txtZmin, gbc_txtZmin);
-     	txtZmin.setText("" + DEFAULT_BOUNDS[4]);
-     	txtZmin.setColumns(10);
-
-     	label_3 = new JLabel("< z <");
-     	GridBagConstraints gbc_label_3 = new GridBagConstraints();
-     	gbc_label_3.insets = new Insets(0, 0, 5, 5);
-     	gbc_label_3.gridx = 3;
-     	gbc_label_3.gridy = 3;
-     	optionPanel.add(label_3, gbc_label_3);
-
-     	txtZmax = new JTextField();
-     	GridBagConstraints gbc_txtZmax = new GridBagConstraints();
-     	gbc_txtZmax.fill = GridBagConstraints.HORIZONTAL;
-     	gbc_txtZmax.insets = new Insets(0, 0, 5, 5);
-     	gbc_txtZmax.gridx = 4;
-     	gbc_txtZmax.gridy = 3;
-     	optionPanel.add(txtZmax, gbc_txtZmax);
-     	txtZmax.setText("" + DEFAULT_BOUNDS[5]);
-     	txtZmax.setColumns(10);
-
-     	GuiUtil.setupUndoListener(txtXmin);
-     	GuiUtil.setupUndoListener(txtXmax);
-     	GuiUtil.setupUndoListener(txtYmin);
-     	GuiUtil.setupUndoListener(txtYmax);
-     	GuiUtil.setupUndoListener(txtZmin);
-     	GuiUtil.setupUndoListener(txtZmax);
-
-     	lblStepSize = new JLabel("Resolution");
-     	lblStepSize.setHorizontalAlignment(SwingConstants.CENTER);
-     	GridBagConstraints gbc_lblStepSize = new GridBagConstraints();
-     	gbc_lblStepSize.anchor = GridBagConstraints.EAST;
-     	gbc_lblStepSize.insets = new Insets(0, 0, 0, 5);
-     	gbc_lblStepSize.gridx = 1;
-     	gbc_lblStepSize.gridy = 5;
-     	optionPanel.add(lblStepSize, gbc_lblStepSize);
+     	stdFuncTab.add(stdOptionPanel, gbc_optionPanel);
      	
-     	slider = new JSlider();
-     	slider.setPreferredSize(new Dimension(100, 20));
-     	GridBagConstraints gbc_slider = new GridBagConstraints();
-     	gbc_slider.gridwidth = 3;
-     	gbc_slider.fill = GridBagConstraints.HORIZONTAL;
-     	gbc_slider.insets = new Insets(0, 0, 0, 5);
-     	gbc_slider.gridx = 2;
-     	gbc_slider.gridy = 5;
-     	optionPanel.add(slider, gbc_slider);
-
+     	stdGridOptionPanel = new StdGridOptionPanel(DEFAULT_BOUNDS);
+     	stdAppearancePanel = new AppearanceOptionPanel(colorList, map);
+     	stdOptionPanel.setLayout(new BoxLayout(stdOptionPanel, BoxLayout.Y_AXIS));
+     	stdOptionPanel.add(stdGridOptionPanel);
+     	stdOptionPanel.add(stdAppearancePanel);
+     	
      	// The standard function list
      	stdFuncOuterPanel = new JPanel();
      	stdFuncPanelWrapper = new JScrollPane(stdFuncOuterPanel);
@@ -552,19 +448,7 @@ public class V2GUI {
      	gbc_panel.gridy = 0;
      	stdFuncOuterPanel.add(stdFuncInnerPanel, gbc_panel);
      	stdFuncInnerPanel.setLayout(new BoxLayout(stdFuncInnerPanel, BoxLayout.Y_AXIS));
-     	
-		EditOptionPanel editPanel = new EditOptionPanel(colorList, null, map);
-		editPanel.addFunctionListener(createEditPanelListener());
-		stdEditOptionPanel = editPanel;
-
-     	
-     	GridBagConstraints gbc_panel_1 = new GridBagConstraints();
-     	gbc_panel_1.fill = GridBagConstraints.BOTH;
-     	gbc_panel_1.gridwidth = 5;
-     	gbc_panel_1.insets = new Insets(0, 0, 5, 5);
-     	gbc_panel_1.gridx = 1;
-     	gbc_panel_1.gridy = 8;
-     	stdFuncTab.add(stdEditOptionPanel, gbc_panel_1);
+     
 	}
 
 	private FunctionListener createEditPanelListener() {
@@ -588,7 +472,7 @@ public class V2GUI {
      	tabbedPane.addTab("Parametric equations", paramFuncTab);
      	GridBagLayout gbl_paramFunctionPanel = new GridBagLayout();
      	gbl_paramFunctionPanel.columnWidths = new int[]{5, 25, 50, 50, 50, 25, 5, 0};
-     	gbl_paramFunctionPanel.rowHeights = new int[]{5, 0, 0, 0, 0, 10, 5, 5, 0, 0, 0};
+     	gbl_paramFunctionPanel.rowHeights = new int[]{5, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0};
      	gbl_paramFunctionPanel.columnWeights = new double[]{0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
      	gbl_paramFunctionPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
      	paramFuncTab.setLayout(gbl_paramFunctionPanel);
@@ -662,7 +546,7 @@ public class V2GUI {
      			String[] paramExpr = new String[]{inputX.getText(),inputY.getText(),inputZ.getText()};
      			if (e.getKeyCode() == KeyEvent.VK_ENTER && (inputX.isFocusOwner() || inputY.isFocusOwner() || inputZ.isFocusOwner())) {
      				try {
-	    				addPlot(paramExpr,colorList.getNextAvailableColor(paramFuncList), getBounds(TYPE.PARAM), GuiUtil.getStepsize(paramSlider.getValue(),getBounds(TYPE.PARAM)));
+	    				addPlot(paramExpr,colorList.getNextAvailableColor(paramFuncList), paramGridOptionPanel.getGridBounds(), paramGridOptionPanel.getGridStepsize());
 					} catch (ExpressionParseException e1) {
 						JOptionPane.showMessageDialog(frame,new JLabel(e1.getMessage(),JLabel.CENTER));
 					}
@@ -683,96 +567,24 @@ public class V2GUI {
      	inputY.addFocusListener(focusListener);
      	inputZ.addFocusListener(focusListener);
      	
-     	panel = new JPanel();
-     	panel.setBorder(BorderFactory.createEtchedBorder());
-     	GridBagConstraints gbc_panel = new GridBagConstraints();
-     	gbc_panel.gridwidth = 5;
-     	gbc_panel.insets = new Insets(0, 0, 5, 5);
-     	gbc_panel.fill = GridBagConstraints.HORIZONTAL;
-     	gbc_panel.gridx = 1;
-     	gbc_panel.gridy = 5;
-     	paramFuncTab.add(panel, gbc_panel);
-     	GridBagLayout gbl_panel = new GridBagLayout();
-     	gbl_panel.columnWidths = new int[]{0, 15, 15, 0, 30, 30, 0, 0};
-     	gbl_panel.rowHeights = new int[]{10, 0, 0, 5, 0, 5, 0};
-     	gbl_panel.columnWeights = new double[]{1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
-     	gbl_panel.rowWeights = new double[]{1.0, 0.0, 0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE};
-     	panel.setLayout(gbl_panel);
+     	// OptionPanel
+     	paramOptionPanel = new JPanel();
+     	GridBagConstraints gbc_panel_1 = new GridBagConstraints();
+     	gbc_panel_1.gridwidth = 5;
+     	gbc_panel_1.insets = new Insets(0, 0, 5, 5);
+     	gbc_panel_1.fill = GridBagConstraints.HORIZONTAL;
+     	gbc_panel_1.gridx = 1;
+     	gbc_panel_1.gridy = 5;
+     	paramFuncTab.add(paramOptionPanel, gbc_panel_1);
+     	paramOptionPanel.setBorder(BorderFactory.createEtchedBorder());
      	
-     	txtTmin = new JTextField();
-     	txtTmin.setText("0");
-     	txtTmin.setColumns(10);
-     	GridBagConstraints gbc_textField_param = new GridBagConstraints();
-     	gbc_textField_param.gridwidth = 2;
-     	gbc_textField_param.insets = new Insets(0, 0, 5, 5);
-     	gbc_textField_param.gridx = 1;
-     	gbc_textField_param.gridy = 1;
-     	panel.add(txtTmin, gbc_textField_param);
+     	paramGridOptionPanel = new ParamGridOptionPanel(DEFAULT_BOUNDS);
+     	paramAppearancePanel = new AppearanceOptionPanel(colorList, map);
+     	paramOptionPanel.setLayout(new BoxLayout(paramOptionPanel, BoxLayout.Y_AXIS));
+     	paramOptionPanel.add(paramGridOptionPanel);
+     	paramOptionPanel.add(paramAppearancePanel);
      	
-     	label_4 = new JLabel("< t <");
-     	GridBagConstraints gbc_label_4 = new GridBagConstraints();
-     	gbc_label_4.insets = new Insets(0, 0, 5, 5);
-     	gbc_label_4.gridx = 3;
-     	gbc_label_4.gridy = 1;
-     	panel.add(label_4, gbc_label_4);
-     	
-     	txtTmax = new JTextField();
-     	txtTmax.setText("2*pi");
-     	txtTmax.setColumns(10);
-     	GridBagConstraints gbc_textField_param_1 = new GridBagConstraints();
-     	gbc_textField_param_1.gridwidth = 2;
-     	gbc_textField_param_1.insets = new Insets(0, 0, 5, 5);
-     	gbc_textField_param_1.gridx = 4;
-     	gbc_textField_param_1.gridy = 1;
-     	panel.add(txtTmax, gbc_textField_param_1);
-     	
-     	txtUmin = new JTextField();
-     	txtUmin.setText("0");
-     	txtUmin.setColumns(10);
-     	GridBagConstraints gbc_textField_2 = new GridBagConstraints();
-     	gbc_textField_2.gridwidth = 2;
-     	gbc_textField_2.insets = new Insets(0, 0, 5, 5);
-     	gbc_textField_2.gridx = 1;
-     	gbc_textField_2.gridy = 2;
-     	panel.add(txtUmin, gbc_textField_2);
-     	
-     	label_5 = new JLabel("< u <");
-     	GridBagConstraints gbc_label_5 = new GridBagConstraints();
-     	gbc_label_5.insets = new Insets(0, 0, 5, 5);
-     	gbc_label_5.gridx = 3;
-     	gbc_label_5.gridy = 2;
-     	panel.add(label_5, gbc_label_5);
-     	
-     	txtUmax = new JTextField();
-     	txtUmax.setText("2*pi");
-     	txtUmax.setColumns(10);
-     	GridBagConstraints gbc_textField_3 = new GridBagConstraints();
-     	gbc_textField_3.gridwidth = 2;
-     	gbc_textField_3.insets = new Insets(0, 0, 5, 5);
-     	gbc_textField_3.gridx = 4;
-     	gbc_textField_3.gridy = 2;
-     	panel.add(txtUmax, gbc_textField_3);
-     	
-     	lblResolution = new JLabel("Resolution");
-     	lblResolution.setHorizontalAlignment(SwingConstants.CENTER);
-     	GridBagConstraints gbc_lblResolution = new GridBagConstraints();
-     	gbc_lblResolution.anchor = GridBagConstraints.EAST;
-     	gbc_lblResolution.insets = new Insets(0, 0, 5, 5);
-     	gbc_lblResolution.gridx = 1;
-     	gbc_lblResolution.gridy = 4;
-     	panel.add(lblResolution, gbc_lblResolution);
-     	
-     	paramSlider = new JSlider();
-     	paramSlider.setPreferredSize(new Dimension(100, 20));
-     	GridBagConstraints gbc_slider_1 = new GridBagConstraints();
-     	gbc_slider_1.fill = GridBagConstraints.HORIZONTAL;
-     	gbc_slider_1.gridwidth = 4;
-     	gbc_slider_1.insets = new Insets(0, 0, 5, 5);
-     	gbc_slider_1.gridx = 2;
-     	gbc_slider_1.gridy = 4;
-     	panel.add(paramSlider, gbc_slider_1);
-     	
-     	// The parametric function list
+    	// The parametric function list
      	paramFuncOuterPanel = new JPanel();
      	paramFuncPanelWrapper = new JScrollPane(paramFuncOuterPanel);
      	paramFuncPanelWrapper.setBorder(null);
@@ -800,18 +612,6 @@ public class V2GUI {
      	paramFuncOuterPanel.add(paramFuncInnerPanel, gbc_panel_param);
      	paramFuncInnerPanel.setLayout(new BoxLayout(paramFuncInnerPanel, BoxLayout.Y_AXIS));
      	
-		EditOptionPanel editOptionPanel = new EditOptionPanel(colorList, null, map);
-		editOptionPanel.addFunctionListener(createEditPanelListener());
-		paramEditOptionPanel = editOptionPanel; 
-		
-     	GridBagConstraints gbc_panel_1 = new GridBagConstraints();
-     	gbc_panel_1.gridwidth = 5;
-     	gbc_panel_1.insets = new Insets(0, 0, 5, 5);
-     	gbc_panel_1.fill = GridBagConstraints.BOTH;
-     	gbc_panel_1.gridx = 1;
-     	gbc_panel_1.gridy = 8;
-     	paramFuncTab.add(paramEditOptionPanel, gbc_panel_1);
-
 	}
 	
 	private void autoResize(){
@@ -884,7 +684,7 @@ public class V2GUI {
 	
 	private void addPlot(Function function) {
 		FunctionLabel label = null;
-		EditOptionPanel panel = null;
+		AppearanceOptionPanel panel = null;
 		
 		if (function.getClass() == ParametricFunction.class) {
 			label = addParametricPlot(function);
@@ -901,7 +701,7 @@ public class V2GUI {
 		frame.pack();
 	}
 	
-	private FunctionListener createFunctionListener(final EditOptionPanel panel) {
+	private FunctionListener createFunctionListener(final AppearanceOptionPanel panel) {
 		return new FunctionListener() {
 			
 			@Override
@@ -982,30 +782,6 @@ public class V2GUI {
 		
 		map.remove(f);
 		frame.pack();
-	}
-
-	/*
-	 * Return current bounds (set in GUI).
-	 */
-	private float[] getBounds(TYPE type) throws ExpressionParseException{
-		float[] bounds = new float[6];
-		if(type == TYPE.PARAM){
-			bounds[0] = GuiUtil.evalString(txtTmin.getText());
-			bounds[1] = GuiUtil.evalString(txtTmax.getText());
-			bounds[2] = GuiUtil.evalString(txtUmin.getText());
-			bounds[3] = GuiUtil.evalString(txtUmax.getText());
-			bounds[4] = 0;
-			bounds[5] = 0;
-		}
-		if(type == TYPE.STD){
-			bounds[0] = GuiUtil.evalString(txtXmin.getText());
-			bounds[1] = GuiUtil.evalString(txtXmax.getText());
-			bounds[2] = GuiUtil.evalString(txtYmin.getText());
-			bounds[3] = GuiUtil.evalString(txtYmax.getText());
-			bounds[4] = GuiUtil.evalString(txtZmin.getText());
-			bounds[5] = GuiUtil.evalString(txtZmax.getText());
-		}
-		return bounds;
 	}
 
 	/*
@@ -1132,23 +908,30 @@ public class V2GUI {
 		}
 		else{
 			stdFuncInput.setBackground(NORMAL_COLOR);
-			inputX.setBackground(NORMAL_COLOR);
-			inputY.setBackground(NORMAL_COLOR);
-			inputZ.setBackground(NORMAL_COLOR);
+//			inputX.setBackground(NORMAL_COLOR);
+//			inputY.setBackground(NORMAL_COLOR);
+//			inputZ.setBackground(NORMAL_COLOR);
 		}
 		selectedLabel = l;
 		if(selectedLabel == null){
 			stdFuncInput.setBackground(SELECTED_COLOR);
-			inputX.setBackground(SELECTED_COLOR);
-			inputY.setBackground(SELECTED_COLOR);
-			inputZ.setBackground(SELECTED_COLOR);
+//			inputX.setBackground(SELECTED_COLOR);
+//			inputY.setBackground(SELECTED_COLOR);
+//			inputZ.setBackground(SELECTED_COLOR);
 		}
 		else if(selectedLabel.getClass() == ParametricFunctionLabel.class){
-			paramEditOptionPanel.updateFuncReference(l.getMother());
+			stdAppearancePanel.updateFuncReference(l.getMother());
+			// INPUT REFERENCE UPDATE HERE
 			l.setSelected(true);
 		}
 		else if(selectedLabel.getClass() == StdFunctionLabel.class){
-			stdEditOptionPanel.updateFuncReference(l.getMother());
+			try {
+				stdAppearancePanel.updateFuncReference(l.getMother());
+				stdGridOptionPanel.setGridBounds(l.getMother().getBounds());
+				stdGridOptionPanel.setSliders(l.getMother().getStepsizes());
+			} catch (ExpressionParseException e) {
+				e.printStackTrace();
+			}
 			l.setSelected(true);
 		}
 	}
