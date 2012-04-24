@@ -20,7 +20,7 @@ import com.graphbuilder.math.ExpressionParseException;
 import com.graphbuilder.math.UndefinedVariableException;
 
 @SuppressWarnings("serial")
-public class EditOptionPanel extends JPanel {
+public class AppearanceOptionPanel extends JPanel {
 	
 	private Function oldFunc;
 	private JComboBox comboBox;
@@ -34,55 +34,26 @@ public class EditOptionPanel extends JPanel {
 	private JCheckBox chckbxFasterImplicits;
 	private JLabel resolution;
 	
-	public EditOptionPanel(final ColorList colorList, Function f, HashMap<Function, FunctionLabel> map) {
-		//setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+	public AppearanceOptionPanel(final ColorList colorList, HashMap<Function, FunctionLabel> map) {
+		
+		this.setPreferredSize(new Dimension(300,35));
+		
 		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[]{5, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0};
-		gridBagLayout.rowHeights = new int[]{5, 0, 0, 0, 5, 0};
-		gridBagLayout.columnWeights = new double[]{1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
-		gridBagLayout.rowWeights = new double[]{1.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
+		gridBagLayout.columnWidths = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+		gridBagLayout.rowHeights = new int[]{0, 10, 0};
+		gridBagLayout.columnWeights = new double[]{1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, Double.MIN_VALUE};
+		gridBagLayout.rowWeights = new double[]{0.0, 0.0, Double.MIN_VALUE};
 		setLayout(gridBagLayout);
 		
-		resolution = new JLabel("Resolution");
-		GridBagConstraints gbc_lblStepSize = new GridBagConstraints();
-		gbc_lblStepSize.insets = new Insets(0, 0, 5, 5);
-		gbc_lblStepSize.anchor = GridBagConstraints.WEST;
-		gbc_lblStepSize.gridx = 1;
-		gbc_lblStepSize.gridy = 1;
-		add(resolution, gbc_lblStepSize);
+		viewGroup = new ButtonGroup();
 		
-		slider = new JSlider();
-		slider.setPreferredSize(new Dimension(150,20));
-		GridBagConstraints gbc_slider = new GridBagConstraints();
-		gbc_slider.gridwidth = 8;
-		gbc_slider.insets = new Insets(0, 0, 5, 5);
-		gbc_slider.gridx = 2;
-		gbc_slider.gridy = 1;
-		add(slider, gbc_slider);
-		slider.addMouseListener(new MouseAdapter() {
-
-			@Override
-			public void mouseReleased(MouseEvent arg0) {
-				float[] newStepsizes = getStepsize(slider.getValue(), oldFunc.getBounds());
-				if(slider.isEnabled() && !Arrays.equals(newStepsizes, oldFunc.getStepsizes())){
-					notifyStepsizeChanged(newStepsizes);
-				}
-			}
-		});
-		
-		comboBox = new JComboBox(colorList.getIconList());
-		GridBagConstraints gbc_comboBox = new GridBagConstraints();
-		gbc_comboBox.insets = new Insets(0, 0, 5, 5);
-		gbc_comboBox.fill = GridBagConstraints.HORIZONTAL;
-		gbc_comboBox.gridx = 10;
-		gbc_comboBox.gridy = 1;
-		add(comboBox, gbc_comboBox);
+		this.colorList = colorList;
 		
 		rdbtnPoint = new JRadioButton("Point");
 		GridBagConstraints gbc_rdbtnPoint = new GridBagConstraints();
 		gbc_rdbtnPoint.insets = new Insets(0, 0, 5, 5);
 		gbc_rdbtnPoint.gridx = 1;
-		gbc_rdbtnPoint.gridy = 2;
+		gbc_rdbtnPoint.gridy = 0;
 		add(rdbtnPoint, gbc_rdbtnPoint);
 		rdbtnPoint.addActionListener(new ActionListener() {
 			
@@ -91,12 +62,13 @@ public class EditOptionPanel extends JPanel {
 				oldFunc.setView(FILL.POINT);
 			}
 		});
+		viewGroup.add(rdbtnPoint);
 		
 		rdbtnGrid = new JRadioButton("Grid");
 		GridBagConstraints gbc_rdbtnGrid = new GridBagConstraints();
 		gbc_rdbtnGrid.insets = new Insets(0, 0, 5, 5);
-		gbc_rdbtnGrid.gridx = 2;
-		gbc_rdbtnGrid.gridy = 2;
+		gbc_rdbtnGrid.gridx = 3;
+		gbc_rdbtnGrid.gridy = 0;
 		add(rdbtnGrid, gbc_rdbtnGrid);
 		rdbtnGrid.addActionListener(new ActionListener() {
 			
@@ -105,12 +77,13 @@ public class EditOptionPanel extends JPanel {
 				oldFunc.setView(FILL.GRID);
 			}
 		});
+		viewGroup.add(rdbtnGrid);
 		
 		rdbtnSolid = new JRadioButton("Solid");
 		GridBagConstraints gbc_rdbtnSolid = new GridBagConstraints();
 		gbc_rdbtnSolid.insets = new Insets(0, 0, 5, 5);
-		gbc_rdbtnSolid.gridx = 3;
-		gbc_rdbtnSolid.gridy = 2;
+		gbc_rdbtnSolid.gridx = 5;
+		gbc_rdbtnSolid.gridy = 0;
 		add(rdbtnSolid, gbc_rdbtnSolid);
 		rdbtnSolid.addActionListener(new ActionListener() {
 			
@@ -119,35 +92,42 @@ public class EditOptionPanel extends JPanel {
 				oldFunc.setView(FILL.FILL);
 			}
 		});
-		
-		viewGroup = new ButtonGroup();
-		viewGroup.add(rdbtnGrid);
-		viewGroup.add(rdbtnPoint);
 		viewGroup.add(rdbtnSolid);
 		
-		chckbxFasterImplicits = new JCheckBox("Faster Implicit");
-		GridBagConstraints gbc_chckbxFasterImplicits = new GridBagConstraints();
-		gbc_chckbxFasterImplicits.gridwidth = 7;
-		gbc_chckbxFasterImplicits.insets = new Insets(0, 0, 5, 5);
-		gbc_chckbxFasterImplicits.gridx = 4;
-		gbc_chckbxFasterImplicits.gridy = 2;
-		add(chckbxFasterImplicits, gbc_chckbxFasterImplicits);
-		comboBox.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				Color3f selectedColor = (Color3f) colorList.get(comboBox.getSelectedIndex());
-				if(!selectedColor.equals(oldFunc.getColor()) && comboBox.isEnabled()){
-					if(comboBox.isEnabled() && !selectedColor.equals(oldFunc.getColor())){
-						oldFunc.setColor(selectedColor);
-					}
-				}
-			}
-		});
+//		resolution = new JLabel("Resolution");
+//		GridBagConstraints gbc_lblStepSize = new GridBagConstraints();
+//		gbc_lblStepSize.insets = new Insets(0, 0, 5, 5);
+//		gbc_lblStepSize.anchor = GridBagConstraints.WEST;
+//		gbc_lblStepSize.gridx = 1;
+//		gbc_lblStepSize.gridy = 1;
+//		add(resolution, gbc_lblStepSize);
+//		
+//		slider = new JSlider();
+//		slider.setPreferredSize(new Dimension(150,20));
+//		GridBagConstraints gbc_slider = new GridBagConstraints();
+//		gbc_slider.gridwidth = 8;
+//		gbc_slider.insets = new Insets(0, 0, 5, 5);
+//		gbc_slider.gridx = 2;
+//		gbc_slider.gridy = 1;
+//		add(slider, gbc_slider);
+//		slider.addMouseListener(new MouseAdapter() {
+//
+//			@Override
+//			public void mouseReleased(MouseEvent arg0) {
+//				float[] newStepsizes = getStepsize(slider.getValue(), oldFunc.getBounds());
+//				if(slider.isEnabled() && !Arrays.equals(newStepsizes, oldFunc.getStepsizes())){
+//					notifyStepsizeChanged(newStepsizes);
+//				}
+//			}
+//		});
 		
-		this.colorList = colorList;
-		chckbxFasterImplicits.setEnabled(false);
-		chckbxFasterImplicits.setSelected(true);
+		comboBox = new JComboBox(colorList.getIconList());
+		GridBagConstraints gbc_comboBox = new GridBagConstraints();
+		gbc_comboBox.insets = new Insets(0, 0, 5, 5);
+		gbc_comboBox.fill = GridBagConstraints.HORIZONTAL;
+		gbc_comboBox.gridx = 7;
+		gbc_comboBox.gridy = 0;
+		add(comboBox, gbc_comboBox);
 		enableOptions(false);
 	}
 	
@@ -157,7 +137,6 @@ public class EditOptionPanel extends JPanel {
 		enableOptions(true);
 		oldFunc = f;
 		comboBox.setSelectedIndex(colorList.indexOf(f.getColor()));
-		slider.setValue(GuiUtil.getSliderValue(f.getStepsize(),f.getBounds()));
 		if(f.getView() == FILL.POINT){
 			rdbtnPoint.setSelected(true);
 		}
@@ -174,13 +153,10 @@ public class EditOptionPanel extends JPanel {
 	}
 	
 	public void enableOptions(Boolean b){
-		resolution.setEnabled(b);
-		slider.setEnabled(b);
 		comboBox.setEnabled(b);
 		rdbtnGrid.setEnabled(b);
 		rdbtnPoint.setEnabled(b);
 		rdbtnSolid.setEnabled(b);
-		// chckbxFasterImplicits.setEnabled(b);
 	}
 	
 	private void notifyStepsizeChanged(float[] newStepsizes) {
