@@ -71,7 +71,7 @@ public class V2GUI {
 	private JMenuItem mntmImportColors, mntmExportColors, mntmAddCustomColor;
 	private JTextField inputX, inputY, inputZ;
 	private JLabel lblX, lblY, lblZ;
-	private FunctionLabel selectedLabel;
+	private Function selectedFunction;
 	
 	// Plotter renders
 	private ExecutorService plottingQueue = Executors.newSingleThreadExecutor(); // Only plot one at a time
@@ -112,7 +112,7 @@ public class V2GUI {
 	 */
 	public V2GUI() {
 		// Initialize variables.
-		colorList = new ColorList();
+		colorList = new ColorList(stdFuncList);
 		filePath = File.separator+"tmp";
 		
 		initialize();
@@ -129,14 +129,8 @@ public class V2GUI {
 		init3Dplotter();
      	initStdFunctionTab();
      	initParamFunctionTab();
-	
-     	// Default selecion.
-		stdFuncInput.setBackground(SELECTED_COLOR);
-		inputX.setBackground(SELECTED_COLOR);
-		inputY.setBackground(SELECTED_COLOR);
-		inputZ.setBackground(SELECTED_COLOR);
      	
-     	addPlot(new String[]{"y = sin(x*5)*cos(z*5)"}, colorList.getNextAvailableColor(stdFuncList), DEFAULT_BOUNDS, new float[]{(float) 0.1,(float) 0.1,(float) 0.1});
+     	addPlot(new String[]{"y = sin(x*5)*cos(z*5)"}, colorList.getNextAvailableColor(), DEFAULT_BOUNDS, new float[]{(float) 0.1,(float) 0.1,(float) 0.1});
 		
      	// Finish up.
      	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -145,8 +139,8 @@ public class V2GUI {
      	
      	// Set up tempate functions.
      	try {
-			paramTemplateFunc = new TemplateFunction(DEFAULT_BOUNDS, stdGridOptionPanel.getGridStepsize());
-	     	stdTemplateFunc = new TemplateFunction(DEFAULT_BOUNDS, stdGridOptionPanel.getGridStepsize());
+			paramTemplateFunc = new TemplateFunction(DEFAULT_BOUNDS, stdGridOptionPanel.getGridStepSize());
+	     	stdTemplateFunc = new TemplateFunction(DEFAULT_BOUNDS, stdGridOptionPanel.getGridStepSize());
 	     	stdGridOptionPanel.updateFuncReference(stdTemplateFunc);
 	     	paramGridOptionPanel.updateFuncReference(paramTemplateFunc);
      	} catch (ExpressionParseException e) {
@@ -382,7 +376,7 @@ public class V2GUI {
      		public void keyPressed(KeyEvent e) {
      			if (e.getKeyCode() == KeyEvent.VK_ENTER && stdFuncInput.isFocusOwner()) {
      				try {
-						addPlot(new String[]{stdFuncInput.getText()},colorList.getNextAvailableColor(stdFuncList), stdGridOptionPanel.getGridBounds(), stdGridOptionPanel.getGridStepsize());
+						addPlot(new String[]{stdFuncInput.getText()},stdTemplateFunc.getColor(), stdGridOptionPanel.getGridBounds(), stdGridOptionPanel.getGridStepSize());
 					} catch (ExpressionParseException e1) {
 						JOptionPane.showMessageDialog(frame,new JLabel(e1.getMessage(),JLabel.CENTER));
 					}
@@ -394,7 +388,11 @@ public class V2GUI {
 			
 			@Override
 			public void focusGained(FocusEvent arg0) {
-				setSelected(null);
+				try {
+					setSelected(stdTemplateFunc);
+				} catch (ExpressionParseException e) {
+					e.printStackTrace();
+				}
 			}
 		});
 
@@ -457,6 +455,7 @@ public class V2GUI {
 					updatePlot(func, func.getExpression(), func.getColor(), e.getStringBounds(), e.getStepsize());
 				}
 				else{
+					System.out.println("hest");
 					func.setBoundsString(e.getStringBounds());
 					func.setStepsize(e.getStepsize());
 				}
@@ -544,7 +543,7 @@ public class V2GUI {
      			String[] paramExpr = new String[]{inputX.getText(),inputY.getText(),inputZ.getText()};
      			if (e.getKeyCode() == KeyEvent.VK_ENTER && (inputX.isFocusOwner() || inputY.isFocusOwner() || inputZ.isFocusOwner())) {
      				try {
-	    				addPlot(paramExpr,colorList.getNextAvailableColor(paramFuncList), paramGridOptionPanel.getGridBounds(), paramGridOptionPanel.getGridStepsize());
+	    				addPlot(paramExpr,paramTemplateFunc.getColor(), paramGridOptionPanel.getGridBounds(), paramGridOptionPanel.getGridStepSize());
 					} catch (ExpressionParseException e1) {
 						JOptionPane.showMessageDialog(frame,new JLabel(e1.getMessage(),JLabel.CENTER));
 					}
@@ -555,7 +554,11 @@ public class V2GUI {
 			
 			@Override
 			public void focusGained(FocusEvent arg0) {
-				setSelected(null);
+				try {
+					setSelected(paramTemplateFunc);
+				} catch (ExpressionParseException e) {
+					e.printStackTrace();
+				}
 			}
 		};
      	inputX.addKeyListener(inputListener);
@@ -581,6 +584,8 @@ public class V2GUI {
      	paramOptionPanel.setLayout(new BoxLayout(paramOptionPanel, BoxLayout.Y_AXIS));
      	paramOptionPanel.add(paramGridOptionPanel);
      	paramOptionPanel.add(paramAppearancePanel);
+     	
+     	paramGridOptionPanel.addFunctionListener(createGridOptionPanelListener());
      	
     	// The parametric function list
      	paramFuncOuterPanel = new JPanel();
@@ -640,7 +645,11 @@ public class V2GUI {
 			
 			@Override
 			public void focusGained(FocusEvent e) {
-				setSelected(label);
+				try {
+					setSelected(label.getMother());
+				} catch (ExpressionParseException e1) {
+					e1.printStackTrace();
+				}
 			}
 		});
 		stdFuncInnerPanel.add(label);
@@ -656,8 +665,11 @@ public class V2GUI {
 			
 			@Override
 			public void focusGained(FocusEvent e) {
-				setSelected(label);
-	
+				try {
+					setSelected(label.getMother());
+				} catch (ExpressionParseException e1) {
+					e1.printStackTrace();
+				}
 			}
 		});
 		paramFuncInnerPanel.add(label);
@@ -682,24 +694,21 @@ public class V2GUI {
 	
 	private void addPlot(Function function) {
 		FunctionLabel label = null;
-		AppearanceOptionPanel panel = null;
 		
 		if (function.getClass() == ParametricFunction.class) {
 			label = addParametricPlot(function);
-			panel = paramEditOptionPanel;
 		} else {
 			label = addXYZPlot(function);
-			panel = stdEditOptionPanel;
 		}
 		
-		label.addFunctionListener(createFunctionListener(panel));
+		label.addFunctionListener(createFunctionListener());
 		
 		map.put(function, label);
 		spawnNewPlotterThread(function);
 		frame.pack();
 	}
 	
-	private FunctionListener createFunctionListener(final AppearanceOptionPanel panel) {
+	private FunctionListener createFunctionListener() {
 		return new FunctionListener() {
 			
 			@Override
@@ -711,7 +720,6 @@ public class V2GUI {
 					plotter.showPlot(func);
 					
 				} else if (action == FunctionEvent.ACTION.DELETE){
-					panel.enableOptions(false);
 					deletePlot(func);
 					
 				} else if (action == FunctionEvent.ACTION.UPDATE) {
@@ -744,6 +752,7 @@ public class V2GUI {
 			label.setMother(newFunc);
 			map.remove(oldFunc);
 			map.put(newFunc, label);
+			setSelected(newFunc);
 			plotter.removePlot(oldFunc);
 			spawnNewPlotterThread(newFunc);
 			frame.pack();
@@ -903,56 +912,53 @@ public class V2GUI {
 		}
 	}
 
-	private void setSelected(FunctionLabel l){
-		if(l != selectedLabel){
+	private void setSelected(Function f) throws ExpressionParseException{
+		if(f != selectedFunction){
+			
 			// Deselection.
-			if(selectedLabel == null){
+			if(selectedFunction != null && selectedFunction == stdTemplateFunc){
 				stdFuncInput.setBackground(NORMAL_COLOR);
+			}
+			else if(selectedFunction != null && selectedFunction == paramTemplateFunc){
 				inputX.setBackground(NORMAL_COLOR);
 				inputY.setBackground(NORMAL_COLOR);
 				inputZ.setBackground(NORMAL_COLOR);
 			}
-			else{
-				selectedLabel.setSelected(false);
+			else if (selectedFunction != null){
+				try{
+				map.get(selectedFunction).setSelected(false);
+				}
+				catch(NullPointerException e){
+					// Do nothing.
+				}
 			}
+			selectedFunction = f;
+			
 			// Selection.
-			if(l == null){
+			if(selectedFunction != null && selectedFunction == stdTemplateFunc){
 				stdFuncInput.setBackground(SELECTED_COLOR);
+				stdGridOptionPanel.updateFuncReference(selectedFunction);
+				stdAppearancePanel.updateFuncReference(selectedFunction);
+			}
+			else if(selectedFunction != null && selectedFunction == paramTemplateFunc){
 				inputX.setBackground(SELECTED_COLOR);
 				inputY.setBackground(SELECTED_COLOR);
 				inputZ.setBackground(SELECTED_COLOR);
-				try {
-					stdGridOptionPanel.updateFuncReference(stdTemplateFunc);
-					stdAppearancePanel.updateFuncReference(stdTemplateFunc);
-					paramGridOptionPanel.updateFuncReference(paramTemplateFunc);
-					paramAppearancePanel.updateFuncReference(paramTemplateFunc);
-				} catch (ExpressionParseException e) {
-					e.printStackTrace();
-				}
-				selectedLabel = null;
+				paramGridOptionPanel.updateFuncReference(selectedFunction);
+				paramAppearancePanel.updateFuncReference(selectedFunction);
 			}
-			else{
-				selectedLabel = l;
+			else if (selectedFunction != null){
+				FunctionLabel selectedLabel = map.get(selectedFunction);
 				if(selectedLabel.getClass() == ParametricFunctionLabel.class){
-					try {
-						paramAppearancePanel.updateFuncReference(l.getMother());
-						paramGridOptionPanel.updateFuncReference(l.getMother());
-					} catch (ExpressionParseException e) {
-						e.printStackTrace();
-					}
-					selectedLabel.setSelected(true);
+					paramAppearancePanel.updateFuncReference(selectedFunction);
+					paramGridOptionPanel.updateFuncReference(selectedFunction);
 				}
 				else if(selectedLabel.getClass() == StdFunctionLabel.class){
-					try {
-						stdAppearancePanel.updateFuncReference(l.getMother());
-						stdGridOptionPanel.updateFuncReference(l.getMother());
-					} catch (ExpressionParseException e) {
-						e.printStackTrace();
-					}
-					selectedLabel.setSelected(true);
+					stdAppearancePanel.updateFuncReference(selectedFunction);
+					stdGridOptionPanel.updateFuncReference(selectedFunction);
 				}
+				selectedLabel.setSelected(true);
 			}
 		}
 	}
 }
-

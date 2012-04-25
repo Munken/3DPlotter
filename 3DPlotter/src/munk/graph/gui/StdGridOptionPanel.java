@@ -2,16 +2,12 @@ package munk.graph.gui;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
 
 import javax.swing.*;
 
-import munk.graph.function.Function;
-import munk.graph.gui.listener.*;
-
 import com.graphbuilder.math.ExpressionParseException;
 
-public class StdGridOptionPanel extends JPanel{
+public class StdGridOptionPanel extends AbstractGridOptionPanel{
 
 	private static final long serialVersionUID = 1L;
 	private JTextField xMin;
@@ -24,8 +20,6 @@ public class StdGridOptionPanel extends JPanel{
 	private JTextField zMax;
 	private JLabel zLabel;
 	private JSlider zSlider;
-	private ArrayList<FunctionListener> listeners = new ArrayList<FunctionListener>();
-	private Function selectedFunction;
 
 	public StdGridOptionPanel(String[] bounds) {
 
@@ -146,38 +140,23 @@ public class StdGridOptionPanel extends JPanel{
 
 			@Override
 			public void mouseReleased(MouseEvent arg0) {
-				if(xSlider.isEnabled()){
 					try {
-						// For now adjust all sliders accordingly.
-						JSlider j = (JSlider) arg0.getSource();
-						xSlider.setValue(j.getValue());
-						ySlider.setValue(j.getValue());
-						zSlider.setValue(j.getValue());
+//						// For now adjust all sliders accordingly.
+//						JSlider j = (JSlider) arg0.getSource();
+//						xSlider.setValue(j.getValue());
+//						ySlider.setValue(j.getValue());
+//						zSlider.setValue(j.getValue());
 						signallAll();
 					} catch (ExpressionParseException e) {
 						e.printStackTrace();
 					}
-				}
 			}
 		};
 		xSlider.addMouseListener(sliderListener);
 		ySlider.addMouseListener(sliderListener);
 		zSlider.addMouseListener(sliderListener);	
 		
-		KeyListener boundsListener = new KeyAdapter() {
-     		// Plot the graph.
-     		
-     		@Override
-     		public void keyPressed(KeyEvent e) {
-     			if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-     				try {
-						signallAll();
-					} catch (ExpressionParseException e1) {
-						e1.printStackTrace();
-					}
-     			}
-     		}
-     	};
+		KeyListener boundsListener = super.getBoundsListener();
      	xMin.addKeyListener(boundsListener);
      	xMax.addKeyListener(boundsListener);
      	yMin.addKeyListener(boundsListener);
@@ -197,7 +176,7 @@ public class StdGridOptionPanel extends JPanel{
 		return bounds;
 	}
 	
-	public float[] getGridStepsize() throws ExpressionParseException{
+	public float[] getGridStepSize() throws ExpressionParseException{
 		float[] bounds = GuiUtil.evalStringArray(getGridBounds());
 		float[] stepSize = new float[3];
 		stepSize[0] = Math.abs(bounds[1]-bounds[0])/xSlider.getValue();
@@ -216,25 +195,9 @@ public class StdGridOptionPanel extends JPanel{
 	}
 	
 	public void setSliders(float[] stepSize) throws ExpressionParseException{
-		float[] bounds = selectedFunction.getBounds();
+		float[] bounds = GuiUtil.evalStringArray(selectedFunction.getBoundsString());
 		xSlider.setValue((int) (Math.abs(bounds[1]-bounds[0])/stepSize[0]));
 		ySlider.setValue((int) (Math.abs(bounds[3]-bounds[2])/stepSize[1]));
 		zSlider.setValue((int) (Math.abs(bounds[5]-bounds[4])/stepSize[2]));
-	}
-	
-	public void updateFuncReference(Function f) throws ExpressionParseException{
-		selectedFunction = f;
-		setSliders(f.getStepsize());
-		setGridBounds(f.getBoundsString());
-	}
-	
-	public void addFunctionListener(FunctionListener f){
-		listeners.add(f);
-	}
-	
-	private void signallAll() throws ExpressionParseException{
-		for(FunctionListener f : listeners){
-			f.functionChanged(new FunctionEvent(selectedFunction, getGridBounds(), getGridStepsize()));
-		}
 	}
 }

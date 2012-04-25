@@ -100,12 +100,9 @@ public class AppearanceOptionPanel extends JPanel {
 				}
 			}
 		});
-		
-		enableOptions(false);
 	}
 
 	public void updateFuncReference(Function f){
-		enableOptions(true);
 		selectedFunc = f;
 		comboBox.setSelectedIndex(colorList.indexOf(f.getColor()));
 		if(f.getView() == FILL.POINT){
@@ -121,13 +118,6 @@ public class AppearanceOptionPanel extends JPanel {
 
 	public void updateColors(){
 		comboBox.setModel(new JComboBox(colorList.getIconList()).getModel());
-	}
-
-	public void enableOptions(Boolean b){
-		comboBox.setEnabled(b);
-		rdbtnGrid.setEnabled(b);
-		rdbtnPoint.setEnabled(b);
-		rdbtnSolid.setEnabled(b);
-	}		
+	}	
 }
 

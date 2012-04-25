@@ -2,16 +2,12 @@ package munk.graph.gui;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
 
 import javax.swing.*;
 
-import munk.graph.function.Function;
-import munk.graph.gui.listener.*;
-
 import com.graphbuilder.math.ExpressionParseException;
 
-public class ParamGridOptionPanel extends JPanel{
+public class ParamGridOptionPanel extends AbstractGridOptionPanel{
 
 	private static final long serialVersionUID = 1L;
 	private JTextField tMin;
@@ -20,8 +16,6 @@ public class ParamGridOptionPanel extends JPanel{
 	private JTextField uMax;
 	private JSlider uSlider;
 	private JSlider tSlider;
-	private ArrayList<FunctionListener> listeners = new ArrayList<FunctionListener>();
-	private Function selectedFunction;
 
 	public ParamGridOptionPanel(String[] bounds) {
 
@@ -108,21 +102,25 @@ public class ParamGridOptionPanel extends JPanel{
 
 			@Override
 			public void mouseReleased(MouseEvent arg0) {
-				if(tSlider.isEnabled()){
 					try {
-						// For now adjust all sliders accoringly.
-						JSlider j = (JSlider) arg0.getSource();
-						tSlider.setValue(j.getValue());
-						uSlider.setValue(j.getValue());
+//						// For now adjust all sliders accoringly.
+//						JSlider j = (JSlider) arg0.getSource();
+//						tSlider.setValue(j.getValue());
+//						uSlider.setValue(j.getValue());
 						signallAll();
 					} catch (ExpressionParseException e) {
 						e.printStackTrace();
 					}
-				}
 			}
 		};
 		tSlider.addMouseListener(sliderListener);
 		uSlider.addMouseListener(sliderListener);	
+		
+		KeyListener boundsListener = super.getBoundsListener();
+		uMin.addKeyListener(boundsListener);
+		uMax.addKeyListener(boundsListener);
+		tMin.addKeyListener(boundsListener);
+		tMax.addKeyListener(boundsListener);
 	}
 
 	public String[] getGridBounds() throws ExpressionParseException{
@@ -134,7 +132,7 @@ public class ParamGridOptionPanel extends JPanel{
 		return bounds;
 	}
 	
-	public float[] getGridStepsize() throws ExpressionParseException{
+	public float[] getGridStepSize() throws ExpressionParseException{
 		float[] bounds = GuiUtil.evalStringArray(getGridBounds());
 		float[] stepSize = new float[2];
 		stepSize[0] = Math.abs(bounds[1]-bounds[0])/tSlider.getValue();
@@ -153,21 +151,5 @@ public class ParamGridOptionPanel extends JPanel{
 		float[] bounds = selectedFunction.getBounds();
 		tSlider.setValue((int) (Math.abs(bounds[1]-bounds[0])/stepSize[0]));
 		uSlider.setValue((int) (Math.abs(bounds[1]-bounds[0])/stepSize[1]));
-	}
-	
-	public void updateFuncReference(Function f) throws ExpressionParseException{
-		selectedFunction = f;
-		setSliders(f.getStepsize());
-		setGridBounds(f.getBoundsString());
-	}
-	
-	public void addFunctionListener(FunctionListener f){
-		listeners.add(f);
-	}
-	
-	private void signallAll() throws ExpressionParseException{
-		for(FunctionListener f : listeners){
-			f.functionChanged(new FunctionEvent(selectedFunction, getGridBounds(), getGridStepsize()));
-		}
 	}
 }

@@ -22,7 +22,7 @@ public abstract class AbstractFunction implements Function{
 	private float[] bounds;
 	private String[] boundsString;
 	private Shape3D shape;
-	private FILL state;
+	protected FILL state;
 	private Plotter	plotter;
 	private float[]	stepSize;
 	private boolean fasterImplicit;
