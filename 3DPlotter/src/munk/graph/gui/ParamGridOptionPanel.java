@@ -111,7 +111,7 @@ public class ParamGridOptionPanel extends JPanel{
 		float[] stepSize = new float[2];
 		stepSize[0] = Math.abs(bounds[1]-bounds[0])/tSlider.getValue();
 		stepSize[1] = Math.abs(bounds[3]-bounds[2])/uSlider.getValue();
-		return bounds;
+		return stepSize;
 	}
 	
 	public void setGridBounds(float[] bounds){

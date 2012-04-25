@@ -13,10 +13,8 @@ import javax.swing.event.*;
 import javax.vecmath.Color3f;
 
 import munk.graph.IO.*;
-import munk.graph.appearance.Colors;
 import munk.graph.function.*;
-import munk.graph.gui.listener.FunctionEvent;
-import munk.graph.gui.listener.FunctionListener;
+import munk.graph.gui.listener.*;
 
 import com.graphbuilder.math.*;
 
@@ -45,7 +43,7 @@ public class V2GUI {
 	private JScrollPane stdFuncPanelWrapper;
 	private JPanel paramFuncTab, paramFuncOuterPanel, paramFuncInnerPanel;
 	private JScrollPane paramFuncPanelWrapper;
-	private JPanel stdOptionPanel, canvasPanel;
+	private JPanel canvasPanel;
 	private JTabbedPane tabbedPane;
 	private JDialog colorDialog;
 	private AppearanceOptionPanel stdEditOptionPanel;
@@ -97,11 +95,13 @@ public class V2GUI {
 	// Fun
 	JPanel targetPanel;
 	
- 	StdGridOptionPanel stdGridOptionPanel;
- 	ParamGridOptionPanel paramGridOptionPanel;
- 	AppearanceOptionPanel stdAppearancePanel;
- 	AppearanceOptionPanel paramAppearancePanel;
+	// Option panels (new)
+ 	private StdGridOptionPanel stdGridOptionPanel;
+ 	private ParamGridOptionPanel paramGridOptionPanel;
+ 	private AppearanceOptionPanel stdAppearancePanel;
+ 	private AppearanceOptionPanel paramAppearancePanel;
  	private JPanel paramOptionPanel;
+ 	private JPanel stdOptionPanel;
 	
 	/**
 	 * Launch the application.
@@ -137,7 +137,6 @@ public class V2GUI {
 	 * Initialize;
 	 */
 	private void initialize(){
-		
 		// Initialize GUI components.
 		initFrame();
 		initMenuBar();
@@ -146,13 +145,8 @@ public class V2GUI {
      	initStdFunctionTab();
      	initParamFunctionTab();
 		
-     	//TODO: TAG
-//		try {
-//			addPlot(new String[]{"y = sin(x*5)*cos(z*5)"}, colorList.getNextAvailableColor(stdFuncList), new float[]{-1,1,-1,1,-1,1}, GuiUtil.getStepsize(slider.getValue(), getBounds(TYPE.STD)));
-//		} catch (ExpressionParseException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+     	// Add test function ("manually")
+     	addPlot(new String[]{"y = sin(x*5)*cos(z*5)"}, colorList.getNextAvailableColor(stdFuncList), new float[]{-1,1,-1,1,-1,1}, new float[]{(float) 0.1,(float) 0.1,(float) 0.1});
 		
      	// Finish up.
      	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

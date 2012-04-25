@@ -1,38 +1,26 @@
 package munk.graph.gui;
 
-import static munk.graph.gui.GuiUtil.getStepsize;
-
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 import java.util.List;
 
 import javax.swing.*;
-import javax.vecmath.Color3f;
 
-import munk.graph.function.Function;
-import munk.graph.function.XYZFunction;
-import munk.graph.gui.listener.FunctionEvent;
-import munk.graph.gui.listener.FunctionListener;
 import munk.graph.function.AbstractFunction.FILL;
-
-import com.graphbuilder.math.ExpressionParseException;
-import com.graphbuilder.math.UndefinedVariableException;
+import munk.graph.function.*;
+import munk.graph.gui.listener.*;
 
 @SuppressWarnings("serial")
 public class AppearanceOptionPanel extends JPanel {
 	
-	private Function oldFunc;
+	private Function selectedFunc;
 	private JComboBox comboBox;
-	private JSlider slider;
 	private ColorList colorList;
-	private List<FunctionListener> listeners = new ArrayList<FunctionListener>();
 	private JRadioButton rdbtnGrid;
 	private JRadioButton rdbtnSolid;
 	private JRadioButton rdbtnPoint;
 	private ButtonGroup viewGroup;
-	private JCheckBox chckbxFasterImplicits;
-	private JLabel resolution;
 	
 	public AppearanceOptionPanel(final ColorList colorList, HashMap<Function, FunctionLabel> map) {
 		
@@ -59,7 +47,7 @@ public class AppearanceOptionPanel extends JPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				oldFunc.setView(FILL.POINT);
+				selectedFunc.setView(FILL.POINT);
 			}
 		});
 		viewGroup.add(rdbtnPoint);
@@ -74,7 +62,7 @@ public class AppearanceOptionPanel extends JPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				oldFunc.setView(FILL.GRID);
+				selectedFunc.setView(FILL.GRID);
 			}
 		});
 		viewGroup.add(rdbtnGrid);
@@ -89,37 +77,10 @@ public class AppearanceOptionPanel extends JPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				oldFunc.setView(FILL.FILL);
+				selectedFunc.setView(FILL.FILL);
 			}
 		});
 		viewGroup.add(rdbtnSolid);
-		
-//		resolution = new JLabel("Resolution");
-//		GridBagConstraints gbc_lblStepSize = new GridBagConstraints();
-//		gbc_lblStepSize.insets = new Insets(0, 0, 5, 5);
-//		gbc_lblStepSize.anchor = GridBagConstraints.WEST;
-//		gbc_lblStepSize.gridx = 1;
-//		gbc_lblStepSize.gridy = 1;
-//		add(resolution, gbc_lblStepSize);
-//		
-//		slider = new JSlider();
-//		slider.setPreferredSize(new Dimension(150,20));
-//		GridBagConstraints gbc_slider = new GridBagConstraints();
-//		gbc_slider.gridwidth = 8;
-//		gbc_slider.insets = new Insets(0, 0, 5, 5);
-//		gbc_slider.gridx = 2;
-//		gbc_slider.gridy = 1;
-//		add(slider, gbc_slider);
-//		slider.addMouseListener(new MouseAdapter() {
-//
-//			@Override
-//			public void mouseReleased(MouseEvent arg0) {
-//				float[] newStepsizes = getStepsize(slider.getValue(), oldFunc.getBounds());
-//				if(slider.isEnabled() && !Arrays.equals(newStepsizes, oldFunc.getStepsizes())){
-//					notifyStepsizeChanged(newStepsizes);
-//				}
-//			}
-//		});
 		
 		comboBox = new JComboBox(colorList.getIconList());
 		GridBagConstraints gbc_comboBox = new GridBagConstraints();
@@ -130,12 +91,10 @@ public class AppearanceOptionPanel extends JPanel {
 		add(comboBox, gbc_comboBox);
 		enableOptions(false);
 	}
-	
-
 
 	public void updateFuncReference(Function f){
 		enableOptions(true);
-		oldFunc = f;
+		selectedFunc = f;
 		comboBox.setSelectedIndex(colorList.indexOf(f.getColor()));
 		if(f.getView() == FILL.POINT){
 			rdbtnPoint.setSelected(true);
@@ -147,34 +106,16 @@ public class AppearanceOptionPanel extends JPanel {
 			rdbtnSolid.setSelected(true);
 		}
 	}
-	
+
 	public void updateColors(){
 		comboBox.setModel(new JComboBox(colorList.getIconList()).getModel());
 	}
-	
+
 	public void enableOptions(Boolean b){
 		comboBox.setEnabled(b);
 		rdbtnGrid.setEnabled(b);
 		rdbtnPoint.setEnabled(b);
 		rdbtnSolid.setEnabled(b);
-	}
-	
-	private void notifyStepsizeChanged(float[] newStepsizes) {
-		FunctionEvent e = new FunctionEvent(oldFunc, oldFunc.getExpression(), 
-				oldFunc.getColor(), oldFunc.getBounds(), 
-				newStepsizes, FunctionEvent.ACTION.STEPSIZE_CHANGED);
-		notifyListeners(e);
-	}
-	
-	private void notifyListeners(FunctionEvent e) {
-		for (FunctionListener l : listeners) {
-			l.functionChanged(e);
-		}
-	}
-	
-	public void addFunctionListener(FunctionListener l) {
-		listeners.add(l);
-	}
-		
+	}		
 }
 

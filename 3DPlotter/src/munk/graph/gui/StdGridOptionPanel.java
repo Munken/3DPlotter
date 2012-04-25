@@ -156,7 +156,7 @@ public class StdGridOptionPanel extends JPanel{
 		stepSize[0] = Math.abs(bounds[1]-bounds[0])/xSlider.getValue();
 		stepSize[1] = Math.abs(bounds[3]-bounds[2])/ySlider.getValue();
 		stepSize[2] = Math.abs(bounds[5]-bounds[4])/zSlider.getValue();
-		return bounds;
+		return stepSize;
 	}
 	
 	public void setGridBounds(float[] bounds){
