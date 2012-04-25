@@ -2,10 +2,8 @@ Product Back Log
 
 GUI
 - Ipad rotation.
-- New edit dialog.
 - Possibility to remove colors.
 - Possibility to add custom constants (Theis' idea).
-- Grid/Point/Solid view option.
 - Fast implicit option.
 
 BACKEND
@@ -23,3 +21,5 @@ Done-(and hopefully wokring)-LIST
 - Support of implicit functions.
 - Scroll-Wheel zooming.
 - Function object refactoring.
+- Grid/Point/Solid view option.
+- New edit dialog.
