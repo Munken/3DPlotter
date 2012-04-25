@@ -2,14 +2,13 @@ package munk.graph.gui;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.util.*;
-import java.util.List;
+import java.util.HashMap;
 
 import javax.swing.*;
+import javax.vecmath.Color3f;
 
 import munk.graph.function.AbstractFunction.FILL;
 import munk.graph.function.*;
-import munk.graph.gui.listener.*;
 
 @SuppressWarnings("serial")
 public class AppearanceOptionPanel extends JPanel {
@@ -89,6 +88,19 @@ public class AppearanceOptionPanel extends JPanel {
 		gbc_comboBox.gridx = 7;
 		gbc_comboBox.gridy = 0;
 		add(comboBox, gbc_comboBox);
+		comboBox.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Color3f selectedColor = (Color3f) colorList.get(comboBox.getSelectedIndex());
+				if(!selectedColor.equals(selectedFunc.getColor()) && comboBox.isEnabled()){
+					if(comboBox.isEnabled() && !selectedColor.equals(selectedFunc.getColor())){
+						selectedFunc.setColor(selectedColor);
+					}
+				}
+			}
+		});
+		
 		enableOptions(false);
 	}
 
