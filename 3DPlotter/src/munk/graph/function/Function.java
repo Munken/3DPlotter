@@ -37,6 +37,10 @@ public interface Function {
 	
 	public void setFastImplicit(boolean b);
 	
+	public void setStepsize(float[] stepSize);
+	
+	public void setBoundsString(String[] bounds);
+	
 	public boolean getFastImplicit();
 
 }

@@ -148,4 +148,12 @@ public abstract class AbstractFunction implements Function{
 	public boolean getFastImplicit(){
 		return fasterImplicit;
 	}
+	
+	public void setStepsize(float[] stepSize){
+		this.stepSize = stepSize;
+	}
+	
+	public void setBoundsString(String[] bounds){
+		this.boundsString = bounds;
+	}
 }

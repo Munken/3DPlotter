@@ -84,6 +84,9 @@ public class V2GUI {
  	private AppearanceOptionPanel paramAppearancePanel;
  	private JPanel paramOptionPanel;
  	private JPanel stdOptionPanel;
+ 	
+ 	private Function stdTemplateFunc;
+ 	private Function paramTemplateFunc;
 	
 	/**
 	 * Launch the application.
@@ -126,14 +129,29 @@ public class V2GUI {
 		init3Dplotter();
      	initStdFunctionTab();
      	initParamFunctionTab();
-		
-     	// Add test function ("manually")
+	
+     	// Default selecion.
+		stdFuncInput.setBackground(SELECTED_COLOR);
+		inputX.setBackground(SELECTED_COLOR);
+		inputY.setBackground(SELECTED_COLOR);
+		inputZ.setBackground(SELECTED_COLOR);
+     	
      	addPlot(new String[]{"y = sin(x*5)*cos(z*5)"}, colorList.getNextAvailableColor(stdFuncList), DEFAULT_BOUNDS, new float[]{(float) 0.1,(float) 0.1,(float) 0.1});
 		
      	// Finish up.
      	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
      	frame.setVisible(true);
      	frame.pack();
+     	
+     	// Set up tempate functions.
+     	try {
+			paramTemplateFunc = new TemplateFunction(DEFAULT_BOUNDS, stdGridOptionPanel.getGridStepsize());
+	     	stdTemplateFunc = new TemplateFunction(DEFAULT_BOUNDS, stdGridOptionPanel.getGridStepsize());
+	     	stdGridOptionPanel.updateFuncReference(stdTemplateFunc);
+	     	paramGridOptionPanel.updateFuncReference(paramTemplateFunc);
+     	} catch (ExpressionParseException e) {
+			e.printStackTrace();
+		}
      	
      	autoResize();
 	}
@@ -435,7 +453,13 @@ public class V2GUI {
 			@Override
 			public void functionChanged(FunctionEvent e) {
 				Function func = e.getOldFunction();
-				updatePlot(func, func.getExpression(), func.getColor(), e.getStringBounds(), e.getStepsize());
+				if(func.getClass() != TemplateFunction.class){
+					updatePlot(func, func.getExpression(), func.getColor(), e.getStringBounds(), e.getStepsize());
+				}
+				else{
+					func.setBoundsString(e.getStringBounds());
+					func.setStepsize(e.getStepsize());
+				}
 			}
 		};
 	}
@@ -880,41 +904,55 @@ public class V2GUI {
 	}
 
 	private void setSelected(FunctionLabel l){
-		if(selectedLabel != null && selectedLabel != l){
-			selectedLabel.setSelected(false);
-		}
-		else{
-			stdFuncInput.setBackground(NORMAL_COLOR);
-			inputX.setBackground(NORMAL_COLOR);
-			inputY.setBackground(NORMAL_COLOR);
-			inputZ.setBackground(NORMAL_COLOR);
-		}
-		if(selectedLabel != l){
-			selectedLabel = l;
+		if(l != selectedLabel){
+			// Deselection.
 			if(selectedLabel == null){
+				stdFuncInput.setBackground(NORMAL_COLOR);
+				inputX.setBackground(NORMAL_COLOR);
+				inputY.setBackground(NORMAL_COLOR);
+				inputZ.setBackground(NORMAL_COLOR);
+			}
+			else{
+				selectedLabel.setSelected(false);
+			}
+			// Selection.
+			if(l == null){
 				stdFuncInput.setBackground(SELECTED_COLOR);
 				inputX.setBackground(SELECTED_COLOR);
 				inputY.setBackground(SELECTED_COLOR);
 				inputZ.setBackground(SELECTED_COLOR);
-			}
-			else if(selectedLabel.getClass() == ParametricFunctionLabel.class){
 				try {
-					paramAppearancePanel.updateFuncReference(l.getMother());
-					paramGridOptionPanel.updateFuncReference(l.getMother());
+					stdGridOptionPanel.updateFuncReference(stdTemplateFunc);
+					stdAppearancePanel.updateFuncReference(stdTemplateFunc);
+					paramGridOptionPanel.updateFuncReference(paramTemplateFunc);
+					paramAppearancePanel.updateFuncReference(paramTemplateFunc);
 				} catch (ExpressionParseException e) {
 					e.printStackTrace();
 				}
-				l.setSelected(true);
+				selectedLabel = null;
 			}
-			else if(selectedLabel.getClass() == StdFunctionLabel.class){
-				try {
-					stdAppearancePanel.updateFuncReference(l.getMother());
-					stdGridOptionPanel.updateFuncReference(l.getMother());
-				} catch (ExpressionParseException e) {
-					e.printStackTrace();
+			else{
+				selectedLabel = l;
+				if(selectedLabel.getClass() == ParametricFunctionLabel.class){
+					try {
+						paramAppearancePanel.updateFuncReference(l.getMother());
+						paramGridOptionPanel.updateFuncReference(l.getMother());
+					} catch (ExpressionParseException e) {
+						e.printStackTrace();
+					}
+					selectedLabel.setSelected(true);
 				}
-				l.setSelected(true);
+				else if(selectedLabel.getClass() == StdFunctionLabel.class){
+					try {
+						stdAppearancePanel.updateFuncReference(l.getMother());
+						stdGridOptionPanel.updateFuncReference(l.getMother());
+					} catch (ExpressionParseException e) {
+						e.printStackTrace();
+					}
+					selectedLabel.setSelected(true);
+				}
 			}
 		}
 	}
 }
+
