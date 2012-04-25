@@ -1,20 +1,29 @@
 package munk.graph.gui;
 
 import java.awt.*;
+import java.awt.event.*;
+import java.util.ArrayList;
 
 import javax.swing.*;
+
+import munk.graph.function.Function;
+import munk.graph.gui.listener.*;
 
 import com.graphbuilder.math.ExpressionParseException;
 
 public class ParamGridOptionPanel extends JPanel{
+
+	private static final long serialVersionUID = 1L;
 	private JTextField tMin;
 	private JTextField tMax;
 	private JTextField uMin;
 	private JTextField uMax;
 	private JSlider uSlider;
 	private JSlider tSlider;
+	private ArrayList<FunctionListener> listeners = new ArrayList<FunctionListener>();
+	private Function selectedFunction;
 
-	public ParamGridOptionPanel(float[] bounds) {
+	public ParamGridOptionPanel(String[] bounds) {
 
 		this.setPreferredSize(new Dimension(300,70));
 
@@ -93,37 +102,72 @@ public class ParamGridOptionPanel extends JPanel{
      	GuiUtil.setupUndoListener(tMax);
      	GuiUtil.setupUndoListener(uMin);
      	GuiUtil.setupUndoListener(uMax);
+     	setGridBounds(bounds);
      	
-		setGridBounds(bounds);
+		MouseListener sliderListener = new MouseAdapter() {
+
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+				if(tSlider.isEnabled()){
+					try {
+						// For now adjust all sliders accoringly.
+						JSlider j = (JSlider) arg0.getSource();
+						tSlider.setValue(j.getValue());
+						uSlider.setValue(j.getValue());
+						signallAll();
+					} catch (ExpressionParseException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		};
+		tSlider.addMouseListener(sliderListener);
+		uSlider.addMouseListener(sliderListener);	
 	}
 
-	public float[] getGridBounds() throws ExpressionParseException{
-		float[] bounds = new float[4];
-		bounds[0] = GuiUtil.evalString(tMin.getText());
-		bounds[1] = GuiUtil.evalString(tMax.getText());
-		bounds[2] = GuiUtil.evalString(uMin.getText());
-		bounds[3] = GuiUtil.evalString(uMax.getText());
+	public String[] getGridBounds() throws ExpressionParseException{
+		String[] bounds = new String[4];
+		bounds[0] = tMin.getText();
+		bounds[1] = tMax.getText();
+		bounds[2] = uMin.getText();
+		bounds[3] = uMax.getText();
 		return bounds;
 	}
 	
 	public float[] getGridStepsize() throws ExpressionParseException{
-		float[] bounds = getGridBounds();
+		float[] bounds = GuiUtil.evalStringArray(getGridBounds());
 		float[] stepSize = new float[2];
 		stepSize[0] = Math.abs(bounds[1]-bounds[0])/tSlider.getValue();
 		stepSize[1] = Math.abs(bounds[3]-bounds[2])/uSlider.getValue();
 		return stepSize;
 	}
 	
-	public void setGridBounds(float[] bounds){
-		tMin.setText(bounds[0] + "");
-		tMax.setText(bounds[1] + "");
-		uMin.setText(bounds[2] + "");
-		uMax.setText(bounds[3] + "");
+	public void setGridBounds(String[] bounds){
+		tMin.setText(bounds[0]);
+		tMax.setText(bounds[1]);
+		uMin.setText(bounds[2]);
+		uMax.setText(bounds[3]);
 	}
 	
 	public void setSliders(float[] stepSize) throws ExpressionParseException{
-		float[] bounds = getGridBounds();
+		float[] bounds = selectedFunction.getBounds();
 		tSlider.setValue((int) (Math.abs(bounds[1]-bounds[0])/stepSize[0]));
 		uSlider.setValue((int) (Math.abs(bounds[1]-bounds[0])/stepSize[1]));
+	}
+	
+	public void updateFuncReference(Function f) throws ExpressionParseException{
+		selectedFunction = f;
+		setSliders(f.getStepsize());
+		setGridBounds(f.getBoundsString());
+	}
+	
+	public void addFunctionListener(FunctionListener f){
+		listeners.add(f);
+	}
+	
+	private void signallAll() throws ExpressionParseException{
+		for(FunctionListener f : listeners){
+			f.functionChanged(new FunctionEvent(selectedFunction, getGridBounds(), getGridStepsize()));
+		}
 	}
 }

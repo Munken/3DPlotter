@@ -46,6 +46,7 @@ public class FunctionEvent {
 	}
 	
 	public FunctionEvent(Function oldFunction, String[] bounds, float[] stepSize) {
+		this.oldFunction = oldFunction;
 		this.bounds = bounds;
 		this.stepsizes = stepSize;
 	}
@@ -62,11 +63,11 @@ public class FunctionEvent {
 		return color;
 	}
 
-	public String[] getBounds() {
+	public String[] getStringBounds() {
 		return bounds;
 	}
 
-	public float[] getStepsizes() {
+	public float[] getStepsize() {
 		return stepsizes;
 	}
 

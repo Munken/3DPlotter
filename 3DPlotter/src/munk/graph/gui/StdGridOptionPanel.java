@@ -1,21 +1,18 @@
 package munk.graph.gui;
 
 import java.awt.*;
+import java.awt.event.*;
 import java.util.ArrayList;
 
 import javax.swing.*;
 
 import munk.graph.function.Function;
-import munk.graph.function.AbstractFunction.FILL;
 import munk.graph.gui.listener.*;
 
 import com.graphbuilder.math.ExpressionParseException;
 
 public class StdGridOptionPanel extends JPanel{
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private JTextField xMin;
 	private JTextField xMax;
@@ -144,7 +141,49 @@ public class StdGridOptionPanel extends JPanel{
      	GuiUtil.setupUndoListener(zMin);
      	GuiUtil.setupUndoListener(zMax);
 		setGridBounds(bounds);
-	
+		
+		MouseListener sliderListener = new MouseAdapter() {
+
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+				if(xSlider.isEnabled()){
+					try {
+						// For now adjust all sliders accordingly.
+						JSlider j = (JSlider) arg0.getSource();
+						xSlider.setValue(j.getValue());
+						ySlider.setValue(j.getValue());
+						zSlider.setValue(j.getValue());
+						signallAll();
+					} catch (ExpressionParseException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		};
+		xSlider.addMouseListener(sliderListener);
+		ySlider.addMouseListener(sliderListener);
+		zSlider.addMouseListener(sliderListener);	
+		
+		KeyListener boundsListener = new KeyAdapter() {
+     		// Plot the graph.
+     		
+     		@Override
+     		public void keyPressed(KeyEvent e) {
+     			if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+     				try {
+						signallAll();
+					} catch (ExpressionParseException e1) {
+						e1.printStackTrace();
+					}
+     			}
+     		}
+     	};
+     	xMin.addKeyListener(boundsListener);
+     	xMax.addKeyListener(boundsListener);
+     	yMin.addKeyListener(boundsListener);
+     	yMax.addKeyListener(boundsListener);
+     	zMin.addKeyListener(boundsListener);
+     	zMax.addKeyListener(boundsListener);
 	}
 
 	public String[] getGridBounds(){
