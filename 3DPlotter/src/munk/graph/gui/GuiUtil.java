@@ -132,6 +132,13 @@ public class GuiUtil {
 			return (float) ExpressionTree.parse(expr).eval(varMap, new FuncMap());
 	}
 	
+	public static float[] evalStringArray(String[] input) throws ExpressionParseException{
+		float[] returnFloat = new float[input.length];
+		for(int i = 0; i < input.length ; i++){
+			returnFloat[i] = evalString(input[i]);
+		}
+		return returnFloat;
+	}
 		
 	public static String getFileExtension(File file) {
 		return getFileExtension(file.getAbsolutePath());

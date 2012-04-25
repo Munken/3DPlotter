@@ -914,20 +914,18 @@ public class V2GUI {
 			inputZ.setBackground(SELECTED_COLOR);
 		}
 		else if(selectedLabel.getClass() == ParametricFunctionLabel.class){
-			try {
-			paramAppearancePanel.updateFuncReference(l.getMother());
-			paramGridOptionPanel.setGridBounds(l.getMother().getBounds());
-			paramGridOptionPanel.setSliders(l.getMother().getStepsizes());
-			} catch (ExpressionParseException e) {
-				e.printStackTrace();
-			}
+//			try {
+//			paramAppearancePanel.updateFuncReference(l.getMother());
+//			paramGridOptionPanel.updateFunc
+//			} catch (ExpressionParseException e) {
+//				e.printStackTrace();
+//			}
 			l.setSelected(true);
 		}
 		else if(selectedLabel.getClass() == StdFunctionLabel.class){
 			try {
 				stdAppearancePanel.updateFuncReference(l.getMother());
-				stdGridOptionPanel.setGridBounds(l.getMother().getBounds());
-				stdGridOptionPanel.setSliders(l.getMother().getStepsizes());
+				stdGridOptionPanel.updateFuncReference(l.getMother());
 			} catch (ExpressionParseException e) {
 				e.printStackTrace();
 			}

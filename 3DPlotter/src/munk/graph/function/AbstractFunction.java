@@ -3,7 +3,10 @@ package munk.graph.function;
 import javax.media.j3d.*;
 import javax.vecmath.Color3f;
 
+import com.graphbuilder.math.ExpressionParseException;
+
 import munk.graph.appearance.*;
+import munk.graph.gui.GuiUtil;
 import munk.graph.plot.Plotter;
 
 public abstract class AbstractFunction implements Function{
@@ -17,29 +20,27 @@ public abstract class AbstractFunction implements Function{
 	private Boolean visible; 
 	private BranchGroup plot;
 	private float[] bounds;
+	private String[] boundsString;
 	private Shape3D shape;
-	private float stepsize;
 	private FILL state;
 	private Plotter	plotter;
-	private float[]	stepsizes;
+	private float[]	stepSize;
 	private boolean fasterImplicit;
-
-	public AbstractFunction(String[] expr, Color3f color, float[] bounds, float stepsize, Plotter plotter) {
-		this(expr, color, bounds, new float[] {stepsize, stepsize}, plotter);
-	}
 	
-	public AbstractFunction(String[] expr, Color3f color, float[] bounds, float[] stepsizes, Plotter plotter) {
+	public AbstractFunction(String[] expr, Color3f color, String[] bounds, float[] stepSize, Plotter plotter) throws ExpressionParseException {
 		this.expr = expr;
 		this.plotter = plotter;
 		this.visible = true;
 		this.selected = false;
 		this.color = color;
-		this.bounds = bounds;
-		this.stepsizes = stepsizes;
-		state = FILL.FILL;
+		this.boundsString = bounds;
+		this.stepSize = stepSize;
+		this.bounds = new float[6];
+		for(int i = 0; i < bounds.length; i++){
+			this.bounds[i] = GuiUtil.evalString(bounds[i]);
+		}
 		
-		// TODO remove thiø
-		this.stepsize = stepsizes[0];
+		state = FILL.FILL;
 	}
 	
 	private BranchGroup setApperancePackInBranchGroup(Color3f color2, Shape3D shape2, Node handle) {
@@ -69,12 +70,8 @@ public abstract class AbstractFunction implements Function{
 		return plot;
 	}
 	
-	public float getStepsize() {
-		return stepsize;
-	}
-	
-	public float[] getStepsizes() {
-		return stepsizes;
+	public float[] getStepsize() {
+		return stepSize;
 	}
 
 	public String[] getExpression(){
@@ -124,6 +121,10 @@ public abstract class AbstractFunction implements Function{
 		return bounds;
 	}
 	
+	public String[] getBoundsString(){
+		return boundsString;
+	}
+	
 	public void cancel() {
 		if (plotter != null)
 			plotter.cancel();
@@ -147,23 +148,4 @@ public abstract class AbstractFunction implements Function{
 	public boolean getFastImplicit(){
 		return fasterImplicit;
 	}
-
-//	public void setGridAppearance() {
-//	if (state != FILL.GRID)
-//		state = FILL.GRID;
-//		shape.setAppearance(new GridAppearance(color));
-//}
-//
-//public void setFillAppearance() {
-//	if (state != FILL.FILL)
-//		state = FILL.FILL;
-//		shape.setAppearance(new ColorAppearance(color));
-//}
-//
-//public void setPointAppearance() {
-//	if (state != FILL.POINT) {
-//		state = FILL.POINT;
-//		shape.setAppearance(new PointAppearance(color));
-//	}
-//}
 }

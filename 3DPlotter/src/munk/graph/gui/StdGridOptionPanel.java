@@ -1,8 +1,13 @@
 package munk.graph.gui;
 
 import java.awt.*;
+import java.util.ArrayList;
 
 import javax.swing.*;
+
+import munk.graph.function.Function;
+import munk.graph.function.AbstractFunction.FILL;
+import munk.graph.gui.listener.*;
 
 import com.graphbuilder.math.ExpressionParseException;
 
@@ -22,8 +27,10 @@ public class StdGridOptionPanel extends JPanel{
 	private JTextField zMax;
 	private JLabel zLabel;
 	private JSlider zSlider;
+	private ArrayList<FunctionListener> listeners = new ArrayList<FunctionListener>();
+	private Function selectedFunction;
 
-	public StdGridOptionPanel(float[] bounds) {
+	public StdGridOptionPanel(String[] bounds) {
 
 		this.setPreferredSize(new Dimension(300,100));
 
@@ -137,21 +144,22 @@ public class StdGridOptionPanel extends JPanel{
      	GuiUtil.setupUndoListener(zMin);
      	GuiUtil.setupUndoListener(zMax);
 		setGridBounds(bounds);
+	
 	}
 
-	public float[] getGridBounds() throws ExpressionParseException{
-		float[] bounds = new float[6];
-		bounds[0] = GuiUtil.evalString(xMin.getText());
-		bounds[1] = GuiUtil.evalString(xMax.getText());
-		bounds[2] = GuiUtil.evalString(yMin.getText());
-		bounds[3] = GuiUtil.evalString(yMax.getText());
-		bounds[4] = GuiUtil.evalString(zMin.getText());
-		bounds[5] = GuiUtil.evalString(zMax.getText());
+	public String[] getGridBounds(){
+		String[] bounds = new String[6];
+		bounds[0] = xMin.getText();
+		bounds[1] = xMax.getText();
+		bounds[2] = yMin.getText();
+		bounds[3] = yMax.getText();
+		bounds[4] = zMin.getText();
+		bounds[5] = zMax.getText();
 		return bounds;
 	}
 	
 	public float[] getGridStepsize() throws ExpressionParseException{
-		float[] bounds = getGridBounds();
+		float[] bounds = GuiUtil.evalStringArray(getGridBounds());
 		float[] stepSize = new float[3];
 		stepSize[0] = Math.abs(bounds[1]-bounds[0])/xSlider.getValue();
 		stepSize[1] = Math.abs(bounds[3]-bounds[2])/ySlider.getValue();
@@ -159,19 +167,35 @@ public class StdGridOptionPanel extends JPanel{
 		return stepSize;
 	}
 	
-	public void setGridBounds(float[] bounds){
-		xMin.setText(bounds[0] + "");
-		xMax.setText(bounds[1] + "");
-		yMin.setText(bounds[2] + "");
-		yMax.setText(bounds[3] + "");
-		zMin.setText(bounds[4] + "");
-		zMax.setText(bounds[5] + "");
+	public void setGridBounds(String[] bounds){
+		xMin.setText(bounds[0]);
+		xMax.setText(bounds[1]);
+		yMin.setText(bounds[2]);
+		yMax.setText(bounds[3]);
+		zMin.setText(bounds[4]);
+		zMax.setText(bounds[5]);
 	}
 	
 	public void setSliders(float[] stepSize) throws ExpressionParseException{
-		float[] bounds = getGridBounds();
+		float[] bounds = selectedFunction.getBounds();
 		xSlider.setValue((int) (Math.abs(bounds[1]-bounds[0])/stepSize[0]));
 		ySlider.setValue((int) (Math.abs(bounds[3]-bounds[2])/stepSize[1]));
 		zSlider.setValue((int) (Math.abs(bounds[5]-bounds[4])/stepSize[2]));
+	}
+	
+	public void updateFuncReference(Function f) throws ExpressionParseException{
+		selectedFunction = f;
+		setSliders(f.getStepsize());
+		setGridBounds(f.getBoundsString());
+	}
+	
+	public void addFunctionListener(FunctionListener f){
+		listeners.add(f);
+	}
+	
+	private void signallAll() throws ExpressionParseException{
+		for(FunctionListener f : listeners){
+			f.functionChanged(new FunctionEvent(selectedFunction, getGridBounds(), getGridStepsize()));
+		}
 	}
 }

@@ -174,8 +174,8 @@ public class StdFunctionLabel extends JPanel implements FunctionLabel{
 	
 	private void notifyPlotUpdate(String... text) {
 		FunctionEvent ev = new FunctionEvent(mother, text, 
-												mother.getColor(), mother.getBounds(), 
-												mother.getStepsizes(), FunctionEvent.ACTION.UPDATE);
+												mother.getColor(), mother.getBoundsString(), 
+												mother.getStepsize(), FunctionEvent.ACTION.UPDATE);
 		notifyListeners(ev);
 	}
 	

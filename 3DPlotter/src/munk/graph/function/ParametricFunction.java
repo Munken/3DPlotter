@@ -3,21 +3,15 @@ package munk.graph.function;
 
 import javax.vecmath.Color3f;
 
+import munk.graph.gui.GuiUtil;
 import munk.graph.plot.parametric.*;
 
-import com.graphbuilder.math.ExpressionParseException;
-import com.graphbuilder.math.UndefinedVariableException;
+import com.graphbuilder.math.*;
 
 /*
  * Parametric functions; to be evaluated directly by Mesp.
  */
 public class ParametricFunction extends AbstractFunction {
-	
-
-	public ParametricFunction(String xExpr, String yExpr, String zExpr, Color3f color, float[] bounds, float stepsize) 
-								throws ExpressionParseException, IllegalEquationException, UndefinedVariableException{
-		this(expressionArray(xExpr, yExpr, zExpr), color, bounds, stepsize);
-	}
 	
 	/**
 	 * 
@@ -29,24 +23,9 @@ public class ParametricFunction extends AbstractFunction {
 	 * @throws IllegalEquationException 
 	 * @throws UndefinedVariableException 
 	 */
-	public ParametricFunction(String[] expressions, Color3f color, float[] bounds, float stepsize) throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
-		super(expressions, color, bounds, stepsize, 
-				createPlotter(expressions, bounds, new float[] {stepsize}));
-	}
-	
-	/**
-	 * 
-	 * @param expressions The x, y and z expression. Length must be 3!
-	 * @param color The color of the function as a Color3f
-	 * @param bounds The bounds for the variables [v1Min, v1Max, v2Min, v2Max] or [v1Min, v1Max].
-	 * @param stepsizes
-	 * @throws ExpressionParseException If you math sucks
-	 * @throws IllegalEquationException 
-	 * @throws UndefinedVariableException 
-	 */
-	public ParametricFunction(String[] expressions, Color3f color, float[] bounds, float[] stepsizes) throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
-		super(expressions, color, bounds, stepsizes, 
-				createPlotter(expressions, bounds, stepsizes));
+	public ParametricFunction(String[] expressions, Color3f color, String[] bounds, float[] stepSize) throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
+		super(expressions, color, bounds, stepSize, 
+				createPlotter(expressions, GuiUtil.evalStringArray(bounds), stepSize));
 	}
 	
 	private static ParametricPlotter createPlotter(String[] expressions, float[] bounds, float[] stepsize) throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
@@ -64,11 +43,5 @@ public class ParametricFunction extends AbstractFunction {
 		} else {
 			throw new IllegalEquationException("There must be one or two variables in the expression!");
 		}
-	}
-	
-
-	
-	private static String[] expressionArray(String... expr) {
-		return expr;
 	}
 }
