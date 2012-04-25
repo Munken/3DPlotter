@@ -811,8 +811,8 @@ public class V2GUI {
 				}
 				else if(!colorList.contains(e.getSource())){
 					colorList.add((Color3f) e.getSource());
-					stdEditOptionPanel.updateColors();
-					paramEditOptionPanel.updateColors();
+					stdAppearancePanel.updateColors();
+					paramAppearancePanel.updateColors();
 				}
 			}
 		});
