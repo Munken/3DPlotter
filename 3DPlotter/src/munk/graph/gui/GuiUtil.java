@@ -10,6 +10,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.Document;
 import javax.swing.undo.*;
 
+import munk.graph.gui.paranthesismatching.BracketMatcher;
+
 import com.graphbuilder.math.*;
 
 public class GuiUtil {
@@ -38,6 +40,9 @@ public class GuiUtil {
      			}
      		}
 		});
+     	
+     	textfield.addCaretListener(new BracketMatcher());
+     	
 	}
 	
 	/*
