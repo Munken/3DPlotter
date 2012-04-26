@@ -163,6 +163,14 @@ public class StdGridOptionPanel extends AbstractGridOptionPanel{
      	yMax.addKeyListener(boundsListener);
      	zMin.addKeyListener(boundsListener);
      	zMax.addKeyListener(boundsListener);
+     	
+		FocusListener updateBoundsListener = super.getUpdateBoundsListener(this);
+		xMin.addFocusListener(updateBoundsListener);
+		xMax.addFocusListener(updateBoundsListener);
+		yMin.addFocusListener(updateBoundsListener);
+		yMax.addFocusListener(updateBoundsListener);
+		zMin.addFocusListener(updateBoundsListener);
+		zMax.addFocusListener(updateBoundsListener);
 	}
 
 	public String[] getGridBounds(){

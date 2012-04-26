@@ -121,6 +121,12 @@ public class ParamGridOptionPanel extends AbstractGridOptionPanel{
 		uMax.addKeyListener(boundsListener);
 		tMin.addKeyListener(boundsListener);
 		tMax.addKeyListener(boundsListener);
+		
+		FocusListener updateBoundsListener = super.getUpdateBoundsListener(this);
+		uMin.addFocusListener(updateBoundsListener);
+		uMax.addFocusListener(updateBoundsListener);
+		tMin.addFocusListener(updateBoundsListener);
+		tMax.addFocusListener(updateBoundsListener);
 	}
 
 	public String[] getGridBounds() throws ExpressionParseException{

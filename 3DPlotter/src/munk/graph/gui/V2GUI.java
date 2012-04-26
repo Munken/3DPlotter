@@ -823,7 +823,7 @@ public class V2GUI {
 	}
 
 	/*
-	 * Spawn new plotter thread. 
+	 * Spawn new plotter thread.
 	 */
 	private void spawnNewPlotterThread(final Function function) {
 		SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
