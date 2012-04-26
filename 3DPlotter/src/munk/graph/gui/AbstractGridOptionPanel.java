@@ -39,7 +39,8 @@ public abstract class AbstractGridOptionPanel extends JPanel {
 	
 	protected KeyListener getBoundsListener(){
 		KeyListener k = new KeyAdapter() {
-     		// Plot the graph.
+     		// Plot the gra
+			
      		@Override
      		public void keyPressed(KeyEvent e) {
      			if (e.getKeyCode() == KeyEvent.VK_ENTER && selectedFunction.getClass() != TemplateFunction.class) {
