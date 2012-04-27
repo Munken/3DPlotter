@@ -75,4 +75,21 @@ public class ColorList extends ArrayList<Color3f> {
 		}
 		return returnBoolean;
 	}
+	
+	/*
+	 * Save the color list, when a new color has been removed.
+	 */
+	public Color3f remove(int i){
+		Color3f returnColor = null;
+		if(this.size() > 1){
+		returnColor = super.remove(i);
+		try{
+		ObjectWriter.ObjectToFile(new File("Files/config.color"), this);
+		}
+		catch(IOException e){
+			e.printStackTrace();
+		}
+		}
+		return returnColor;
+	}
 }

@@ -93,10 +93,8 @@ public class AppearanceOptionPanel extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				Color3f selectedColor = (Color3f) colorList.get(comboBox.getSelectedIndex());
-				if(!selectedColor.equals(selectedFunc.getColor()) && comboBox.isEnabled()){
-					if(comboBox.isEnabled() && !selectedColor.equals(selectedFunc.getColor())){
+				if(!selectedColor.equals(selectedFunc.getColor())){
 						selectedFunc.setColor(selectedColor);
-					}
 				}
 			}
 		});

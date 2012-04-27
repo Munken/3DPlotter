@@ -59,17 +59,19 @@ public abstract class AbstractFunction implements Function{
 	public BranchGroup getPlot() {
 		if(plotter != null){
 			Node handle = plotter.getPlot();
-			shape = plotter.getShape();
-			plotter = null;
-			
-			if (shape != null) 
-				plot = setApperancePackInBranchGroup(getColor(), shape, handle);
+			if(!plotter.isCancelled()){
+				shape = plotter.getShape();
+				plotter = null;
 
-			setColor(color);
+				if (shape != null) 
+					plot = setApperancePackInBranchGroup(getColor(), shape, handle);
+
+				setColor(color);
+			}
 		}
 		return plot;
 	}
-	
+
 	public float[] getStepsize() {
 		return stepSize;
 	}

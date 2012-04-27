@@ -13,6 +13,7 @@ import javax.swing.event.*;
 import javax.vecmath.Color3f;
 
 import munk.graph.IO.*;
+import munk.graph.appearance.Colors;
 import munk.graph.function.*;
 import munk.graph.gui.listener.*;
 
@@ -129,9 +130,7 @@ public class V2GUI {
 		init3Dplotter();
      	initStdFunctionTab();
      	initParamFunctionTab();
-     	
-     	addPlot(new String[]{"y = sin(x*5)*cos(z*5)"}, colorList.getNextAvailableColor(), DEFAULT_BOUNDS, new float[]{(float) 0.1,(float) 0.1,(float) 0.1});
-		
+     
      	// Finish up.
      	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
      	frame.setVisible(true);
@@ -139,13 +138,15 @@ public class V2GUI {
      	
      	// Set up tempate functions.
      	try {
-			paramTemplateFunc = new TemplateFunction(DEFAULT_BOUNDS, stdGridOptionPanel.getGridStepSize());
-	     	stdTemplateFunc = new TemplateFunction(DEFAULT_BOUNDS, stdGridOptionPanel.getGridStepSize());
-	     	stdGridOptionPanel.updateFuncReference(stdTemplateFunc);
-	     	paramGridOptionPanel.updateFuncReference(paramTemplateFunc);
+			paramTemplateFunc = new TemplateFunction(DEFAULT_BOUNDS, stdGridOptionPanel.getGridStepSize(),colorList);
+	     	stdTemplateFunc = new TemplateFunction(DEFAULT_BOUNDS, stdGridOptionPanel.getGridStepSize(),colorList);
+	     	setSelected(stdTemplateFunc);
+	     	
      	} catch (ExpressionParseException e) {
 			e.printStackTrace();
 		}
+     	
+     	addPlot(new String[]{"y = sin(x*5)*cos(z*5)"}, colorList.getNextAvailableColor(), DEFAULT_BOUNDS, new float[]{(float) 0.1,(float) 0.1,(float) 0.1});
      	
      	autoResize();
 	}
@@ -271,7 +272,7 @@ public class V2GUI {
 		});
 		mnColorOptions.add(mntmImportColors);
 		
-		mntmAddCustomColor = new JMenuItem("Add custom color", new ImageIcon("Icons/settings.png"));
+		mntmAddCustomColor = new JMenuItem("Customize colors", new ImageIcon("Icons/settings.png"));
 		mntmAddCustomColor.addActionListener(new ActionListener() {
 			
 			@Override
@@ -801,18 +802,25 @@ public class V2GUI {
 		if(colorDialog == null){
 		colorDialog = new JDialog();
 		colorDialog.setLocation(frame.getLocationOnScreen());
-		ColorOptionPanel colorOptionPanel = new ColorOptionPanel();
-		colorOptionPanel.addChangeListener(new ChangeListener() {
+		ColorOptionPanel colorOptionPanel = new ColorOptionPanel(colorList);
+		colorOptionPanel.addActionListener(new ActionListener() {
 			
 			@Override
-			public void stateChanged(ChangeEvent e) {
-				if(e.getSource().equals("CLOSE")){
-					colorDialog.setVisible(false);
-				}
-				else if(!colorList.contains(e.getSource())){
+			public void actionPerformed(ActionEvent e) {
+				if(e.getID() == 0){
 					colorList.add((Color3f) e.getSource());
 					stdAppearancePanel.updateColors();
 					paramAppearancePanel.updateColors();
+				}
+				else if(e.getID() == 1){
+					if((int) e.getSource() >= 0){
+					colorList.remove((int) e.getSource());
+					stdAppearancePanel.updateColors();
+					paramAppearancePanel.updateColors();
+					}
+				}
+				else{
+					colorDialog.setVisible(false);
 				}
 			}
 		});
