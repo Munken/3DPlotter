@@ -27,34 +27,36 @@ public class StdFunctionLabel extends JPanel implements FunctionLabel{
 		// GUI representation
 		GridBagLayout gbl_fLabel = new GridBagLayout();
 		gbl_fLabel.columnWidths = new int[]{20, 150, 20, 0};
-		gbl_fLabel.rowHeights = new int[]{0, 0};
+		gbl_fLabel.rowHeights = new int[]{0, 0, 0};
 		gbl_fLabel.columnWeights = new double[]{0.0, 1.0, 0.0, Double.MIN_VALUE};
-		gbl_fLabel.rowWeights = new double[]{0.0, Double.MIN_VALUE};
+		gbl_fLabel.rowWeights = new double[]{0.0, 0.0, Double.MIN_VALUE};
 		this.setLayout(gbl_fLabel);
-
-		toggleButton = new ToggleButton(new ImageIcon("Icons/selected.png"),new ImageIcon("Icons/notSelected.png"));
-		GridBagConstraints gbc_chckbxTest = new GridBagConstraints();
-		gbc_chckbxTest.insets = new Insets(0, 0, 0, 5);
-		gbc_chckbxTest.gridx = 0;
-		gbc_chckbxTest.gridy = 0;
-		this.add(toggleButton, gbc_chckbxTest);
+		
+		btnDelete = new JButton(new ImageIcon("Icons/delete.png"));
+		GridBagConstraints gbc_btnDelete = new GridBagConstraints();
+		gbc_btnDelete.insets = new Insets(0, 0, 5, 5);
+		gbc_btnDelete.gridx = 0;
+		gbc_btnDelete.gridy = 0;
+		add(btnDelete, gbc_btnDelete);
 
 		exprField = new JTextField(mother.getExpression()[0]);
 		GridBagConstraints gbc_list = new GridBagConstraints();
-		gbc_list.insets = new Insets(0, 0, 0, 5);
-		gbc_list.fill = GridBagConstraints.HORIZONTAL;
+		gbc_list.insets = new Insets(0, 0, 5, 5);
+		gbc_list.fill = GridBagConstraints.BOTH;
 		gbc_list.gridx = 1;
 		gbc_list.gridy = 0;
 		this.add(exprField, gbc_list);
 		exprField.setEditable(true);
+
+		toggleButton = new ToggleButton(new ImageIcon("Icons/selected.png"),new ImageIcon("Icons/notSelected.png"));
+		GridBagConstraints gbc_chckbxTest = new GridBagConstraints();
+		gbc_chckbxTest.insets = new Insets(0, 0, 5, 0);
+		gbc_chckbxTest.gridx = 2;
+		gbc_chckbxTest.gridy = 0;
+		this.add(toggleButton, gbc_chckbxTest);
+		
 		// Don't fuck up layout, when text string becomes too long.
 		exprField.setPreferredSize(new Dimension(100,20));
-		
-		btnDelete = new JButton(new ImageIcon("Icons/delete.png"));
-		GridBagConstraints gbc_btnDelete = new GridBagConstraints();
-		gbc_btnDelete.gridx = 2;
-		gbc_btnDelete.gridy = 0;
-		add(btnDelete, gbc_btnDelete);
 		addTextChangeListener();
 		addToggleButtonListener();	
 		addDeleteListener();

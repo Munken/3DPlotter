@@ -134,6 +134,7 @@ public class BracketMatcher implements CaretListener
 		highlighter = source.getHighlighter();
 		Document doc = source.getDocument();
 		if(e.getDot() == 0) {
+			highlighter.removeAllHighlights();
 			return;
 		}
 
