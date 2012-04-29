@@ -10,6 +10,7 @@ import javax.vecmath.*;
 
 import munk.graph.function.Function;
 import munk.graph.plot.Axes;
+import munk.graph.plot.intersection.ImplicitIntersection;
 import munk.graph.rotaters.*;
 
 import com.sun.j3d.utils.behaviors.mouse.MouseRotate;
@@ -130,7 +131,7 @@ public class Plotter3D extends JPanel{
 	}
 	
 	
-	public void plotFunction(final Function function) {
+	public void plotFunction(Function function) {
 		BranchGroup bg = function.getPlot();
 		
 		if (bg != null) {
@@ -138,6 +139,16 @@ public class Plotter3D extends JPanel{
 			updateAxes();
 			adjustZoom();
 		}
+	}
+	
+	public void plotFunction(ImplicitIntersection it) {
+//		Shape3D shape = it.plot();
+//		BranchGroup bg = new BranchGroup();
+//		bg.addChild(shape);
+		BranchGroup bg = it.plot();
+		plots.addChild(bg);
+		updateAxes();
+		adjustZoom();
 	}
 	
 	

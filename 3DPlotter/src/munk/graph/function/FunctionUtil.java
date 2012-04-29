@@ -32,6 +32,30 @@ public class FunctionUtil {
 		String[] result = {expr};
 		return result;
 	}
+	
+	public static float[] determineIntersection(Function f1, Function f2) {
+				
+		float[] bound1 = f1.getBounds();
+		float[] bound2 = f2.getBounds();
+		
+		float[] xBounds = determineIntersection(bound1[0], bound1[1], bound2[0], bound1[1]);
+		float[] yBounds = determineIntersection(bound1[2], bound1[3], bound2[2], bound1[3]);
+		float[] zBounds = determineIntersection(bound1[4], bound1[5], bound2[4], bound1[5]);
+		
+		if (xBounds != null && yBounds != null && zBounds != null) {
+			
+			return new float[] 
+					{xBounds[0], xBounds[1], yBounds[0], yBounds[1], zBounds[0], zBounds[1]};
+		} else 
+			return null;
+	}
+	
+	private static float[] determineIntersection(float f1Min, float f1Max, float f2Min, float f2Max) {
+//		if (f1Max >= f2Min)
+//			return null;
+//		
+		return new float[] {Math.max(f1Min, f2Min), Math.min(f1Max, f2Max)};
+	}
 
 	/**
 	 * Determine function type and return the correct function.
@@ -128,4 +152,6 @@ public class FunctionUtil {
 		}
 		return zippedList;
 	}
+	
+	
 }

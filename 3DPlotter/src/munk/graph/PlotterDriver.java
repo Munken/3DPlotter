@@ -11,6 +11,7 @@ import munk.graph.appearance.Colors;
 import munk.graph.function.*;
 import munk.graph.function.implicit.ImplicitIterativeFunction;
 import munk.graph.gui.Plotter3D;
+import munk.graph.plot.intersection.ImplicitIntersection;
 
 import com.graphbuilder.math.ExpressionParseException;
 import com.graphbuilder.math.UndefinedVariableException;
@@ -44,7 +45,16 @@ public class PlotterDriver {
 //		ImplicitRecursiveFunction rec = new ImplicitRecursiveFunction(expr, Colors.BLUE, recBound, 0.05f);
 //		p.plotFunction(rec);
 		
-		ImplicitIterativeFunction it = new ImplicitIterativeFunction("x^2 + y^2 = 1", Colors.BLUE, recBound, 0.1f);
+//		ImplicitIterativeFunction it = new ImplicitIterativeFunction("x^2 + y^2 = 1", Colors.BLUE, recBound, 0.1f);
+		
+		Function f1 = FunctionUtil.createFunction(new String[] {"x^2 + y^2 + z^2 = 1"}, Colors.BLUE, 
+				new String[] {"-1", "1", "-1", "1", "-1", "1"}, new float[] {0.05f, 0.05f, 0.05f});
+		
+		Function f2 = FunctionUtil.createFunction(new String[] {"x^2 + y^2 = 0.5"}, Colors.BLUE, 
+				new String[] {"-1", "1", "-1", "1", "-1", "1"}, new float[] {0.1f, 0.1f, 0.1f});
+		
+		
+		ImplicitIntersection it = new ImplicitIntersection(f1, f2);
 		p.plotFunction(it);
 		
 		
