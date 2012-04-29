@@ -45,6 +45,7 @@ public class ImplicitIntersection {
 	private List<MarchCell> cells = new LinkedList<MarchCell>();
 	
 	private Expression ex;
+	private Expression differnce;
 	private VarMap vm;
 	private FuncMap fm;
 
@@ -78,35 +79,32 @@ public class ImplicitIntersection {
 		
 		this.f1 = f1;
 		this.f2 = f2;
+		
+
+		vm = new VarMap();
+		fm = new FuncMap();
+		fm.loadDefaultFunctions();
+		
+		differnce = ExpressionTree.parse(preParse(f1.getExpression()[0]) + "-1*(" + preParse(f1.getExpression()[0]) + ")");
 	}
 
-	private void setExpression(Function f1) throws IllegalEquationException,
+	private void setExpression(Function func) throws IllegalEquationException,
 			ExpressionParseException {
-		String expr = preParse(f1.getExpression()[0]);
+		String expr = preParse(func.getExpression()[0]);
 		
 		ex = ExpressionTree.parse(expr);
-		vm = new VarMap();
 		vm.setValue("x", xMin);
 		vm.setValue("y", yMin);
 		vm.setValue("z", zMin);
 		
-		fm = new FuncMap();
-		fm.loadDefaultFunctions();
+
 	}
 	
 	public  BranchGroup plot() {
 		
 		if (marchFirstCubes()) {
-			System.out.println("1");
 			if (marchSecondCubes()) {
 				return plot;
-//				System.out.println("2");
-//				PointArray ar = new PointArray(points.size(), PointArray.COORDINATES);
-//				Point3f[] p = new Point3f[points.size()];
-//				points.toArray(p);
-//				ar.setCoordinates(0, p);
-//
-//				return new Shape3D(ar);
 			}
 
 			return null;
@@ -181,15 +179,43 @@ public class ImplicitIntersection {
 		Point3f corner = cell.getCorners()[0];
 		
 		Sphere sphere = new Sphere(xStepsize, APPEARANCE);
-//		points.add(new Point3f(corner.x+xStepsize/2, corner.y+yStepsize/2, corner.z+zStepsize/2));
 		
 		Transform3D t = new Transform3D();
-		t.setTranslation(new Vector3f(corner.x+xStepsize/2, corner.y+yStepsize/2, corner.z+zStepsize/2));
+//		t.setTranslation(new Vector3f(corner.x+xStepsize/2, corner.y+yStepsize/2, corner.z+zStepsize/2));
+		t.setTranslation(new Vector3f(interpolate(cell)));
 		
 		TransformGroup tg = new TransformGroup(t);
 		tg.addChild(sphere);
 		plot.addChild(tg);
-//		plot.addChild(sphere);
+	}
+	
+	private Point3f interpolate(MarchCell cell) {
+		
+		Point3f[] corners = cell.getCorners();
+		float[] values = new float[8];
+		
+		for (int i = 0; i < values.length; i++) {
+			values[i] = difference(corners[i]);
+		}
+		
+		Point3f x0 = vertexInterp(ISOLEVEL, corners[0], corners[1], values[0], values[1]);
+		Point3f x1 = vertexInterp(ISOLEVEL, corners[3], corners[2], values[3], values[2]);
+		Point3f x2 = vertexInterp(ISOLEVEL, corners[4], corners[5], values[4], values[5]);
+		Point3f x3 = vertexInterp(ISOLEVEL, corners[7], corners[6], values[7], values[6]);
+		
+		Point3f y0 = vertexInterp(ISOLEVEL, x0, x1, difference(x0), difference(x1));
+		Point3f y1 = vertexInterp(ISOLEVEL, x2, x3, difference(x2), difference(x3));
+		
+		
+		return vertexInterp(ISOLEVEL, y0, y1, difference(y0), difference(y1));
+	}
+	
+	private float difference(Point3f p) {
+		vm.setValue("x", p.x);
+		vm.setValue("y", p.y);
+		vm.setValue("z", p.z);
+			
+		return (float) differnce.eval(vm, fm);
 	}
 	
 	private void marchNext(MarchCell next) {
@@ -733,5 +759,23 @@ public class ImplicitIntersection {
 		String rhs = m.group(2).trim();
 		
 		return lhs + "-(" + rhs + ")";
+	}
+	
+	private Point3f vertexInterp(float isolevel, Point3f p1,
+			Point3f p2, float val1, float val2) {
+		if (Math.abs(isolevel-val1) < 0.00001)
+			return p1;
+		if (Math.abs(isolevel-val2) < 0.00001)
+			return p2;
+		if (Math.abs(val1-val2) < 0.00001)
+			return p1;
+
+		float mu = (isolevel - val1) / (val2 - val1);
+		Point3f p = new Point3f();
+		p.x = p1.x + mu * (p2.x - p1.x);
+		p.y = p1.y + mu * (p2.y - p1.y);
+		p.z = p1.z + mu * (p2.z - p1.z);
+
+		return(p);
 	}
 }

@@ -313,40 +313,40 @@ public class MarchingCubes {
 		Point3f[] vertlist = new Point3f[12]; 
 		if ((EDGE_TABLE[cubeindex] & 1) != 0)
 			vertlist[0] =
-			VertexInterp(isolevel,corners[0],corners[1],values[0],values[1]);
+			vertexInterp(isolevel,corners[0],corners[1],values[0],values[1]);
 		if ((EDGE_TABLE[cubeindex] & 2) != 0)
 			vertlist[1] =
-			VertexInterp(isolevel,corners[1],corners[2],values[1],values[2]);
+			vertexInterp(isolevel,corners[1],corners[2],values[1],values[2]);
 		if ((EDGE_TABLE[cubeindex] & 4) != 0)
 			vertlist[2] =
-			VertexInterp(isolevel,corners[2],corners[3],values[2],values[3]);
+			vertexInterp(isolevel,corners[2],corners[3],values[2],values[3]);
 		if ((EDGE_TABLE[cubeindex] & 8) != 0)
 			vertlist[3] =
-			VertexInterp(isolevel,corners[3],corners[0],values[3],values[0]);
+			vertexInterp(isolevel,corners[3],corners[0],values[3],values[0]);
 		if ((EDGE_TABLE[cubeindex] & 16) != 0)
 			vertlist[4] =
-			VertexInterp(isolevel,corners[4],corners[5],values[4],values[5]);
+			vertexInterp(isolevel,corners[4],corners[5],values[4],values[5]);
 		if ((EDGE_TABLE[cubeindex] & 32) != 0)
 			vertlist[5] =
-			VertexInterp(isolevel,corners[5],corners[6],values[5],values[6]);
+			vertexInterp(isolevel,corners[5],corners[6],values[5],values[6]);
 		if ((EDGE_TABLE[cubeindex] & 64) != 0)
 			vertlist[6] =
-			VertexInterp(isolevel,corners[6],corners[7],values[6],values[7]);
+			vertexInterp(isolevel,corners[6],corners[7],values[6],values[7]);
 		if ((EDGE_TABLE[cubeindex] & 128) != 0)
 			vertlist[7] =
-			VertexInterp(isolevel,corners[7],corners[4],values[7],values[4]);
+			vertexInterp(isolevel,corners[7],corners[4],values[7],values[4]);
 		if ((EDGE_TABLE[cubeindex] & 256) != 0)
 			vertlist[8] =
-			VertexInterp(isolevel,corners[0],corners[4],values[0],values[4]);
+			vertexInterp(isolevel,corners[0],corners[4],values[0],values[4]);
 		if ((EDGE_TABLE[cubeindex] & 512) != 0)
 			vertlist[9] =
-			VertexInterp(isolevel,corners[1],corners[5],values[1],values[5]);
+			vertexInterp(isolevel,corners[1],corners[5],values[1],values[5]);
 		if ((EDGE_TABLE[cubeindex] & 1024) != 0)
 			vertlist[10] =
-			VertexInterp(isolevel,corners[2],corners[6],values[2],values[6]);
+			vertexInterp(isolevel,corners[2],corners[6],values[2],values[6]);
 		if ((EDGE_TABLE[cubeindex] & 2048) != 0)
 			vertlist[11] =
-			VertexInterp(isolevel,corners[3],corners[7],values[3],values[7]);
+			vertexInterp(isolevel,corners[3],corners[7],values[3],values[7]);
 
 		/* Create the triangle */
 		int ntriang = 0;
@@ -376,7 +376,7 @@ public class MarchingCubes {
 		return cubeindex;
 	}
 
-	private Point3f VertexInterp(float isolevel, Point3f p1,
+	private Point3f vertexInterp(float isolevel, Point3f p1,
 			Point3f p2, float val1, float val2) {
 		if (Math.abs(isolevel-val1) < 0.00001)
 			return p1;
