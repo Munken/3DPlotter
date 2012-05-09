@@ -20,7 +20,7 @@ import munk.graph.gui.listener.FunctionListener;
 import com.graphbuilder.math.*;
 
 
-/**
+/** TEST
  * A simple GUI for the 3DPlotter application.
  * 
  * @author xXx
