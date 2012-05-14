@@ -8,6 +8,7 @@ import javax.media.j3d.*;
 import javax.vecmath.Color3f;
 
 import munk.graph.function.implicit.ImplicitMultiFunction;
+import munk.graph.function.implicit.SphericalFunction;
 import munk.graph.gui.GuiUtil;
 
 import com.graphbuilder.math.*;
@@ -56,7 +57,10 @@ public class FunctionUtil {
 		Function result = null;
 		if (isXYZExpression(expr)) {
 			result = new XYZFunction(expressions, color, bounds, stepSize);
-		} else {
+		} else if(isSpherical(expr)) {
+			result = new SphericalFunction(expressions, color, bounds, stepSize);
+		}
+		else{
 			result = new ImplicitMultiFunction(expressions, color, bounds, stepSize);
 		}
 		
@@ -69,6 +73,13 @@ public class FunctionUtil {
 		}
 		
 		return result;
+	}
+
+	private static boolean isSpherical(String expr) {
+		if(expr.contains("r") || expr.contains("theta") || expr.contains("phi")){
+			return true;
+		}
+		return false;
 	}
 
 	public static Function loadFunction(ZippedFunction zip) throws ExpressionParseException, IllegalEquationException, UndefinedVariableException{
@@ -127,5 +138,12 @@ public class FunctionUtil {
 			zippedList[i] = new ZippedFunction(f.getExpression(), f.getColor(), f.getBoundsString(), f.getStepsize(), f.isSelected(), f.isVisible(), f.getView(), f.getFastImplicit());
 		}
 		return zippedList;
+	}
+	
+	public static String sphericalToImplicit(String s){
+		s = s.replace("theta", "(atan(z/r))");
+		s = s.replace("phi", "(atan(y/x))");
+		s = s.replace("r", "(x^2+y^2+z^2)^0.5");
+		return s;
 	}
 }
