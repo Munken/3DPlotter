@@ -1,4 +1,4 @@
-package munk.graph.gui;
+package munk.graph.gui.panel;
 
 import java.awt.event.*;
 import java.util.ArrayList;

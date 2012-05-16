@@ -1,4 +1,4 @@
-package munk.graph.gui;
+package munk.graph.gui.panel;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -9,6 +9,8 @@ import javax.vecmath.Color3f;
 
 import munk.graph.function.AbstractFunction.FILL;
 import munk.graph.function.*;
+import munk.graph.gui.ColorList;
+import munk.graph.gui.FunctionLabel;
 
 @SuppressWarnings("serial")
 public class AppearanceOptionPanel extends JPanel {

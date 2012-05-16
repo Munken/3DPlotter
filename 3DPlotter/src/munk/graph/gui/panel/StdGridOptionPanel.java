@@ -1,13 +1,15 @@
-package munk.graph.gui;
+package munk.graph.gui.panel;
 
 import java.awt.*;
 import java.awt.event.*;
 
 import javax.swing.*;
 
+import munk.graph.gui.GuiUtil;
+
 import com.graphbuilder.math.ExpressionParseException;
 
-public class StdGridOptionPanel extends AbstractGridOptionPanel{
+public class StdGridOptionPanel extends AbstractGridOptionPanel implements GridOptionPanel{
 
 	private static final long serialVersionUID = 1L;
 	private JTextField xMin;

@@ -1,4 +1,4 @@
-package munk.graph.gui;
+package munk.graph.gui.panel;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -6,6 +6,8 @@ import java.util.ArrayList;
 
 import javax.swing.*;
 import javax.vecmath.Color3f;
+
+import munk.graph.gui.ColorList;
 
 @SuppressWarnings("serial")
 public class ColorOptionPanel extends JPanel {
