@@ -13,9 +13,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -34,11 +32,14 @@ import javax.vecmath.Color3f;
 
 import munk.graph.IO.ObjectReader;
 import munk.graph.IO.ObjectWriter;
+import munk.graph.appearance.Colors;
 import munk.graph.function.Function;
 import munk.graph.function.FunctionUtil;
 import munk.graph.function.IllegalEquationException;
+import munk.graph.function.ParametricFunction;
 import munk.graph.function.TemplateFunction;
 import munk.graph.function.ZippedFunction;
+import munk.graph.function.implicit.SphericalFunction;
 import munk.graph.gui.panel.ColorOptionPanel;
 import munk.graph.gui.panel.FunctionTab;
 import munk.graph.gui.panel.ParametricFunctionTab;
@@ -75,8 +76,6 @@ public class V2GUI {
 	private Plotter3D plotter;
 	private int controlsWidth;
 	private int controlsHeight;
-	private List<Function> stdFuncList = new ArrayList<Function>();
-	private List<Function> paramFuncList = new ArrayList<Function>();
 	private HashMap<Function, FunctionLabel> map = new HashMap<Function, FunctionLabel>();
 	private javax.swing.Timer resizeTimer;
 	private ColorList colorList;
@@ -121,7 +120,7 @@ public class V2GUI {
 	 */
 	public V2GUI() {
 		// Initialize variables.
-		colorList = new ColorList(stdFuncList);
+		colorList = new ColorList();
 		filePath = File.separator+"tmp";
 		
 		try {
@@ -144,12 +143,10 @@ public class V2GUI {
 		
 		// Initialize GUI components.
 		initFrame();
-		initMenuBar();
 		initTabbedPane();
 		init3Dplotter();
-     	initStdFunctionTab();
-     	initParamFunctionTab();
-     	initSphFunctionTab();
+     	initFunctionTabs();
+		initMenuBar();
      
      	// Update references.
      	paramFuncTab.updateReferences(paramTemplateFunc);
@@ -163,7 +160,7 @@ public class V2GUI {
      	
      	// Test function
      	try {
-			stdFuncTab.addPlot(new String[]{"y = sin(x*5)*cos(z*5)"}, colorList.getNextAvailableColor(), new String[]{"-1","1","-1","1","-1","1"}, new float[]{(float) 0.1,(float) 0.1,(float) 0.1});
+			stdFuncTab.addPlot(new String[]{"y = sin(x*5)*cos(z*5)"}, Colors.RED, new String[]{"-1","1","-1","1","-1","1"}, new float[]{(float) 0.1,(float) 0.1,(float) 0.1});
 		} catch (ExpressionParseException | IllegalEquationException
 				| UndefinedVariableException e) {
 			// TODO Auto-generated catch block
@@ -216,17 +213,11 @@ public class V2GUI {
      	frame.getContentPane().add(canvasPanel, gbc_canvasPanel);
 	}
 
-	private void initStdFunctionTab() throws Exception{
+	private void initFunctionTabs() throws Exception{
 		stdFuncTab = new XYZFunctionTab(colorList, map, stdTemplateFunc, plotter);
 		tabbedPane.addTab("Standard equations", (Component) stdFuncTab);
-	}
-
-	private void initParamFunctionTab() throws Exception{
 		paramFuncTab = new ParametricFunctionTab(colorList, map, paramTemplateFunc, plotter);
-		tabbedPane.addTab("Parametric equations", (Component) paramFuncTab);     	
-	}
-
-	private void initSphFunctionTab() throws Exception{
+		tabbedPane.addTab("Parametric equations", (Component) paramFuncTab);   
 		sphFuncTab = new SphericalFunctionTab(colorList, map, sphTemplateFunc, plotter);
 		tabbedPane.addTab("Spherical equations", (Component) sphFuncTab);
 	}
@@ -320,36 +311,52 @@ public class V2GUI {
 		});
 	}
 
-//	private void importFunctions() {
-//		File inputFile = GuiUtil.spawnImportDialog(filePath, frame);
-//		if(inputFile != null){
-//			filePath=inputFile.getPath().replace(inputFile.getName(), "");
-//			try{
-//				ZippedFunction[][] importLists = (ZippedFunction[][]) ObjectReader.ObjectFromFile(inputFile);
-//				// Determine if current workspace should be erased.
-//				boolean eraseWorkspace = (map.size() == 0) ||
-//						(0 == JOptionPane.showOptionDialog(frame, 
-//								"Would you like to erase current workspace during import?",
-//								"Import Dialog", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null));
-//
-//				if(eraseWorkspace){
-//					for (Function f : map.keySet()) {
-//						deletePlot(f);
-//					}
-//				}
-//				//Read new functions from zipped object.
-//				for(int i = 0; i < importLists.length; i++){
-//					ZippedFunction[] current = importLists[i];
-//					for (int j = 0; j < current.length; j++) {
-//						addPlot(FunctionUtil.loadFunction(current[j]));
-//					}
-//				}
-//			}
-//			catch(IOException | ClassCastException | ClassNotFoundException | ExpressionParseException | IllegalArgumentException | UndefinedVariableException | IllegalEquationException ex){
-//				JOptionPane.showMessageDialog(frame,new JLabel("Unable to import workspace from file.",JLabel.CENTER));
-//			} 
-//		}
-//	}
+	private void importFunctions() {
+		File inputFile = GuiUtil.spawnImportDialog(filePath, frame);
+		if(inputFile != null){
+			filePath=inputFile.getPath().replace(inputFile.getName(), "");
+			try{
+				ZippedFunction[][] importLists = (ZippedFunction[][]) ObjectReader.ObjectFromFile(inputFile);
+				// Determine if current workspace should be erased.
+				boolean eraseWorkspace = (map.size() == 0) ||
+						(0 == JOptionPane.showOptionDialog(frame, 
+								"Would you like to erase current workspace during import?",
+								"Import Dialog", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null));
+
+				if(eraseWorkspace){
+					for (Function f : map.keySet()) {
+						if(f.getClass() == ParametricFunction.class){
+							paramFuncTab.deletePlot(f);
+						}
+						else if(f.getClass() == SphericalFunction.class){
+							sphFuncTab.deletePlot(f);
+						}
+						else{
+							stdFuncTab.deletePlot(f);
+						}
+					}
+				}
+				//Read new functions from zipped object.
+				for(int i = 0; i < importLists.length; i++){
+					ZippedFunction[] current = importLists[i];
+					for (int j = 0; j < current.length; j++) {
+						if(i==0){
+							stdFuncTab.addPlot(FunctionUtil.loadFunction(current[j]));
+						}
+						if(i==1){
+							paramFuncTab.addPlot(FunctionUtil.loadFunction(current[j]));
+						}
+						if(i==2){
+							sphFuncTab.addPlot(FunctionUtil.loadFunction(current[j]));
+						}
+					}
+				}
+			}
+			catch(IOException | ClassCastException | ClassNotFoundException | ExpressionParseException | IllegalArgumentException | UndefinedVariableException | IllegalEquationException ex){
+				JOptionPane.showMessageDialog(frame,new JLabel("Unable to import workspace from file.",JLabel.CENTER));
+			} 
+		}
+	}
 	
 	private void initMenuBar(){
 		menuBar = new JMenuBar();
@@ -367,7 +374,7 @@ public class V2GUI {
 				if(outputFile != null){
 				filePath=outputFile.getPath().replace(outputFile.getName(), "");
 				try {
-					ObjectWriter.ObjectToFile(outputFile, new ZippedFunction[][]{FunctionUtil.zipFunctionList(stdFuncList),FunctionUtil.zipFunctionList(paramFuncList)});
+					ObjectWriter.ObjectToFile(outputFile, new ZippedFunction[][]{FunctionUtil.zipFunctionList(stdFuncTab.getFunctionList()),FunctionUtil.zipFunctionList(paramFuncTab.getFunctionList()),FunctionUtil.zipFunctionList(sphFuncTab.getFunctionList())});
 				} catch (IOException e) {
 					JOptionPane.showMessageDialog(frame,new JLabel("Unable to write file.",JLabel.CENTER));
 				}
@@ -381,8 +388,7 @@ public class V2GUI {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-//				importFunctions();
-				System.out.println("To be implemented..");
+				importFunctions();
 			}
 		});
 		mnFile.add(mntmLoadProject);

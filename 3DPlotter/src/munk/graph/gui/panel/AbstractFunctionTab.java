@@ -24,6 +24,7 @@ import javax.swing.SwingWorker;
 import javax.vecmath.Color3f;
 
 import munk.graph.function.Function;
+import munk.graph.function.FunctionList;
 import munk.graph.function.FunctionUtil;
 import munk.graph.function.IllegalEquationException;
 import munk.graph.function.TemplateFunction;
@@ -149,17 +150,21 @@ public abstract class AbstractFunctionTab extends JPanel implements FunctionTab{
 		innerFuncTab.setLayout(new BoxLayout(innerFuncTab, BoxLayout.Y_AXIS));
 	}
 	
-	protected abstract void addPlot(Function newFunction);
+	public abstract void addPlot(Function newFunction);
 
-	private void setupInputListeners(final JTextField input){
-		input.addKeyListener(new KeyAdapter() {
+	private void setupInputListeners(final JTextField currentInput){
+		currentInput.addKeyListener(new KeyAdapter() {
 			// Plot the graph.
 
 			@Override
 			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_ENTER && input.isFocusOwner()) {
-					try {
-						addPlot(new String[]{input.getText()},templateFunc.getColor(), gridOP.getGridBounds(), gridOP.getGridStepSize());
+				if (e.getKeyCode() == KeyEvent.VK_ENTER && currentInput.isFocusOwner()) {
+					try{
+						String[] equations = new String[getNoOfInputs()];
+						for(int i = 0; i < getNoOfInputs(); i++){
+							equations[i] = input[i].getText();
+						}
+						addPlot(equations,templateFunc.getColor(), gridOP.getGridBounds(), gridOP.getGridStepSize());
 					} catch (ExpressionParseException | IllegalEquationException | UndefinedVariableException e1) {
 						// TODO: Error handling..
 						e1.printStackTrace();
@@ -168,7 +173,7 @@ public abstract class AbstractFunctionTab extends JPanel implements FunctionTab{
 
 			}
 		});
-		input.addFocusListener(new FocusAdapter() {
+		currentInput.addFocusListener(new FocusAdapter() {
 
 			@Override
 			public void focusGained(FocusEvent arg0) {
@@ -338,7 +343,7 @@ public abstract class AbstractFunctionTab extends JPanel implements FunctionTab{
 	/*
 	 * Delete a function.
 	 */
-	private void deletePlot(Function f) {
+	public void deletePlot(Function f) {
 		f.cancel();
 		plotter.removePlot(f);
 		int index = funcList.indexOf(f);
@@ -378,15 +383,14 @@ public abstract class AbstractFunctionTab extends JPanel implements FunctionTab{
 	public void updateColors() {
 		apperanceOP.updateColors();
 	}
-
-	@Override
-	public void addFunctionListener(FunctionListener f) {
-		// TODO Auto-generated method stub
-	}
 	
 	public void updateReferences(Function f) throws ExpressionParseException{
 		gridOP.updateFuncReference(f);
 		apperanceOP.updateFuncReference(f);
+	}
+	
+	public List<Function> getFunctionList(){
+		return funcList;
 	}
 }
 
