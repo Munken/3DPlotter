@@ -1,17 +1,22 @@
 package munk.graph.function;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.media.j3d.*;
+import javax.media.j3d.BranchGroup;
+import javax.media.j3d.Node;
+import javax.media.j3d.Shape3D;
 import javax.vecmath.Color3f;
 
 import munk.graph.function.implicit.ImplicitMultiFunction;
-import munk.graph.function.implicit.SphericalFunction;
-import munk.graph.gui.GuiUtil;
 
-import com.graphbuilder.math.*;
+import com.graphbuilder.math.Expression;
+import com.graphbuilder.math.ExpressionParseException;
+import com.graphbuilder.math.ExpressionTree;
+import com.graphbuilder.math.UndefinedVariableException;
 
 public class FunctionUtil {
 
@@ -48,38 +53,18 @@ public class FunctionUtil {
 	public static Function createFunction(String[] expressions, Color3f color,
 										String[] bounds, float stepSize[]) 
 												throws ExpressionParseException, IllegalEquationException, UndefinedVariableException{
-		if (expressions.length == 3) {
-			return new ParametricFunction(expressions, color, bounds, stepSize);
-		} 
 		
 		String expr = expressions[0];
 		
 		Function result = null;
 		if (isXYZExpression(expr)) {
 			result = new XYZFunction(expressions, color, bounds, stepSize);
-		} else if(isSpherical(expr)) {
-			result = new SphericalFunction(expressions, color, bounds, stepSize);
-		}
+		} 
 		else{
 			result = new ImplicitMultiFunction(expressions, color, bounds, stepSize);
 		}
 		
-		for (int i = 0; i < bounds.length; i+=2) {
-			if (GuiUtil.evalString(bounds[i]) > GuiUtil.evalString(bounds[i+1])) {
-				String tmp = bounds[i+1];
-				bounds[i+1] = bounds[i];
-				bounds[i] = tmp;
-			}
-		}
-		
 		return result;
-	}
-
-	private static boolean isSpherical(String expr) {
-		if(expr.contains("r") || expr.contains("theta") || expr.contains("phi")){
-			return true;
-		}
-		return false;
 	}
 
 	public static Function loadFunction(ZippedFunction zip) throws ExpressionParseException, IllegalEquationException, UndefinedVariableException{
@@ -138,12 +123,5 @@ public class FunctionUtil {
 			zippedList[i] = new ZippedFunction(f.getExpression(), f.getColor(), f.getBoundsString(), f.getStepsize(), f.isSelected(), f.isVisible(), f.getView(), f.getFastImplicit());
 		}
 		return zippedList;
-	}
-	
-	public static String sphericalToImplicit(String s){
-		s = s.replace("theta", "(atan(z/r))");
-		s = s.replace("phi", "(atan(y/x))");
-		s = s.replace("r", "(x^2+y^2+z^2)^0.5");
-		return s;
 	}
 }

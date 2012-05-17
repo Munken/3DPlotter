@@ -2,9 +2,17 @@ package munk.graph.gui.panel;
 
 import java.util.HashMap;
 
+import javax.vecmath.Color3f;
+
+import com.graphbuilder.math.ExpressionParseException;
+import com.graphbuilder.math.UndefinedVariableException;
+
 import munk.graph.function.Function;
+import munk.graph.function.FunctionUtil;
+import munk.graph.function.IllegalEquationException;
 import munk.graph.gui.ColorList;
 import munk.graph.gui.FunctionLabel;
+import munk.graph.gui.GuiUtil;
 import munk.graph.gui.Plotter3D;
 
 @SuppressWarnings("serial")
@@ -29,5 +37,24 @@ public class SphericalFunctionTab extends AbstractFunctionTab {
 		label.addFunctionListener(createFunctionListener());
 		map.put(function, label);
 		spawnNewPlotterThread(function);
+	}
+	
+	public Function createNewFunction(String[] expressions, Color3f color, String[] bounds, float[] stepSize) throws ExpressionParseException, UndefinedVariableException, IllegalEquationException{
+		for (int i = 0; i < bounds.length; i+=2) {
+			if (GuiUtil.evalString(bounds[i]) > GuiUtil.evalString(bounds[i+1])) {
+				String tmp = bounds[i+1];
+				bounds[i+1] = bounds[i];
+				bounds[i] = tmp;
+			}
+		}
+		expressions[0] = sphericalToImplicit(expressions[0]);
+		return FunctionUtil.createFunction(expressions, color, bounds, stepSize);
+	}
+	
+	public static String sphericalToImplicit(String s){
+		s = s.replace("theta", "(atan(z/r))");
+		s = s.replace("phi", "(atan(y/x))");
+		s = s.replace("r", "(x^2+y^2+z^2)^0.5");
+		return s;
 	}
 }

@@ -214,11 +214,24 @@ public class V2GUI {
 	}
 
 	private void initFunctionTabs() throws Exception{
+		ActionListener a = new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(e.getSource() instanceof Exception){
+					showMessageDialogThreadSafe(((Exception) e.getSource()).getMessage());
+				}
+			}
+		};
+		
 		stdFuncTab = new XYZFunctionTab(colorList, map, stdTemplateFunc, plotter);
+		stdFuncTab.addActionListener(a);
 		tabbedPane.addTab("Standard equations", (Component) stdFuncTab);
 		paramFuncTab = new ParametricFunctionTab(colorList, map, paramTemplateFunc, plotter);
+		paramFuncTab.addActionListener(a);
 		tabbedPane.addTab("Parametric equations", (Component) paramFuncTab);   
 		sphFuncTab = new SphericalFunctionTab(colorList, map, sphTemplateFunc, plotter);
+		sphFuncTab.addActionListener(a);
 		tabbedPane.addTab("Spherical equations", (Component) sphFuncTab);
 	}
 	

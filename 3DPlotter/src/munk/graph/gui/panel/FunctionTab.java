@@ -1,5 +1,6 @@
 package munk.graph.gui.panel;
 
+import java.awt.event.ActionListener;
 import java.util.List;
 
 import javax.vecmath.Color3f;
@@ -23,5 +24,5 @@ public interface FunctionTab{
 	int getNoOfInputs();
 	
 	public void addPlot(String[] expr, Color3f color, String[] bounds, float[] stepSize) throws ExpressionParseException, IllegalEquationException, UndefinedVariableException;
-	
+	public void addActionListener(ActionListener a);
 }
