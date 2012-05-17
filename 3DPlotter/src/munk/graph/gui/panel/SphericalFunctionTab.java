@@ -4,16 +4,16 @@ import java.util.HashMap;
 
 import javax.vecmath.Color3f;
 
-import com.graphbuilder.math.ExpressionParseException;
-import com.graphbuilder.math.UndefinedVariableException;
-
 import munk.graph.function.Function;
-import munk.graph.function.FunctionUtil;
 import munk.graph.function.IllegalEquationException;
+import munk.graph.function.implicit.SphericalFunction;
 import munk.graph.gui.ColorList;
 import munk.graph.gui.FunctionLabel;
 import munk.graph.gui.GuiUtil;
 import munk.graph.gui.Plotter3D;
+
+import com.graphbuilder.math.ExpressionParseException;
+import com.graphbuilder.math.UndefinedVariableException;
 
 @SuppressWarnings("serial")
 public class SphericalFunctionTab extends AbstractFunctionTab {
@@ -24,7 +24,7 @@ public class SphericalFunctionTab extends AbstractFunctionTab {
 	}
 
 	public GridOptionPanel getGridOptionPanel(){
-		return new StdGridOptionPanel(new String[]{"0","1","0","pi","0","2*pi"});
+		return new SphGridOptionPanel(new String[]{"0","1","0","pi","0","2*pi"});
 	}
 	
 	public int getNoOfInputs(){
@@ -47,14 +47,6 @@ public class SphericalFunctionTab extends AbstractFunctionTab {
 				bounds[i] = tmp;
 			}
 		}
-		expressions[0] = sphericalToImplicit(expressions[0]);
-		return FunctionUtil.createFunction(expressions, color, bounds, stepSize);
-	}
-	
-	public static String sphericalToImplicit(String s){
-		s = s.replace("theta", "(atan(z/r))");
-		s = s.replace("phi", "(atan(y/x))");
-		s = s.replace("r", "(x^2+y^2+z^2)^0.5");
-		return s;
+		return new SphericalFunction(expressions, color, bounds, stepSize);
 	}
 }
