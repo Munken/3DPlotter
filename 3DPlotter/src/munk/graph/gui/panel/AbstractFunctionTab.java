@@ -2,9 +2,12 @@ package munk.graph.gui.panel;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
@@ -24,7 +27,6 @@ import javax.swing.SwingWorker;
 import javax.vecmath.Color3f;
 
 import munk.graph.function.Function;
-import munk.graph.function.FunctionList;
 import munk.graph.function.FunctionUtil;
 import munk.graph.function.IllegalEquationException;
 import munk.graph.function.TemplateFunction;
@@ -64,6 +66,7 @@ public abstract class AbstractFunctionTab extends JPanel implements FunctionTab{
 	private Plotter3D plotter;
 	private ExecutorService plottingQueue = Executors.newSingleThreadExecutor(); // Only plot one at a time
 	private ColorList colorList;
+	private ArrayList<ActionListener> listeners = new ArrayList<ActionListener>();;
 
 	public AbstractFunctionTab(ColorList colorList, HashMap<Function, FunctionLabel> map, Function templateFunc, Plotter3D plotter) throws Exception{
 		this.templateFunc = templateFunc;
@@ -106,7 +109,7 @@ public abstract class AbstractFunctionTab extends JPanel implements FunctionTab{
 		mainOP = new JPanel();
 		mainOP.setBorder(BorderFactory.createEtchedBorder());
 		GridBagConstraints gbc_mainOP = new GridBagConstraints();
-		gbc_mainOP.fill = GridBagConstraints.HORIZONTAL;
+		gbc_mainOP.fill = GridBagConstraints.BOTH;
 		gbc_mainOP.gridwidth = 5;
 		gbc_mainOP.insets = new Insets(0, 0, 5, 5);
 		gbc_mainOP.gridx = 1;
@@ -125,13 +128,14 @@ public abstract class AbstractFunctionTab extends JPanel implements FunctionTab{
 		funcPanelWrapper = new JScrollPane(outerFuncTab);
 		funcPanelWrapper.setBorder(BorderFactory.createEtchedBorder());
 		funcPanelWrapper.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		GridBagConstraints gbc_funcPanel = new GridBagConstraints();
-		gbc_funcPanel.fill = GridBagConstraints.BOTH;
-		gbc_funcPanel.gridwidth = 5;
-		gbc_funcPanel.insets = new Insets(0, 0, 5, 5);
-		gbc_funcPanel.gridx = 1;
-		gbc_funcPanel.gridy = getNoOfInputs()+2;;
-		this.add(funcPanelWrapper, gbc_funcPanel);
+		funcPanelWrapper.setMinimumSize(new Dimension(310,500));
+		GridBagConstraints gbc_funcPanelWrapper = new GridBagConstraints();
+		gbc_funcPanelWrapper.fill = GridBagConstraints.BOTH;
+		gbc_funcPanelWrapper.gridwidth = 5;
+		gbc_funcPanelWrapper.insets = new Insets(0, 0, 5, 5);
+		gbc_funcPanelWrapper.gridx = 1;
+		gbc_funcPanelWrapper.gridy = getNoOfInputs()+2;;
+		this.add(funcPanelWrapper, gbc_funcPanelWrapper);
 
 		GridBagLayout gbl_stdFuncPanel = new GridBagLayout();
 		gbl_stdFuncPanel.columnWidths = new int[]{0, 0};
@@ -166,7 +170,7 @@ public abstract class AbstractFunctionTab extends JPanel implements FunctionTab{
 						}
 						addPlot(equations,templateFunc.getColor(), gridOP.getGridBounds(), gridOP.getGridStepSize());
 					} catch (ExpressionParseException | IllegalEquationException | UndefinedVariableException e1) {
-						// TODO: Error handling..
+						signalAll(new ActionEvent(e1, -1, ""));
 						e1.printStackTrace();
 					}
 				}
@@ -180,7 +184,7 @@ public abstract class AbstractFunctionTab extends JPanel implements FunctionTab{
 				try {
 					setSelected(templateFunc);
 				} catch (ExpressionParseException e) {
-					// TODO: Error handling..
+					signalAll(new ActionEvent(e, -1, ""));
 					e.printStackTrace();
 				}
 			}
@@ -281,12 +285,11 @@ public abstract class AbstractFunctionTab extends JPanel implements FunctionTab{
 					} catch (ExpressionParseException
 							| IllegalEquationException
 							| UndefinedVariableException e1) {
-						// TODO Error handling.
+						signalAll(new ActionEvent(e1, -1, ""));
 						e1.printStackTrace();
 					}
 				}
 				else{
-					System.out.println("hest");
 					func.setBoundsString(e.getStringBounds());
 					func.setStepsize(e.getStepsize());
 				}
@@ -314,7 +317,7 @@ public abstract class AbstractFunctionTab extends JPanel implements FunctionTab{
 					} catch (ExpressionParseException
 							| IllegalEquationException
 							| UndefinedVariableException e1) {
-						// TODO Error handling.
+						signalAll(new ActionEvent(e1, -1, ""));
 						e1.printStackTrace();
 					}
 				} 
@@ -392,6 +395,16 @@ public abstract class AbstractFunctionTab extends JPanel implements FunctionTab{
 	
 	public List<Function> getFunctionList(){
 		return funcList;
+	}
+	
+	public void addActionListener(ActionListener a){
+		listeners.add(a);
+	}
+	
+	private void signalAll(ActionEvent e){
+		for(ActionListener a : listeners){
+			a.actionPerformed(e);
+		}
 	}
 }
 
