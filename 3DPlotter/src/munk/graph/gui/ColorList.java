@@ -13,12 +13,12 @@ import munk.graph.function.Function;
 @SuppressWarnings("serial")
 public class ColorList extends ArrayList<Color3f> {
 	
-	List<Function> functionList = new ArrayList<Function>();
+//	List<Function> functionList = new ArrayList<Function>();
 	
 	/*
 	 * Try to load colors from file, otherwise load default colors.
 	 */
-	public ColorList(List<Function> functionList){
+	public ColorList(){
 		
 		try{
 			this.addAll((ColorList) ObjectReader.ObjectFromFile(new File("Files/config.color")));
@@ -44,23 +44,23 @@ public class ColorList extends ArrayList<Color3f> {
 		return iconList;
 	}
 
-	/*
-	 * Return the next available color. If none are, return the one least in use.
-	 */
-	
-	public Color3f getNextAvailableColor() {
-		int[] frequence = new int[this.size()];
-		ArrayList<Integer> indexList = new ArrayList<Integer>();
-		for(int i = 0; i < this.size() ; i++){
-			frequence[i]=0;
-			for(Function f : functionList){
-				if(f.getColor().equals(this.get(i))) frequence[i]++;
-			}
-			indexList.add(frequence[i]);
-		}
-		Arrays.sort(frequence);
-		return this.get(indexList.indexOf(frequence[0]));
-	}
+//	/*
+//	 * Return the next available color. If none are, return the one least in use.
+//	 */
+//	
+//	public Color3f getNextAvailableColor() {
+//		int[] frequence = new int[this.size()];
+//		ArrayList<Integer> indexList = new ArrayList<Integer>();
+//		for(int i = 0; i < this.size() ; i++){
+//			frequence[i]=0;
+//			for(Function f : functionList){
+//				if(f.getColor().equals(this.get(i))) frequence[i]++;
+//			}
+//			indexList.add(frequence[i]);
+//		}
+//		Arrays.sort(frequence);
+//		return this.get(indexList.indexOf(frequence[0]));
+//	}
 	
 	/*
 	 * Save the color list, when a new color has been added.

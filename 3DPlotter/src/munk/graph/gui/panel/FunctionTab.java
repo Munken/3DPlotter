@@ -1,10 +1,11 @@
 package munk.graph.gui.panel;
 
+import java.util.List;
+
 import javax.vecmath.Color3f;
 
 import munk.graph.function.Function;
 import munk.graph.function.IllegalEquationException;
-import munk.graph.gui.listener.FunctionListener;
 
 import com.graphbuilder.math.ExpressionParseException;
 import com.graphbuilder.math.UndefinedVariableException;
@@ -13,8 +14,11 @@ public interface FunctionTab{
 
 	public void updateColors();
 	public void updateReferences(Function f) throws ExpressionParseException;
-	public void addFunctionListener(FunctionListener f);
-
+	
+	public void deletePlot(Function f);
+	public void addPlot(Function f);
+	public List<Function> getFunctionList();
+	
 	GridOptionPanel getGridOptionPanel();
 	int getNoOfInputs();
 	
