@@ -200,12 +200,9 @@ public abstract class AbstractFunctionTab extends JPanel implements FunctionTab{
 				}
 			}
 			else if (selectedFunction != null){
-				try{
-					map.get(selectedFunction).setSelected(false);
-				}
-				catch(NullPointerException e){
-					// Do nothing.
-				}
+				FunctionLabel label = map.get(selectedFunction);
+				if (label != null)
+					label.setSelected(false);
 			}
 			selectedFunction = f;
 
