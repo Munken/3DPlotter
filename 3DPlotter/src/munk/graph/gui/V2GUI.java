@@ -100,6 +100,7 @@ public class V2GUI {
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
+		UIManager.put("Slider.onlyLeftMouseButtonDrag", Boolean.FALSE);
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				// Set look-and-feel to OS default.

@@ -138,22 +138,7 @@ public class SphGridOptionPanel extends AbstractGridOptionPanel implements GridO
      	GuiUtil.setupUndoListener(zMax);
 		setGridBounds(bounds);
 		
-		MouseListener sliderListener = new MouseAdapter() {
-
-			@Override
-			public void mouseReleased(MouseEvent arg0) {
-					try {
-//						// For now adjust all sliders accordingly.
-//						JSlider j = (JSlider) arg0.getSource();
-//						xSlider.setValue(j.getValue());
-//						ySlider.setValue(j.getValue());
-//						zSlider.setValue(j.getValue());
-						signallAll();
-					} catch (ExpressionParseException e) {
-						e.printStackTrace();
-					}
-			}
-		};
+		MouseListener sliderListener = getKeyListener(xSlider, ySlider, zSlider);
 		xSlider.addMouseListener(sliderListener);
 		ySlider.addMouseListener(sliderListener);
 		zSlider.addMouseListener(sliderListener);	

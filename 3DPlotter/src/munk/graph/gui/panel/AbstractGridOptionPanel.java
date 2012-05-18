@@ -3,7 +3,7 @@ package munk.graph.gui.panel;
 import java.awt.event.*;
 import java.util.ArrayList;
 
-import javax.swing.JPanel;
+import javax.swing.*;
 
 import munk.graph.function.*;
 import munk.graph.gui.listener.*;
@@ -71,4 +71,77 @@ public abstract class AbstractGridOptionPanel extends JPanel {
 		};
 		return f;
 	}
+	
+	protected MouseListener getKeyListener(final JSlider... sliders) {
+		return new MouseAdapter() {
+			BoundedRangeModel sharedModel;
+			BoundedRangeModel[] models;
+			
+			{
+				models = new BoundedRangeModel[sliders.length];
+				
+				for (int i = 0; i < models.length; i++) {
+					models[i] = sliders[i].getModel();
+				}
+			}
+			
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+					try {
+//						// For now adjust all sliders accordingly.
+//						JSlider j = (JSlider) arg0.getSource();
+//						xSlider.setValue(j.getValue());
+//						ySlider.setValue(j.getValue());
+//						zSlider.setValue(j.getValue());
+						signallAll();
+						
+						if (sharedModel != null) {
+							int value = sharedModel.getValue();
+							for (int i = 0; i < models.length; i++) {
+								BoundedRangeModel m = models[i];
+								m.setValue(value);
+								sliders[i].setModel(m);
+							}
+						}
+						sharedModel = null;
+					} catch (ExpressionParseException e) {
+						e.printStackTrace();
+					}
+			}
+			
+			@Override
+			public void mousePressed(MouseEvent e) {
+				if (SwingUtilities.isRightMouseButton(e)) {
+					JSlider slider = (JSlider) e.getSource();
+					sharedModel = slider.getModel();
+					
+					for (int i = 0; i < models.length; i++) {
+						sliders[i].setModel(sharedModel);
+					}
+				}
+			}
+			
+		};
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }
