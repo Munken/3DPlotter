@@ -1,15 +1,12 @@
 package munk.graph;
 
 import java.awt.BorderLayout;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 
 import javax.swing.JFrame;
 import javax.swing.JTextField;
 
 import munk.graph.appearance.Colors;
-import munk.graph.function.*;
-import munk.graph.function.implicit.ImplicitIterativeFunction;
+import munk.graph.function.IllegalEquationException;
 import munk.graph.function.implicit.SphericalFunction;
 import munk.graph.gui.Plotter3D;
 
