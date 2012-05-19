@@ -36,7 +36,7 @@ public class SphericalMulti extends ImplicitMulti {
 			float yReal = y*stepsizes[0]-rMax;
 			float zReal = z*stepsizes[0]-rMax;
 			// Radius bounds.
-			double r = Math.pow(Math.pow(xReal, 2)+ Math.pow(yReal, 2) + Math.pow(zReal, 2),0.5);
+			double r = Math.sqrt(Math.pow(xReal, 2)+ Math.pow(yReal, 2) + Math.pow(zReal, 2));
 			if((r+0.1f) > rMin && (r-0.1f) < rMax){
 				//Phi bounds.
 				//			if(Math.atan(yReal/xReal) > phiMin && Math.atan(yReal/xReal) < phiMax){

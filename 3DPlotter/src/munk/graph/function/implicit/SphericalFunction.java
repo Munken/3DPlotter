@@ -20,7 +20,7 @@ public class SphericalFunction extends AbstractFunction {
 	private static String sphericalToImplicit(String s){
 		s = s.replace("theta", "(acos(z/r))");
 		s = s.replace("phi", "(atan(y/x))");
-		s = s.replace("r", "(x^2+y^2+z^2)^0.5");
+		s = s.replace("r", "sqrt(x^2+y^2+z^2)");
 		return s;
 	}
 }
