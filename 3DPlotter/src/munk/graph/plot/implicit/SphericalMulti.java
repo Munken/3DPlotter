@@ -29,7 +29,7 @@ public class SphericalMulti extends ImplicitMulti {
 	}
 
 	protected boolean validPosition(int x, int y, int z) {
-		boolean validCube = (x >= 0 && x < xLength) && (y >= 0 && y < yLength) && (z >= 0 && z < zLength);
+		boolean validCube = super.validPosition(x, y, z);
 		
 		if (validCube) {
 			float xReal = x*stepsizes[0]-rMax;

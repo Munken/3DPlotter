@@ -15,8 +15,4 @@ public class XYZMulti extends ImplicitMulti {
 		// TODO Auto-generated constructor stub
 	}
 
-	protected boolean validPosition(int x, int y, int z) {
-		return (x >= 0 && x < xLength) && (y >= 0 && y < yLength) && (z >= 0 && z < zLength);
-	}
-	
 }

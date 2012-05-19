@@ -639,7 +639,9 @@ public abstract class ImplicitMulti extends AbstractImplicit{
 	
 	//TODO: Fix here: First correct accoring to R. Then do somthing with theta/phi
 	//TODO: xFloat = x*xStepsize - xMin
-	protected abstract boolean validPosition(int x, int y, int z);
+	protected boolean validPosition(int x, int y, int z) {
+		return (x >= 0 && x < xLength) && (y >= 0 && y < yLength) && (z >= 0 && z < zLength);
+	}
 
 	private void markAsVisited(int x, int y, int z) {
 		synchronized (visited[z][y]) {
