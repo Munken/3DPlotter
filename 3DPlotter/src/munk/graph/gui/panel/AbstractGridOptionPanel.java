@@ -111,7 +111,7 @@ public abstract class AbstractGridOptionPanel extends JPanel {
 			
 			@Override
 			public void mousePressed(MouseEvent e) {
-				if (SwingUtilities.isRightMouseButton(e)) {
+				if (SwingUtilities.isRightMouseButton(e) || e.isShiftDown()) {
 					JSlider slider = (JSlider) e.getSource();
 					sharedModel = slider.getModel();
 					
