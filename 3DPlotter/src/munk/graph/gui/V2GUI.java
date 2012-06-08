@@ -150,7 +150,7 @@ public class V2GUI {
 
 	private void initFrame(){
 		frame = new JFrame("Ultra Mega Epic Xtreme Plotter 3D");
-		frame.setBounds(100, 100, 1000, 1000);
+		frame.setBounds(0, 0, 1000, 1000);
      	GridBagLayout gbl = new GridBagLayout();
      	gbl.columnWidths = new int[]{10, 300, 0, 0, 0};
      	gbl.rowHeights = new int[]{2, 0, 5, 0};
