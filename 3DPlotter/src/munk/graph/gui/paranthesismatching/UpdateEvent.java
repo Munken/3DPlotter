@@ -4,6 +4,11 @@ import javax.swing.event.CaretEvent;
 
 public class UpdateEvent extends CaretEvent {
 
+	/**
+	 * 
+	 */
+	private static final long	serialVersionUID	= 6731830825899703002L;
+
 	public UpdateEvent(Object source) {
 		super(source);
 	}

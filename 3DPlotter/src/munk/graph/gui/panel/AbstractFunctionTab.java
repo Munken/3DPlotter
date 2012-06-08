@@ -337,7 +337,6 @@ public abstract class AbstractFunctionTab extends JPanel implements FunctionTab{
 							| IllegalEquationException
 							| UndefinedVariableException e1) {
 						signalAll(new ActionEvent(e1, -1, ""));
-						e1.printStackTrace();
 					}
 				} 
 

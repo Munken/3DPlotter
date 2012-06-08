@@ -15,6 +15,7 @@ import com.graphbuilder.math.UndefinedVariableException;
 
 public class PlotterDriver {
 	
+	@SuppressWarnings("unused")
 	public static void main(String[] args) throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
 		final JFrame frame = new JFrame("Mega ultra");
 		

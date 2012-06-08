@@ -6,13 +6,12 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 
 import javax.swing.*;
-import javax.swing.event.CaretEvent;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.Document;
 import javax.swing.undo.*;
-import javax.swing.event.CaretEvent;
 
-import munk.graph.gui.paranthesismatching.*;
+import munk.graph.gui.paranthesismatching.BracketMatcher;
+import munk.graph.gui.paranthesismatching.UpdateEvent;
 
 import com.graphbuilder.math.*;
 

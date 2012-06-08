@@ -2,13 +2,12 @@ package munk.graph.gui;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
 
 import javax.vecmath.Color3f;
 
 import munk.graph.IO.ObjectReader;
 import munk.graph.IO.ObjectWriter;
-import munk.graph.function.Function;
 
 @SuppressWarnings("serial")
 public class ColorList extends ArrayList<Color3f> {
