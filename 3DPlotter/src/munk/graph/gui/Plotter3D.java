@@ -105,7 +105,6 @@ public class Plotter3D extends JPanel{
 	public RenderedImage takeScreenshot() {
 		offScreenCanvas.renderOffScreenBuffer();
 		offScreenCanvas.waitForOffScreenRendering();
-		System.out.println("Hest");
 		return offScreenCanvas.getOffScreenBuffer().getImage();
 	}
 	
