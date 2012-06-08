@@ -18,6 +18,7 @@ import com.graphbuilder.math.UndefinedVariableException;
 @SuppressWarnings("serial")
 public class ParametricFunctionTab extends AbstractFunctionTab {
 
+	private static final String[] LABEL_NAMES = {"x: ", "y: ", "z: "};
 	public ParametricFunctionTab(ColorList colorList, HashMap<Function, FunctionLabel> map, Function templateFunc, Plotter3D plotter) throws Exception{
 		super(colorList, map, templateFunc, plotter);
 		super.init();
@@ -49,4 +50,11 @@ public class ParametricFunctionTab extends AbstractFunctionTab {
 		}
 		return new ParametricFunction(expressions, color, bounds, stepSize);
 	}
+
+	@Override
+	protected String[] labelNames() {
+		return LABEL_NAMES;
+	}
+	
+	
 }

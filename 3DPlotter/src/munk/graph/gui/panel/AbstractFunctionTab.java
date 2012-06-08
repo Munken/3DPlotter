@@ -18,12 +18,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.SwingWorker;
+import javax.swing.*;
 import javax.vecmath.Color3f;
 
 import munk.graph.function.Function;
@@ -81,27 +76,45 @@ public abstract class AbstractFunctionTab extends JPanel implements FunctionTab{
 		rowWeights[getNoOfInputs()+2] = 1.0; 
 		
 		GridBagLayout gbl_functionPanel = new GridBagLayout();
-		gbl_functionPanel.columnWidths = new int[]{5, 25, 50, 50, 30, 25, 5, 0};
+		gbl_functionPanel.columnWidths = new int[]{5, 0, 50, 50, 30, 25, 5, 0};
 		gbl_functionPanel.rowHeights = new int[]{10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10};
 		gbl_functionPanel.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		gbl_functionPanel.rowWeights = rowWeights;
 		this.setLayout(gbl_functionPanel);
 
+		
 		// Function input field.
 		for(int i = 0; i < getNoOfInputs(); i++){
 			// Creation.
 			input[i] = new JTextField();
 			GridBagConstraints gbc_stdFuncInput = new GridBagConstraints();
-			gbc_stdFuncInput.gridwidth = 5;
+			gbc_stdFuncInput.gridwidth = 4;
 			gbc_stdFuncInput.insets = new Insets(0, 0, 5, 5);
 			gbc_stdFuncInput.fill = GridBagConstraints.HORIZONTAL;
 			gbc_stdFuncInput.anchor = GridBagConstraints.NORTH;
-			gbc_stdFuncInput.gridx = 1;
+			gbc_stdFuncInput.gridx = 2;
 			gbc_stdFuncInput.gridy = i+1;
+			
 			// Setup.
 			GuiUtil.setupUndoListener(input[i]);
 			setupInputListeners(input[i]);
 			this.add(input[i], gbc_stdFuncInput);
+			
+		}
+		
+		// Labels for the input fields
+		String[] labelNames = labelNames();
+		for (int i = 0; i < labelNames.length; i++) {
+			GridBagConstraints gbc_FuncLabel = new GridBagConstraints();
+			gbc_FuncLabel.gridwidth = 1;
+			gbc_FuncLabel.insets = new Insets(0, 0, 5, 5);
+			gbc_FuncLabel.fill = GridBagConstraints.HORIZONTAL;
+			gbc_FuncLabel.anchor = GridBagConstraints.CENTER;
+			gbc_FuncLabel.gridx = 1;
+			gbc_FuncLabel.gridy = i+1;
+			
+			JLabel label = new JLabel(labelNames[i]);
+			this.add(label, gbc_FuncLabel);
 		}
 
 		// OptionPanel.
@@ -154,7 +167,16 @@ public abstract class AbstractFunctionTab extends JPanel implements FunctionTab{
 	}
 	
 	public abstract void addPlot(Function newFunction);
-	public abstract Function createNewFunction(String[] expressions, Color3f color, String[] bounds, float[] stepSize) throws ExpressionParseException, UndefinedVariableException, IllegalEquationException;
+	public abstract Function createNewFunction(String[] expressions, Color3f color, 
+												String[] bounds, float[] stepSize) 
+					throws ExpressionParseException, 
+					UndefinedVariableException, 
+					IllegalEquationException;
+	
+	protected String[] labelNames() {
+		return new String[0];
+	}
+	
 
 	private void setupInputListeners(final JTextField currentInput){
 		currentInput.addKeyListener(new KeyAdapter() {
