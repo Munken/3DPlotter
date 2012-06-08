@@ -1,50 +1,21 @@
 package munk.graph.gui;
-import java.awt.Component;
-import java.awt.Desktop;
-import java.awt.Dimension;
-import java.awt.EventQueue;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
+import java.awt.*;
+import java.awt.event.*;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 
 import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
+import javax.swing.*;
 import javax.vecmath.Color3f;
 
 import munk.graph.IO.ObjectReader;
 import munk.graph.IO.ObjectWriter;
 import munk.graph.appearance.Colors;
-import munk.graph.function.Function;
-import munk.graph.function.FunctionUtil;
-import munk.graph.function.IllegalEquationException;
-import munk.graph.function.ParametricFunction;
-import munk.graph.function.TemplateFunction;
-import munk.graph.function.ZippedFunction;
+import munk.graph.function.*;
 import munk.graph.function.implicit.SphericalFunction;
-import munk.graph.gui.panel.ColorOptionPanel;
-import munk.graph.gui.panel.FunctionTab;
-import munk.graph.gui.panel.ParametricFunctionTab;
-import munk.graph.gui.panel.SphericalFunctionTab;
-import munk.graph.gui.panel.XYZFunctionTab;
+import munk.graph.gui.panel.*;
 
 import com.graphbuilder.math.ExpressionParseException;
 import com.graphbuilder.math.UndefinedVariableException;
@@ -148,6 +119,7 @@ public class V2GUI {
 		init3Dplotter();
      	initFunctionTabs();
 		initMenuBar();
+		initIcon();
      
      	// Update references.
      	paramFuncTab.updateReferences(paramTemplateFunc);
@@ -170,6 +142,12 @@ public class V2GUI {
      	autoResize();
 	}
 	
+	private void initIcon() {
+		Image icon = new ImageIcon("Icons/128.png").getImage();
+		icon = icon.getScaledInstance(16, 16, Image.SCALE_SMOOTH);
+		frame.setIconImage(icon);
+	}
+
 	private void initFrame(){
 		frame = new JFrame("Ultra Mega Epic Xtreme Plotter 3D");
 		frame.setBounds(100, 100, 1000, 1000);
