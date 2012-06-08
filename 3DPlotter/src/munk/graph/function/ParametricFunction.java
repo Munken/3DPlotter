@@ -1,6 +1,8 @@
 package munk.graph.function;
 
 
+import java.util.*;
+
 import javax.vecmath.Color3f;
 
 import munk.graph.gui.GuiUtil;
@@ -13,6 +15,8 @@ import com.graphbuilder.math.*;
  */
 public class ParametricFunction extends AbstractFunction {
 	
+	private static final List<String> ALLOWED_VARIABLES = 
+			Arrays.asList("t", "u");
 	/**
 	 * 
 	 * @param expressions The x, y and z expression. Length must be 3!
@@ -28,8 +32,10 @@ public class ParametricFunction extends AbstractFunction {
 				createPlotter(expressions, GuiUtil.evalStringArray(bounds), stepSize));
 	}
 	
-	private static ParametricPlotter createPlotter(String[] expressions, float[] bounds, float[] stepsize) throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
-		String[] varNames = FunctionUtil.variableNames(expressions);
+	private static ParametricPlotter createPlotter(String[] expressions, float[] bounds, float[] stepsize) 
+									throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
+		
+		String[] varNames = variableNames(expressions);
 		int nVariables = varNames.length;
 		
 		String xExpr = expressions[0];
@@ -37,11 +43,43 @@ public class ParametricFunction extends AbstractFunction {
 		String zExpr = expressions[2];
 		
 		if (nVariables == 1) {
-			return new Parametric1D(xExpr, yExpr, zExpr, bounds[0], bounds[1], varNames[0], stepsize);
+			int varIndex = ALLOWED_VARIABLES.indexOf(varNames[0].toLowerCase());
+			int lower = 2*varIndex;
+			int upper = 2*varIndex + 1;
+			
+			return new Parametric1D(xExpr, yExpr, zExpr, bounds[lower], bounds[upper], varNames[0], stepsize);
 		} else if (nVariables == 2){
 			return new Parametric2D(xExpr, yExpr, zExpr, bounds[0], bounds[1], bounds[2], bounds[3], varNames, stepsize);
 		} else {
 			throw new IllegalEquationException("There must be one or two variables in the expression!");
 		}
+	}
+	
+	private static String[] variableNames (String[] expressions) throws ExpressionParseException {
+		Set<String> variables = new HashSet<String>();
+		
+		for (String ex : expressions) {
+			
+			if (!ex.equals("")) {
+				Expression n = ExpressionTree.parse(ex);
+				String[] variableNames = n.getVariableNames();
+				for (String var : variableNames) {
+					
+					if (ALLOWED_VARIABLES.contains(var.toLowerCase())) {
+						variables.add(var);	
+					} else {
+						
+						throw new ExpressionParseException("The allowed variables are t and u", 0);
+					}
+				}
+			} else {
+				throw new ExpressionParseException("You must specify all coordinates", -1);
+			}
+		}
+		
+		String[] varNames = new String[variables.size()];
+		variables.toArray(varNames);
+		Arrays.sort(varNames);
+		return varNames;
 	}
 }

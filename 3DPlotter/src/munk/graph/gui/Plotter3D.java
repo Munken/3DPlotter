@@ -188,8 +188,8 @@ public class Plotter3D extends JPanel{
 	    mouseRotate.setTransformGroup(root);
 	    root.addChild(mouseRotate);
 	    
-//	    BoundingSphere bs = new BoundingSphere(new Point3d(0,0,0), 6.0);
-	    mouseRotate.setSchedulingBounds(root.getBounds());
+	    BoundingSphere bs = new BoundingSphere(new Point3d(0,0,0), 6.0);    
+	    mouseRotate.setSchedulingBounds(bs);
 	}
 	
 	private void initAxis() {
