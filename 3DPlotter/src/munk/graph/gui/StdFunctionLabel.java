@@ -19,6 +19,7 @@ public class StdFunctionLabel extends JPanel implements FunctionLabel{
 	private Function mother;
 	private JButton btnDelete;
 	private List<FunctionListener> listeners = new ArrayList<FunctionListener>();
+	private boolean selected;
 
 	public StdFunctionLabel (Function function){
 		this.mother = function;
@@ -26,34 +27,36 @@ public class StdFunctionLabel extends JPanel implements FunctionLabel{
 		// GUI representation
 		GridBagLayout gbl_fLabel = new GridBagLayout();
 		gbl_fLabel.columnWidths = new int[]{20, 150, 20, 0};
-		gbl_fLabel.rowHeights = new int[]{0, 0};
+		gbl_fLabel.rowHeights = new int[]{0, 0, 0};
 		gbl_fLabel.columnWeights = new double[]{0.0, 1.0, 0.0, Double.MIN_VALUE};
-		gbl_fLabel.rowWeights = new double[]{0.0, Double.MIN_VALUE};
+		gbl_fLabel.rowWeights = new double[]{0.0, 0.0, Double.MIN_VALUE};
 		this.setLayout(gbl_fLabel);
-
-		toggleButton = new ToggleButton(new ImageIcon("Icons/selected.png"),new ImageIcon("Icons/notSelected.png"));
-		GridBagConstraints gbc_chckbxTest = new GridBagConstraints();
-		gbc_chckbxTest.insets = new Insets(0, 0, 0, 5);
-		gbc_chckbxTest.gridx = 0;
-		gbc_chckbxTest.gridy = 0;
-		this.add(toggleButton, gbc_chckbxTest);
+		
+		btnDelete = new JButton(new ImageIcon("Icons/delete.png"));
+		GridBagConstraints gbc_btnDelete = new GridBagConstraints();
+		gbc_btnDelete.insets = new Insets(0, 0, 5, 5);
+		gbc_btnDelete.gridx = 0;
+		gbc_btnDelete.gridy = 0;
+		add(btnDelete, gbc_btnDelete);
 
 		exprField = new JTextField(mother.getExpression()[0]);
 		GridBagConstraints gbc_list = new GridBagConstraints();
-		gbc_list.insets = new Insets(0, 0, 0, 5);
-		gbc_list.fill = GridBagConstraints.HORIZONTAL;
+		gbc_list.insets = new Insets(0, 0, 5, 5);
+		gbc_list.fill = GridBagConstraints.BOTH;
 		gbc_list.gridx = 1;
 		gbc_list.gridy = 0;
 		this.add(exprField, gbc_list);
 		exprField.setEditable(true);
+
+		toggleButton = new ToggleButton(new ImageIcon("Icons/selected.png"),new ImageIcon("Icons/notSelected.png"));
+		GridBagConstraints gbc_chckbxTest = new GridBagConstraints();
+		gbc_chckbxTest.insets = new Insets(0, 0, 5, 0);
+		gbc_chckbxTest.gridx = 2;
+		gbc_chckbxTest.gridy = 0;
+		this.add(toggleButton, gbc_chckbxTest);
+		
 		// Don't fuck up layout, when text string becomes too long.
 		exprField.setPreferredSize(new Dimension(100,20));
-		
-		btnDelete = new JButton(new ImageIcon("Icons/delete.png"));
-		GridBagConstraints gbc_btnDelete = new GridBagConstraints();
-		gbc_btnDelete.gridx = 2;
-		gbc_btnDelete.gridy = 0;
-		add(btnDelete, gbc_btnDelete);
 		addTextChangeListener();
 		addToggleButtonListener();	
 		addDeleteListener();
@@ -66,8 +69,6 @@ public class StdFunctionLabel extends JPanel implements FunctionLabel{
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-//				listener.actionPerformed(new ActionEvent(mother, FunctionLabel.DELETE, exprField.getText()));
-				
 				FunctionEvent ev = new FunctionEvent(mother, FunctionEvent.ACTION.DELETE);
 				notifyListeners(ev);
 			}
@@ -80,7 +81,6 @@ public class StdFunctionLabel extends JPanel implements FunctionLabel{
 			public void actionPerformed(ActionEvent e) {
 				mother.setVisible(toggleButton.isSelected());
 				FunctionEvent ev = new FunctionEvent(mother, FunctionEvent.ACTION.VISIBILITY);
-				
 				notifyListeners(ev);
 			}
 		});
@@ -93,20 +93,20 @@ public class StdFunctionLabel extends JPanel implements FunctionLabel{
 	 * RED: Evaluation failed.
 	 */
 	private void addTextChangeListener() {
-		
+
 		exprField.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusGained(FocusEvent e) {
 				// TODO Auto-generated method stub
 				FocusListener[] listeners = getFocusListeners();
-				
+
 				for (FocusListener l : listeners) {
 					l.focusGained(e);
 				}
 			}
-			
+
 		});
-		
+
 		// Evaluation.
 		exprField.addKeyListener(new KeyAdapter() {
 
@@ -120,7 +120,12 @@ public class StdFunctionLabel extends JPanel implements FunctionLabel{
 							notifyPlotUpdate(exprField.getText());
 							
 							if(exprField.getText().equals(mother.getExpression()[0])){
-								exprField.setBackground(NORMAL_COLOR);
+								if(selected){
+									exprField.setBackground(SELECTED_COLOR);
+								}
+								else{
+									exprField.setBackground(NORMAL_COLOR);
+								}
 							}
 							else {
 								exprField.setBackground(FAILED_COLOR);
@@ -130,7 +135,12 @@ public class StdFunctionLabel extends JPanel implements FunctionLabel{
 							exprField.setBackground(WARNING_COLOR);
 						}
 					} else {
-						exprField.setBackground(NORMAL_COLOR);
+						if(selected){
+							exprField.setBackground(SELECTED_COLOR);
+						}
+						else{
+							exprField.setBackground(NORMAL_COLOR);
+						}
 					}
 
 				}
@@ -166,8 +176,8 @@ public class StdFunctionLabel extends JPanel implements FunctionLabel{
 	
 	private void notifyPlotUpdate(String... text) {
 		FunctionEvent ev = new FunctionEvent(mother, text, 
-												mother.getColor(), mother.getBounds(), 
-												mother.getStepsizes(), FunctionEvent.ACTION.UPDATE);
+												mother.getColor(), mother.getBoundsString(), 
+												mother.getStepsize(), FunctionEvent.ACTION.UPDATE);
 		notifyListeners(ev);
 	}
 	
@@ -175,5 +185,19 @@ public class StdFunctionLabel extends JPanel implements FunctionLabel{
 	public void addFocusListener(FocusListener l) {
 		super.addFocusListener(l);
 	}
+
+	public void setSelected(boolean b){
+		selected = b;
+		if(selected){
+			exprField.setBackground(SELECTED_COLOR);
+		}
+		else{
+			exprField.setBackground(NORMAL_COLOR);
+		}
+	}
 	
+	public Function getMother(){
+		return mother;
+	}
+
 }

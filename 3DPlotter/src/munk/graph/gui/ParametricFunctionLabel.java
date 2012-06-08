@@ -26,6 +26,7 @@ public class ParametricFunctionLabel extends JPanel implements FunctionLabel{
 	private JLabel lblX;
 	private JLabel lblY;
 	private JLabel lblZ;
+	private boolean selected;
 	
 	private List<FunctionListener> listeners = new ArrayList<FunctionListener>();
 
@@ -187,7 +188,12 @@ public class ParametricFunctionLabel extends JPanel implements FunctionLabel{
 							if(exprFieldX.getText().equals(mother.getExpression()[0]) 
 									&& exprFieldY.getText().equals(mother.getExpression()[1]) 
 									&& exprFieldZ.getText().equals(mother.getExpression()[2])){
-								setExpressionFieldBackground(NORMAL_COLOR);
+								if(selected){
+									setExpressionFieldBackground(SELECTED_COLOR);
+								}
+								else{
+									setExpressionFieldBackground(NORMAL_COLOR);
+								}
 							}
 							else{
 								setExpressionFieldBackground(FAILED_COLOR);
@@ -199,7 +205,12 @@ public class ParametricFunctionLabel extends JPanel implements FunctionLabel{
 					}
 					// Nothing changed just keey calm and carry on
 					else {
-						setExpressionFieldBackground(NORMAL_COLOR);
+						if(selected){
+							setExpressionFieldBackground(SELECTED_COLOR);
+						}
+						else{
+							setExpressionFieldBackground(NORMAL_COLOR);
+						}
 					}
 				}
 			}
@@ -241,13 +252,27 @@ public class ParametricFunctionLabel extends JPanel implements FunctionLabel{
 	
 	private void notifyPlotUpdate(String... text) {
 		FunctionEvent ev = new FunctionEvent(mother, text, 
-												mother.getColor(), mother.getBounds(), 
-												mother.getStepsizes(), FunctionEvent.ACTION.UPDATE);
+												mother.getColor(), mother.getBoundsString(), 
+												mother.getStepsize(), FunctionEvent.ACTION.UPDATE);
 		notifyListeners(ev);
 	}
 	
 	@Override
 	public void addFocusListener(FocusListener l) {
 		super.addFocusListener(l);
+	}
+	
+	public void setSelected(boolean b){
+		selected = b;
+		if(selected){
+			setExpressionFieldBackground(SELECTED_COLOR);
+		}
+		else{
+			setExpressionFieldBackground(NORMAL_COLOR);
+		}
+	}
+	
+	public Function getMother(){
+		return mother;
 	}
 }

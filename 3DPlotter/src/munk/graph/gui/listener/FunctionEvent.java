@@ -17,7 +17,7 @@ public class FunctionEvent {
 	private Function	oldFunction;
 	private String[]	newExpr;
 	private Color3f	color;
-	private float[]	bounds;
+	private String[]	bounds;
 	private float[] stepsizes;
 	private ACTION action;
 
@@ -30,7 +30,7 @@ public class FunctionEvent {
 	 * @param newStepsizes
 	 * @param action
 	 */
-	public FunctionEvent(Function oldFunction, String[] newExpr, Color3f newColor, float[] newBounds, float[] newStepsizes, ACTION action) {
+	public FunctionEvent(Function oldFunction, String[] newExpr, Color3f newColor, String[] newBounds, float[] newStepsizes, ACTION action) {
 		this.oldFunction = oldFunction;
 		this.newExpr = newExpr;
 		this.color = newColor;
@@ -41,8 +41,14 @@ public class FunctionEvent {
 	
 	public FunctionEvent(Function oldFunction, ACTION action) {
 		this(oldFunction, oldFunction.getExpression(), 
-				oldFunction.getColor(), oldFunction.getBounds(), 
-				oldFunction.getStepsizes(), action);
+				oldFunction.getColor(), oldFunction.getBoundsString(), 
+				oldFunction.getStepsize(), action);
+	}
+	
+	public FunctionEvent(Function oldFunction, String[] bounds, float[] stepSize) {
+		this.oldFunction = oldFunction;
+		this.bounds = bounds;
+		this.stepsizes = stepSize;
 	}
 
 	public Function getOldFunction() {
@@ -57,11 +63,11 @@ public class FunctionEvent {
 		return color;
 	}
 
-	public float[] getBounds() {
+	public String[] getStringBounds() {
 		return bounds;
 	}
 
-	public float[] getStepsizes() {
+	public float[] getStepsize() {
 		return stepsizes;
 	}
 

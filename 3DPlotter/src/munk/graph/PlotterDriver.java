@@ -1,15 +1,13 @@
 package munk.graph;
 
 import java.awt.BorderLayout;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 
 import javax.swing.JFrame;
 import javax.swing.JTextField;
 
 import munk.graph.appearance.Colors;
-import munk.graph.function.*;
-import munk.graph.function.implicit.ImplicitIterativeFunction;
+import munk.graph.function.IllegalEquationException;
+import munk.graph.function.implicit.SphericalFunction;
 import munk.graph.gui.Plotter3D;
 
 import com.graphbuilder.math.ExpressionParseException;
@@ -34,7 +32,8 @@ public class PlotterDriver {
 //		p.plotFunction(p2);
 		
 		
-		final float[] recBound = {-i, i, -i, i, -i, i};
+		final String[] recBound = {"-1", "1", "-1", "1", "-1", "1"};
+		final float[] stepSize = {0.1f,0.1f,0.1f};
 		String expr = "z*z - x*(cos(y)*cos(x)) = 0";
 //		expr = "x^2 + y^2 + z^2 = 3";
 //		expr = "0 = 0";
@@ -44,9 +43,11 @@ public class PlotterDriver {
 //		ImplicitRecursiveFunction rec = new ImplicitRecursiveFunction(expr, Colors.BLUE, recBound, 0.05f);
 //		p.plotFunction(rec);
 		
-		ImplicitIterativeFunction it = new ImplicitIterativeFunction("x^2 + y^2 = 1", Colors.BLUE, recBound, 0.1f);
-		p.plotFunction(it);
+//		ImplicitIterativeFunction it = new ImplicitIterativeFunction("x^2 + y^2 = 1", Colors.BLUE, recBound, 0.1f);
+//		p.plotFunction(it);
 		
+		SphericalFunction sf = new SphericalFunction(new String[]{"r=0.5*cos(theta)^10 + 0.1*sin(phi)"}, Colors.BLUE, recBound, stepSize);
+		p.plotFunction(sf);
 		
 		
 //		p.plotFunction("z = y", -i, i, -i, i, Colors.MAGENTA);
@@ -65,26 +66,26 @@ public class PlotterDriver {
 //		p.plotParametricFunction("0.5*cos(t)", "t/5", "0.5*sin(t)", 0, (float) (5*Math.PI));
 		
 		final JTextField function = new JTextField();
-		function.addKeyListener(new KeyAdapter() {
-			
-			@Override
-			public void keyReleased(KeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-
-//							p.plotFunction(function.getText(), -i, i, -i, i, Colors.RED);
-							try {
-								
-								ImplicitIterativeFunction ip = 
-										new ImplicitIterativeFunction(function.getText(), Colors.RED, recBound, 0.1f);
-								p.plotFunction(ip);
-							} catch (ExpressionParseException | IllegalEquationException | UndefinedVariableException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							}
-
-				}
-			}
-		});
+//		function.addKeyListener(new KeyAdapter() {
+//			
+//			@Override
+//			public void keyReleased(KeyEvent e) {
+//				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+//
+////							p.plotFunction(function.getText(), -i, i, -i, i, Colors.RED);
+//							try {
+//								
+//								ImplicitIterativeFunction ip = 
+//										new ImplicitIterativeFunction(function.getText(), Colors.RED, recBound, 0.1f);
+//								p.plotFunction(ip);
+//							} catch (ExpressionParseException | IllegalEquationException | UndefinedVariableException e1) {
+//								// TODO Auto-generated catch block
+//								e1.printStackTrace();
+//							}
+//
+//				}
+//			}
+//		});
 		frame.add(function,BorderLayout.NORTH);
      	frame.add(p);
 

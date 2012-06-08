@@ -12,7 +12,7 @@ import munk.graph.marching.*;
 
 import com.graphbuilder.math.*;
 
-public class ImplicitMulti extends AbstractImplicit{
+public abstract class ImplicitMulti extends AbstractImplicit{
 	
 	private int startX;
 	private int startY;
@@ -33,6 +33,8 @@ public class ImplicitMulti extends AbstractImplicit{
 	
 	private FuncMap fm;
 	private Expression ex;
+	
+	protected float[] stepsizes;
 
 	private String	preParse;
 	
@@ -42,6 +44,8 @@ public class ImplicitMulti extends AbstractImplicit{
 			 float zMin, float zMax, 
 			 float[] stepsizes) throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
 		super(expression, xMin, xMax, yMin, yMax, zMin, zMax, stepsizes[0], stepsizes[1], stepsizes[2]);
+		
+		this.stepsizes = stepsizes;
 		
 		cells = new ConcurrentLinkedQueue<MarchCell>();
 		try {
@@ -633,7 +637,9 @@ public class ImplicitMulti extends AbstractImplicit{
 		cells.add(new MarchCell(corners, values, x, y, z, MarchCell.FACE_5));
 	}
 	
-	private boolean validPosition(int x, int y, int z) {
+	//TODO: Fix here: First correct accoring to R. Then do somthing with theta/phi
+	//TODO: xFloat = x*xStepsize - xMin
+	protected boolean validPosition(int x, int y, int z) {
 		return (x >= 0 && x < xLength) && (y >= 0 && y < yLength) && (z >= 0 && z < zLength);
 	}
 

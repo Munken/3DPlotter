@@ -13,10 +13,13 @@ import munk.graph.function.Function;
 @SuppressWarnings("serial")
 public class ColorList extends ArrayList<Color3f> {
 	
+//	List<Function> functionList = new ArrayList<Function>();
+	
 	/*
 	 * Try to load colors from file, otherwise load default colors.
 	 */
 	public ColorList(){
+		
 		try{
 			this.addAll((ColorList) ObjectReader.ObjectFromFile(new File("Files/config.color")));
 		}
@@ -41,26 +44,23 @@ public class ColorList extends ArrayList<Color3f> {
 		return iconList;
 	}
 
-	/*
-	 * Return the next available color. If none are, return the one least in use.
-	 */
-//	public Color3f getNextAvailableColor(List<Function> functions){
-//		return getNextAvailableColor(functions);
+//	/*
+//	 * Return the next available color. If none are, return the one least in use.
+//	 */
+//	
+//	public Color3f getNextAvailableColor() {
+//		int[] frequence = new int[this.size()];
+//		ArrayList<Integer> indexList = new ArrayList<Integer>();
+//		for(int i = 0; i < this.size() ; i++){
+//			frequence[i]=0;
+//			for(Function f : functionList){
+//				if(f.getColor().equals(this.get(i))) frequence[i]++;
+//			}
+//			indexList.add(frequence[i]);
+//		}
+//		Arrays.sort(frequence);
+//		return this.get(indexList.indexOf(frequence[0]));
 //	}
-	
-	public Color3f getNextAvailableColor(Iterable<Function> functions) {
-		int[] frequence = new int[this.size()];
-		ArrayList<Integer> indexList = new ArrayList<Integer>();
-		for(int i = 0; i < this.size() ; i++){
-			frequence[i]=0;
-			for(Function f : functions){
-				if(f.getColor().equals(this.get(i))) frequence[i]++;
-			}
-			indexList.add(frequence[i]);
-		}
-		Arrays.sort(frequence);
-		return this.get(indexList.indexOf(frequence[0]));
-	}
 	
 	/*
 	 * Save the color list, when a new color has been added.
@@ -74,5 +74,22 @@ public class ColorList extends ArrayList<Color3f> {
 			e.printStackTrace();
 		}
 		return returnBoolean;
+	}
+	
+	/*
+	 * Save the color list, when a new color has been removed.
+	 */
+	public Color3f remove(int i){
+		Color3f returnColor = null;
+		if(this.size() > 1){
+		returnColor = super.remove(i);
+		try{
+		ObjectWriter.ObjectToFile(new File("Files/config.color"), this);
+		}
+		catch(IOException e){
+			e.printStackTrace();
+		}
+		}
+		return returnColor;
 	}
 }

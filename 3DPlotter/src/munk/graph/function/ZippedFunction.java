@@ -13,18 +13,18 @@ public class ZippedFunction implements Serializable {
 	private Color3f color;
 	private Boolean selected;
 	private Boolean visible; 
-	private float[] bounds;
-	private float stepsize;
+	private String[] bounds;
+	private float[] stepSize;
 	private FILL state;
 	private boolean fastImplicit;
 	
-	public ZippedFunction(String[] expr, Color3f color, float[] bounds, float stepsize, boolean selected, boolean visible, FILL state, boolean fastImplicit) {
+	public ZippedFunction(String[] expr, Color3f color, String[] bounds, float[] stepsize, boolean selected, boolean visible, FILL state, boolean fastImplicit) {
 		this.expr = expr;
 		this.visible = visible;
 		this.selected = selected;
 		this.color = color;
 		this.bounds = bounds;
-		this.stepsize = stepsize;
+		this.stepSize = stepsize;
 		this.state = state;
 		this.fastImplicit = fastImplicit;
 	}
@@ -45,11 +45,11 @@ public class ZippedFunction implements Serializable {
 		return selected;
 	}
 
-	public float getStepsize(){
-		return stepsize;
+	public float[] getStepsize(){
+		return stepSize;
 	}
 	
-	public float[] getBounds(){
+	public String[] getBounds(){
 		return bounds;
 	}
 	

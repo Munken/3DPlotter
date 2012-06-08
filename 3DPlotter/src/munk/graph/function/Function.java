@@ -16,13 +16,7 @@ public interface Function {
 	public float[] getBounds();
 	
 	public void setColor(Color3f color);
-	
-//	public void setGridAppearance();
-	
-//	public void setPointAppearance();
-	
-//	public void setFillAppearance();
-	
+
 	public boolean isVisible();
 	
 	public void setVisible(boolean b);
@@ -30,19 +24,22 @@ public interface Function {
 	public boolean isSelected();
 	
 	public void setSelected(boolean b);
+
+	public float[] getStepsize();
 	
-	public float getStepsize();
-	
-	public float[] getStepsizes();
+	public String[] getBoundsString();
 	
 	public void cancel();
 	
-		
 	public void setView(FILL state);
 	
 	public FILL getView();
 	
 	public void setFastImplicit(boolean b);
+	
+	public void setStepsize(float[] stepSize);
+	
+	public void setBoundsString(String[] bounds);
 	
 	public boolean getFastImplicit();
 
