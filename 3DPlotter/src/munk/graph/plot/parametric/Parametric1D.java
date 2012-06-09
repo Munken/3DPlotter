@@ -1,7 +1,6 @@
 package munk.graph.plot.parametric;
 
-import javax.media.j3d.LineArray;
-import javax.media.j3d.Shape3D;
+import javax.media.j3d.*;
 import javax.vecmath.Point3f;
 
 import munk.graph.function.IllegalEquationException;
@@ -52,7 +51,7 @@ public class Parametric1D extends AbstractParametric{
 			t += stepsize;
 		}
 		
-		LineArray la = PlotUtil.buildLineArray(points);
+		LineStripArray la = PlotUtil.buildLineStripArray(points);
 		
 		Shape3D shape = new Shape3D(la);
 		setShape(shape);
