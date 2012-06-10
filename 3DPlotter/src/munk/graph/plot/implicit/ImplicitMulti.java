@@ -61,21 +61,21 @@ public abstract class ImplicitMulti extends AbstractImplicit{
 	
 	public  Shape3D plot() {
 		Point3f startCube =  findStartCube(xStepsize, yStepsize, zStepsize);
-		
+
 		triangles = new ArrayList<Point3f>();
 		if (startCube != null) {
 			marchCubes(startCube);
 		}
 		else 
 			return null;
-		
+
 		Shape3D shape = null;
 		if (!isCancelled()) {
-			 shape = buildGeomtryFromTriangles(triangles);
+			shape = buildGeomtryFromTriangles(triangles);
 		}
-			
+
 		triangles = null;
-		
+
 		return (!isCancelled()) ? shape : null;
 	}
 	

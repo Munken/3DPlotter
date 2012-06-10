@@ -7,7 +7,7 @@ import javax.swing.JTextField;
 
 import munk.graph.appearance.Colors;
 import munk.graph.function.IllegalEquationException;
-import munk.graph.function.implicit.SphericalFunction;
+import munk.graph.function.implicit.*;
 import munk.graph.gui.Plotter3D;
 
 import com.graphbuilder.math.ExpressionParseException;
@@ -48,7 +48,11 @@ public class PlotterDriver {
 //		p.plotFunction(it);
 		
 		SphericalFunction sf = new SphericalFunction(new String[]{"r=0.5*cos(theta)^10 + 0.1*sin(phi)"}, Colors.BLUE, recBound, stepSize);
-		p.plotFunction(sf);
+		ImplicitMultiFunction m = new ImplicitMultiFunction(new String[] {"x^2 + y^2 + z^2 = 1.5"}, 
+				Colors.BLUE, new String[] {"-2","2","-2","2","-2","2"}, new float[] {0.1f, 0.2f, 0.1f});
+		
+		
+		p.plotFunction(m);
 		
 		
 //		p.plotFunction("z = y", -i, i, -i, i, Colors.MAGENTA);
