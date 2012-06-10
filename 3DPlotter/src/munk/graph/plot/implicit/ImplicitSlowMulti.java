@@ -64,22 +64,21 @@ public class ImplicitSlowMulti extends AbstractImplicit {
 				for (int k = 0; k < N; k++) {
 
 					Callable<List<Point3f>> callable = createSubMarcher(xStart, yStart, zStart, xSteps, ySteps, zSteps);
-//					Callable<List<Point3f>> callable = createSubMarcher(xStart, yStart, zStart, xSteps, yLength, zLength);
 					Future<List<Point3f>> f = threadPool.submit(callable);
 					future.add(f);
 
-					xStart = nextStartValue(xStart, xStepsize, xSteps);
-//					xStart += (xSteps - 1) * xStepsize;
+//					xStart = nextStartValue(xStart, xStepsize, xSteps);
+					xStart += (xSteps - 1) * xStepsize;
 					xSteps = xLength / N;
 				}
 				
-				yStart = nextStartValue(yStart, yStepsize, ySteps);
-//				yStart += (ySteps - 1) * yStepsize;				
+//				yStart = nextStartValue(yStart, yStepsize, ySteps);
+				yStart += (ySteps - 1) * yStepsize;				
 				ySteps = yLength / N;
 			}
 			
-			zStart = nextStartValue(zStart, zStepsize, zSteps);
-//			zStart += (zSteps - 1) * zStepsize;			
+//			zStart = nextStartValue(zStart, zStepsize, zSteps);
+			zStart += (zSteps - 1) * zStepsize;			
 			zSteps = zLength / N;
 			
 		}
@@ -263,9 +262,9 @@ public class ImplicitSlowMulti extends AbstractImplicit {
 			return value();
 		}
 		
-//		private void setVariable(String name, float value) {
-//			vm.setValue(name, value);
-//		}
+		private void setVariable(String name, float value) {
+			vm.setValue(name, value);
+		}
 		
 		private void setAllVariable(float x, float y, float z) {
 			vm.setValue("x", x);
@@ -275,16 +274,22 @@ public class ImplicitSlowMulti extends AbstractImplicit {
 		
 		protected float[][] bottomLayerValues() {
 			float[][] result = new float[yLength][xLength];
+			setVariable("z", zStart);
 			
 			float y = yStart;
+			setVariable("y", y);
 			for (int j = 0; j < yLength; j++) {
 				float x = xStart;
 				
 				for (int i = 0; i < xLength; i++) {
-					result[j][i] = value(x, y, zStart);
+					setVariable("x", x);
+//					setVariable("y", y);
+//					result[j][i] = value(x, y, zStart);
+					result[j][i] = value();
 					x += xStepsize;
 				}
 				y += yStepsize;
+				setVariable("y", y);
 			}
 			
 			return result;
@@ -293,15 +298,19 @@ public class ImplicitSlowMulti extends AbstractImplicit {
 		protected void calcEdges(float[][] upperValues, float z) {
 			float y = yStart;
 			float x = xStart;
+			setAllVariable(x, y, z);
 			for (int j = 0; j < upperValues.length; j++) {
-				upperValues[j][0] = value(x, y, z);
+				upperValues[j][0] = value();
 				y += yStepsize;
+				setVariable("y", y);
 			}
 			
 			y = yStart;
+			setVariable("y", y);
 			for (int i = 0; i < upperValues[0].length; i++) {
-				upperValues[0][i] = value(x, y, z);
+				upperValues[0][i] = value();
 				x += xStepsize;
+				setVariable("x", x);
 			}
 		}
 		
