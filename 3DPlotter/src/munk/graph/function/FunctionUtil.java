@@ -7,7 +7,6 @@ import java.util.regex.Pattern;
 import javax.media.j3d.*;
 import javax.vecmath.Color3f;
 
-import munk.graph.function.implicit.ImplicitMultiFunction;
 import munk.graph.function.implicit.ImplicitSlowFunction;
 
 import com.graphbuilder.math.ExpressionParseException;
@@ -46,18 +45,23 @@ public class FunctionUtil {
 	 * @throws UndefinedVariableException 
 	 */
 	public static Function createFunction(String[] expressions, Color3f color,
-										String[] bounds, float stepSize[]) 
+										String[] bounds, float[] stepSizes) 
 												throws ExpressionParseException, IllegalEquationException, UndefinedVariableException{
 		
-		String expr = expressions[0];
-		
 		Function result = null;
-		if (isXYZExpression(expr)) {
-			result = new XYZFunction(expressions, color, bounds, stepSize);
-		} 
-		else{
-//			result = new ImplicitMultiFunction(expressions, color, bounds, stepSize);
-			result = new ImplicitSlowFunction(expressions, color, bounds, stepSize);
+		
+		if (expressions.length == 1) {
+			String expr = expressions[0];
+
+			if (isXYZExpression(expr)) {
+				result = new XYZFunction(expressions, color, bounds, stepSizes);
+			} 
+			else{
+				//			result = new ImplicitMultiFunction(expressions, color, bounds, stepSize);
+				result = new ImplicitSlowFunction(expressions, color, bounds, stepSizes);
+			}
+		} else {
+			result = new ParametricFunction(expressions, color, bounds, stepSizes);
 		}
 		
 		return result;

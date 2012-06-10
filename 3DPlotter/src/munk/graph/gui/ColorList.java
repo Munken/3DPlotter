@@ -8,6 +8,7 @@ import javax.vecmath.Color3f;
 
 import munk.graph.IO.ObjectReader;
 import munk.graph.IO.ObjectWriter;
+import munk.graph.appearance.Colors;
 
 @SuppressWarnings("serial")
 public class ColorList extends ArrayList<Color3f> {
@@ -23,10 +24,16 @@ public class ColorList extends ArrayList<Color3f> {
 			this.addAll((ColorList) ObjectReader.ObjectFromFile(new File("Files/config.color")));
 		}
 		catch(Exception e){
-			System.out.println("Color config file not found. Loading default colors.");
+			// Tys !
+//			System.out.println("Color config file not found. Loading default colors.");
 			add(new Color3f(1, 0, 0)); 			//RED
 			add(new Color3f(0, .0749f, 1)); 	//SKYBLUE
 			add(new Color3f(0, 1, 0)); 			//GREEN
+			add(Colors.INDIGO);
+			add(Colors.TURQUISE);
+			add(Colors.ORANGE);
+			add(Colors.MAGENTA);
+			add(Colors.TEAL);
 		}
 	}
 

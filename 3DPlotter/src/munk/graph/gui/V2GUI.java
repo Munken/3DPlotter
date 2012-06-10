@@ -398,6 +398,7 @@ public class V2GUI {
 		menuBar.add(mnFile);
 
 		mntmSaveProject = new JMenuItem("Export workspace", new ImageIcon("Icons/save.png"));
+		mntmSaveProject.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_MASK));
 		mntmSaveProject.addActionListener(new ActionListener() {
 
 			@Override
@@ -416,6 +417,8 @@ public class V2GUI {
 		mnFile.add(mntmSaveProject);
 
 		mntmLoadProject = new JMenuItem("Import workspace", new ImageIcon("Icons/file.png"));
+		mntmLoadProject.setMnemonic('I');
+		mntmLoadProject.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, KeyEvent.CTRL_MASK));
 		mntmLoadProject.addActionListener(new ActionListener() {
 			
 			@Override
@@ -426,6 +429,7 @@ public class V2GUI {
 		mnFile.add(mntmLoadProject);
 		
 		mntmPrintCanvas = new JMenuItem("Save as image", new ImageIcon("Icons/png.png"));
+		mntmPrintCanvas.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, KeyEvent.CTRL_MASK));
 		mntmPrintCanvas.addActionListener(new ActionListener() {
 			
 			@Override
