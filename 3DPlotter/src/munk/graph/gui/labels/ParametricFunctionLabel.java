@@ -215,12 +215,13 @@ public class ParametricFunctionLabel extends AbstractFunctionLabel{
 	}
 
 
-	@Override
-	public void setSelected(boolean b) {
-		if (b) {
-			exprFieldX.requestFocusInWindow();	
-			
-			fireCaretUpdate(exprFieldX);
+	public void setSelected(boolean b){
+		super.setSelected(b);
+		if(selected){
+			if (!(exprFieldX.hasFocus()|| exprFieldY.hasFocus() || exprFieldZ.hasFocus())) {
+				exprFieldX.requestFocusInWindow();
+				fireCaretUpdate(exprFieldX);
+			}
 		}
 	}
 	
