@@ -8,6 +8,7 @@ import javax.media.j3d.*;
 import javax.vecmath.Color3f;
 
 import munk.graph.function.implicit.ImplicitMultiFunction;
+import munk.graph.function.implicit.ImplicitSlowFunction;
 
 import com.graphbuilder.math.ExpressionParseException;
 import com.graphbuilder.math.UndefinedVariableException;
@@ -55,7 +56,8 @@ public class FunctionUtil {
 			result = new XYZFunction(expressions, color, bounds, stepSize);
 		} 
 		else{
-			result = new ImplicitMultiFunction(expressions, color, bounds, stepSize);
+//			result = new ImplicitMultiFunction(expressions, color, bounds, stepSize);
+			result = new ImplicitSlowFunction(expressions, color, bounds, stepSize);
 		}
 		
 		return result;

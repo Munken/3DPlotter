@@ -14,8 +14,7 @@ import munk.graph.IO.ObjectReader;
 import munk.graph.IO.ObjectWriter;
 import munk.graph.appearance.Colors;
 import munk.graph.function.*;
-import munk.graph.function.implicit.ImplicitMultiFunction;
-import munk.graph.function.implicit.SphericalFunction;
+import munk.graph.function.implicit.*;
 import munk.graph.gui.panel.*;
 import munk.graph.gui.labels.FunctionLabel;
 
@@ -163,7 +162,7 @@ public class V2GUI {
 	private void switchToFunction(Function function) {
 		
 		FunctionTab wantedTab = null;
-		if (function instanceof XYZFunction || function instanceof ImplicitMultiFunction) {
+		if (function instanceof XYZFunction || function instanceof ImplicitFunction) {
 			wantedTab = stdFuncTab;
 		} else if (function instanceof ParametricFunction){
 			wantedTab = paramFuncTab;

@@ -94,7 +94,7 @@ public abstract class AbstractImplicit extends AbstractPlotter implements Implic
 	
 	protected Shape3D buildGeomtryFromTriangles(List<Point3f> vertices) {
 		// Build geometry from triangles
-		if (vertices.size() >= 3 && triangles.size() % 3 == 0) {
+		if (vertices.size() >= 3 && vertices.size() % 3 == 0) {
 			GeometryInfo gi = new GeometryInfo(GeometryInfo.TRIANGLE_ARRAY);
 			Point3f[] points = new Point3f[vertices.size()];
 			gi.setCoordinates((Point3f[]) vertices.toArray(points));
