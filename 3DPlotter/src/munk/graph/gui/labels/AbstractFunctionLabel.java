@@ -1,19 +1,103 @@
 package munk.graph.gui.labels;
 
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.text.Caret;
 import javax.swing.text.JTextComponent;
 
+import munk.graph.function.Function;
+import munk.graph.gui.ToggleButton;
+import munk.graph.gui.listener.FunctionEvent;
+import munk.graph.gui.listener.FunctionListener;
+
 public abstract class AbstractFunctionLabel extends JPanel implements FunctionLabel {
 	
-	/**
-	 * 
-	 */
 	private static final long	serialVersionUID	= -4247550891717359687L;
+	private Function function;
+	
+	protected JButton btnDelete;
+	protected ToggleButton toggleButton;
+	
+	protected boolean selected;
+	
+	private List<FunctionListener> listeners = new ArrayList<FunctionListener>();
+	
+	AbstractFunctionLabel(Function mother) {
+		this.function = mother;
+		
+	}
+	
+	public void setMother (Function mother) {
+		this.function = mother;
+	}
+	
+	public Function getMother(){
+		return function;
+	}
+	
+	protected void notifyPlotUpdate(String... text) {
+		FunctionEvent ev = new FunctionEvent(function, text, 
+												function.getColor(), function.getBoundsString(), 
+												function.getStepsize(), FunctionEvent.ACTION.UPDATE);
+		notifyListeners(ev);
+	}
+	
+	protected ActionListener getDeleteListener() {
+		return new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				FunctionEvent ev = new FunctionEvent(function, FunctionEvent.ACTION.DELETE);
+				notifyListeners(ev);
+			}
+		};
+	}
+	
+	protected ActionListener getToogleListener() {
+		return new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				function.setVisible(toggleButton.isSelected());
+				FunctionEvent ev = new FunctionEvent(function, FunctionEvent.ACTION.VISIBILITY);
+				
+				notifyListeners(ev);
+			}
+		};
+	}
+	
+	public void setIndeterminate(boolean b) {
+		toggleButton.setIndeterminate(b);
+	}
 
 
+	protected void notifyListeners(FunctionEvent e) {
+		for (FunctionListener l : listeners) {
+			l.functionChanged(e);
+		}
+	}
+	
+	public void setSelected(boolean b){
+		selected = b;
+		if(selected){
+			setExpressionFieldBackground(SELECTED_COLOR);
+		}
+		else{
+			setExpressionFieldBackground(NORMAL_COLOR);
+		}
+	}
+	
+	protected abstract void setExpressionFieldBackground(Color color);
+	
+	public void addFunctionListener(FunctionListener l) {
+		listeners.add(l);
+	}
 	
 	protected void fireCaretUpdate(JTextComponent c) {
 		

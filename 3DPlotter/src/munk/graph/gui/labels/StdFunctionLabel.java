@@ -2,29 +2,20 @@ package munk.graph.gui.labels;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.*;
 
 import munk.graph.function.Function;
 import munk.graph.gui.GuiUtil;
 import munk.graph.gui.ToggleButton;
-import munk.graph.gui.listener.FunctionEvent;
-import munk.graph.gui.listener.FunctionListener;
 
 @SuppressWarnings("serial")
 public class StdFunctionLabel extends AbstractFunctionLabel{
 	
-	private ToggleButton toggleButton;
 	private JTextField exprField;
-	private Function mother;
-	private JButton btnDelete;
-	private List<FunctionListener> listeners = new ArrayList<FunctionListener>();
-	private boolean selected;
 
 	public StdFunctionLabel (Function function){
-		this.mother = function;
+		super(function);
 		
 		// GUI representation
 		GridBagLayout gbl_fLabel = new GridBagLayout();
@@ -41,7 +32,7 @@ public class StdFunctionLabel extends AbstractFunctionLabel{
 		gbc_btnDelete.gridy = 0;
 		add(btnDelete, gbc_btnDelete);
 
-		exprField = new JTextField(mother.getExpression()[0]);
+		exprField = new JTextField(function.getExpression()[0]);
 		GridBagConstraints gbc_list = new GridBagConstraints();
 		gbc_list.insets = new Insets(0, 0, 5, 5);
 		gbc_list.fill = GridBagConstraints.BOTH;
@@ -67,25 +58,12 @@ public class StdFunctionLabel extends AbstractFunctionLabel{
 
 	private void addDeleteListener() {
 		// Delete function on click.
-		btnDelete.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				FunctionEvent ev = new FunctionEvent(mother, FunctionEvent.ACTION.DELETE);
-				notifyListeners(ev);
-			}
-		});
+		btnDelete.addActionListener(getDeleteListener());
 	}
 
 	private void addToggleButtonListener() {
 		// Update visibility.
-		toggleButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				mother.setVisible(toggleButton.isSelected());
-				FunctionEvent ev = new FunctionEvent(mother, FunctionEvent.ACTION.VISIBILITY);
-				notifyListeners(ev);
-			}
-		});
+		toggleButton.addActionListener(getToogleListener());
 	}
 
 	
@@ -116,32 +94,32 @@ public class StdFunctionLabel extends AbstractFunctionLabel{
 			public void keyReleased(KeyEvent e) {
 				if(!(exprField.getBackground() == FAILED_COLOR) || !(e.getKeyCode() == KeyEvent.VK_ENTER)){
 					
-					if (!exprField.getText().equals(mother.getExpression()[0])) {
+					if (!exprField.getText().equals(getMother().getExpression()[0])) {
 						
 						if(e.getKeyCode() == KeyEvent.VK_ENTER){
 							notifyPlotUpdate(exprField.getText());
 							
-							if(exprField.getText().equals(mother.getExpression()[0])){
+							if(exprField.getText().equals(getMother().getExpression()[0])){
 								if(selected){
-									exprField.setBackground(SELECTED_COLOR);
+									setExpressionFieldBackground(SELECTED_COLOR);
 								}
 								else{
-									exprField.setBackground(NORMAL_COLOR);
+									setExpressionFieldBackground(NORMAL_COLOR);
 								}
 							}
 							else {
-								exprField.setBackground(FAILED_COLOR);
+								setExpressionFieldBackground(FAILED_COLOR);
 							}
 							
 						} else {
-							exprField.setBackground(WARNING_COLOR);
+							setExpressionFieldBackground(WARNING_COLOR);
 						}
 					} else {
 						if(selected){
-							exprField.setBackground(SELECTED_COLOR);
+							setExpressionFieldBackground(SELECTED_COLOR);
 						}
 						else{
-							exprField.setBackground(NORMAL_COLOR);
+							setExpressionFieldBackground(NORMAL_COLOR);
 						}
 					}
 
@@ -153,12 +131,8 @@ public class StdFunctionLabel extends AbstractFunctionLabel{
 
 
 	public void setMother(Function f){
-		mother = f;
-		exprField.setText(mother.getExpression()[0]);
-	}
-	
-	public void setIndeterminate(boolean b){
-		toggleButton.setIndeterminate(b);
+		super.setMother(f);
+		exprField.setText(f.getExpression()[0]);
 	}
 	
 	@Override
@@ -166,39 +140,25 @@ public class StdFunctionLabel extends AbstractFunctionLabel{
 		return exprField.getText();
 	}
 	
-	private void notifyListeners(FunctionEvent e) {
-		for (FunctionListener l : listeners) {
-			l.functionChanged(e);
-		}
-	}
-	
-	public void addFunctionListener(FunctionListener l) {
-		listeners.add(l);
-	}
-	
-	private void notifyPlotUpdate(String... text) {
-		FunctionEvent ev = new FunctionEvent(mother, text, 
-												mother.getColor(), mother.getBoundsString(), 
-												mother.getStepsize(), FunctionEvent.ACTION.UPDATE);
-		notifyListeners(ev);
-	}
+
 	
 	public void setSelected(boolean b){
 		selected = b;
 		if(selected){
-			exprField.setBackground(SELECTED_COLOR);
+			setExpressionFieldBackground(SELECTED_COLOR);
 			exprField.requestFocusInWindow();
 			
 			fireCaretUpdate(exprField);
 			
 		}
 		else{
-			exprField.setBackground(NORMAL_COLOR);
+			setExpressionFieldBackground(NORMAL_COLOR);
 		}
 	}
-	
-	public Function getMother(){
-		return mother;
+
+	@Override
+	protected void setExpressionFieldBackground(Color color) {
+		exprField.setBackground(color);
 	}
 	
 	

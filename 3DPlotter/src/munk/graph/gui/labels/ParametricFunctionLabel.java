@@ -6,22 +6,14 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import munk.graph.function.Function;
 import munk.graph.gui.GuiUtil;
 import munk.graph.gui.ToggleButton;
-import munk.graph.gui.listener.FunctionEvent;
-import munk.graph.gui.listener.FunctionListener;
 
 @SuppressWarnings("serial")
 public class ParametricFunctionLabel extends AbstractFunctionLabel{
 	
 
-	private ToggleButton toggleButton;
-	private Function mother;
-	private JButton btnDelete;
 	
 	private JTextField exprFieldX;
 	private JTextField exprFieldY;
@@ -30,12 +22,10 @@ public class ParametricFunctionLabel extends AbstractFunctionLabel{
 	private JLabel lblX;
 	private JLabel lblY;
 	private JLabel lblZ;
-	private boolean selected;
 	
-	private List<FunctionListener> listeners = new ArrayList<FunctionListener>();
 
 	public ParametricFunctionLabel (Function function){
-		this.mother = function;
+		super(function);
 		
 		// GUI representation
 		GridBagLayout gbl_fLabel = new GridBagLayout();
@@ -53,7 +43,7 @@ public class ParametricFunctionLabel extends AbstractFunctionLabel{
 		gbc_lblX.gridy = 1;
 		add(lblX, gbc_lblX);
 
-		exprFieldX = new JTextField(mother.getExpression()[0]);
+		exprFieldX = new JTextField(function.getExpression()[0]);
 		GridBagConstraints gbc_list = new GridBagConstraints();
 		gbc_list.insets = new Insets(0, 0, 5, 5);
 		gbc_list.fill = GridBagConstraints.HORIZONTAL;
@@ -78,7 +68,7 @@ public class ParametricFunctionLabel extends AbstractFunctionLabel{
 		gbc_lblY.gridy = 2;
 		add(lblY, gbc_lblY);
 
-		exprFieldY = new JTextField(mother.getExpression()[1]);
+		exprFieldY = new JTextField(function.getExpression()[1]);
 		GridBagConstraints gbc_textField = new GridBagConstraints();
 		gbc_textField.gridheight = 2;
 		gbc_textField.insets = new Insets(0, 0, 5, 5);
@@ -96,7 +86,7 @@ public class ParametricFunctionLabel extends AbstractFunctionLabel{
 		gbc_lblZ.gridy = 4;
 		add(lblZ, gbc_lblZ);
 
-		exprFieldZ = new JTextField(mother.getExpression()[2]);
+		exprFieldZ = new JTextField(function.getExpression()[2]);
 		GridBagConstraints gbc_textField_1 = new GridBagConstraints();
 		gbc_textField_1.insets = new Insets(0, 0, 5, 5);
 		gbc_textField_1.fill = GridBagConstraints.HORIZONTAL;
@@ -132,26 +122,12 @@ public class ParametricFunctionLabel extends AbstractFunctionLabel{
 
 	private void addDeleteListener() {
 		// Delete function on click.
-		btnDelete.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				FunctionEvent ev = new FunctionEvent(mother, FunctionEvent.ACTION.DELETE);
-				notifyListeners(ev);
-			}
-		});
+		btnDelete.addActionListener(getDeleteListener());
 	}
 
 	private void addToggleButtonListener() {
 		// Update visibility.
-		toggleButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				mother.setVisible(toggleButton.isSelected());
-				FunctionEvent ev = new FunctionEvent(mother, FunctionEvent.ACTION.VISIBILITY);
-				
-				notifyListeners(ev);
-			}
-		});
+		toggleButton.addActionListener(getToogleListener());
 	}
 
 	private void addTextChangeListener() {
@@ -177,10 +153,10 @@ public class ParametricFunctionLabel extends AbstractFunctionLabel{
 			@Override
 			public void keyReleased(KeyEvent e) {
 				if(!(exprFieldX.getBackground() == FAILED_COLOR) || !(e.getKeyCode() == KeyEvent.VK_ENTER)){
-					
-					if (!exprFieldX.getText().equals(mother.getExpression()[0]) 
-							|| !exprFieldY.getText().equals(mother.getExpression()[1]) 
-							|| !exprFieldZ.getText().equals(mother.getExpression()[2])) {
+					Function function = getMother();
+					if (!exprFieldX.getText().equals(function.getExpression()[0]) 
+							|| !exprFieldY.getText().equals(function.getExpression()[1]) 
+							|| !exprFieldZ.getText().equals(function.getExpression()[2])) {
 						
 						// They want to plot
 						if(e.getKeyCode() == KeyEvent.VK_ENTER){
@@ -188,9 +164,9 @@ public class ParametricFunctionLabel extends AbstractFunctionLabel{
 							notifyPlotUpdate(exprFieldX.getText(), exprFieldY.getText(), exprFieldZ.getText());
 							
 							// Update the colors
-							if(exprFieldX.getText().equals(mother.getExpression()[0]) 
-									&& exprFieldY.getText().equals(mother.getExpression()[1]) 
-									&& exprFieldZ.getText().equals(mother.getExpression()[2])){
+							if(exprFieldX.getText().equals(function.getExpression()[0]) 
+									&& exprFieldY.getText().equals(function.getExpression()[1]) 
+									&& exprFieldZ.getText().equals(function.getExpression()[2])){
 								if(selected){
 									setExpressionFieldBackground(SELECTED_COLOR);
 								}
@@ -225,58 +201,34 @@ public class ParametricFunctionLabel extends AbstractFunctionLabel{
 		exprFieldZ.addKeyListener(keyListener);
 	}
 	
-	private void setExpressionFieldBackground(Color color) {
+	protected void setExpressionFieldBackground(Color color) {
 		exprFieldX.setBackground(color);
 		exprFieldY.setBackground(color);
 		exprFieldZ.setBackground(color);
 	}
 
 	public void setMother(Function f){
-		mother = f;
-		exprFieldX.setText(mother.getExpression()[0]);
-		exprFieldY.setText(mother.getExpression()[1]);
-		exprFieldZ.setText(mother.getExpression()[2]);
+		super.setMother(f);
+		exprFieldX.setText(f.getExpression()[0]);
+		exprFieldY.setText(f.getExpression()[1]);
+		exprFieldZ.setText(f.getExpression()[2]);
 	}
 
-	public void setIndeterminate(boolean b) {
-		toggleButton.setIndeterminate(b);
-	}
-	
-	
-	private void notifyListeners(FunctionEvent e) {
-		for (FunctionListener l : listeners) {
-			l.functionChanged(e);
-		}
-	}
-	
-	public void addFunctionListener(FunctionListener l) {
-		listeners.add(l);
-	}
-	
-	private void notifyPlotUpdate(String... text) {
-		FunctionEvent ev = new FunctionEvent(mother, text, 
-												mother.getColor(), mother.getBoundsString(), 
-												mother.getStepsize(), FunctionEvent.ACTION.UPDATE);
-		notifyListeners(ev);
-	}
-	
 
-	
-	public void setSelected(boolean b){
-		selected = b;
-		if(selected){
-			setExpressionFieldBackground(SELECTED_COLOR);
-			
+	@Override
+	public void setSelected(boolean b) {
+		if (b) {
 			exprFieldX.requestFocusInWindow();	
 			
 			fireCaretUpdate(exprFieldX);
 		}
-		else{
-			setExpressionFieldBackground(NORMAL_COLOR);
-		}
 	}
 	
-	public Function getMother(){
-		return mother;
-	}
+
+	
+
+	
+
+	
+
 }
