@@ -1,4 +1,4 @@
-package munk.graph.gui;
+package munk.graph.gui.labels;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -10,19 +10,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 import munk.graph.function.Function;
+import munk.graph.gui.GuiUtil;
+import munk.graph.gui.ToggleButton;
 import munk.graph.gui.listener.FunctionEvent;
 import munk.graph.gui.listener.FunctionListener;
 
 @SuppressWarnings("serial")
-public class ParametricFunctionLabel extends JPanel implements FunctionLabel{
+public class ParametricFunctionLabel extends AbstractFunctionLabel{
 	
 
-	ToggleButton toggleButton;
-	JTextField exprFieldX;
-	Function mother;
+	private ToggleButton toggleButton;
+	private Function mother;
 	private JButton btnDelete;
+	
+	private JTextField exprFieldX;
 	private JTextField exprFieldY;
 	private JTextField exprFieldZ;
+	
 	private JLabel lblX;
 	private JLabel lblY;
 	private JLabel lblZ;
@@ -155,7 +159,6 @@ public class ParametricFunctionLabel extends JPanel implements FunctionLabel{
 		FocusListener editListener = new FocusAdapter() {
 			@Override
 			public void focusGained(FocusEvent e) {
-				// TODO Auto-generated method stub
 				FocusListener[] listeners = getFocusListeners();
 				
 				for (FocusListener l : listeners) {
@@ -257,15 +260,16 @@ public class ParametricFunctionLabel extends JPanel implements FunctionLabel{
 		notifyListeners(ev);
 	}
 	
-	@Override
-	public void addFocusListener(FocusListener l) {
-		super.addFocusListener(l);
-	}
+
 	
 	public void setSelected(boolean b){
 		selected = b;
 		if(selected){
 			setExpressionFieldBackground(SELECTED_COLOR);
+			
+			exprFieldX.requestFocusInWindow();	
+			
+			fireCaretUpdate(exprFieldX);
 		}
 		else{
 			setExpressionFieldBackground(NORMAL_COLOR);

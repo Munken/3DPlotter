@@ -1,4 +1,4 @@
-package munk.graph.gui;
+package munk.graph.gui.labels;
 
 import java.awt.Color;
 import java.awt.event.FocusListener;

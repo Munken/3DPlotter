@@ -1,4 +1,4 @@
-package munk.graph.gui;
+package munk.graph.gui.labels;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -8,11 +8,13 @@ import java.util.List;
 import javax.swing.*;
 
 import munk.graph.function.Function;
+import munk.graph.gui.GuiUtil;
+import munk.graph.gui.ToggleButton;
 import munk.graph.gui.listener.FunctionEvent;
 import munk.graph.gui.listener.FunctionListener;
 
 @SuppressWarnings("serial")
-public class StdFunctionLabel extends JPanel implements FunctionLabel{
+public class StdFunctionLabel extends AbstractFunctionLabel{
 	
 	private ToggleButton toggleButton;
 	private JTextField exprField;
@@ -181,15 +183,14 @@ public class StdFunctionLabel extends JPanel implements FunctionLabel{
 		notifyListeners(ev);
 	}
 	
-	@Override
-	public void addFocusListener(FocusListener l) {
-		super.addFocusListener(l);
-	}
-
 	public void setSelected(boolean b){
 		selected = b;
 		if(selected){
 			exprField.setBackground(SELECTED_COLOR);
+			exprField.requestFocusInWindow();
+			
+			fireCaretUpdate(exprField);
+			
 		}
 		else{
 			exprField.setBackground(NORMAL_COLOR);
@@ -199,5 +200,6 @@ public class StdFunctionLabel extends JPanel implements FunctionLabel{
 	public Function getMother(){
 		return mother;
 	}
-
+	
+	
 }

@@ -8,7 +8,7 @@ import munk.graph.function.Function;
 import munk.graph.function.FunctionUtil;
 import munk.graph.function.IllegalEquationException;
 import munk.graph.gui.ColorList;
-import munk.graph.gui.FunctionLabel;
+import munk.graph.gui.labels.FunctionLabel;
 import munk.graph.gui.GuiUtil;
 import munk.graph.gui.Plotter3D;
 

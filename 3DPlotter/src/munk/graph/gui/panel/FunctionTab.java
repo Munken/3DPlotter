@@ -11,7 +11,7 @@ import munk.graph.function.IllegalEquationException;
 import com.graphbuilder.math.ExpressionParseException;
 import com.graphbuilder.math.UndefinedVariableException;
 
-public interface FunctionTab{
+public interface FunctionTab {
 
 	public void updateColors();
 	public void updateReferences(Function f) throws ExpressionParseException;
@@ -25,4 +25,5 @@ public interface FunctionTab{
 	
 	public void addPlot(String[] expr, Color3f color, String[] bounds, float[] stepSize) throws ExpressionParseException, IllegalEquationException, UndefinedVariableException;
 	public void addActionListener(ActionListener a);
+	public void setSelected(Function function);
 }

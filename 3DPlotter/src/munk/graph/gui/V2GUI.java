@@ -14,8 +14,10 @@ import munk.graph.IO.ObjectReader;
 import munk.graph.IO.ObjectWriter;
 import munk.graph.appearance.Colors;
 import munk.graph.function.*;
+import munk.graph.function.implicit.ImplicitMultiFunction;
 import munk.graph.function.implicit.SphericalFunction;
 import munk.graph.gui.panel.*;
+import munk.graph.gui.labels.FunctionLabel;
 
 import com.graphbuilder.math.ExpressionParseException;
 import com.graphbuilder.math.UndefinedVariableException;
@@ -37,7 +39,7 @@ public class V2GUI {
 	private static V2GUI window;
 	private JFrame frame;
 	private JTabbedPane tabbedPane;
- 	private FunctionTab stdFuncTab;
+	private FunctionTab stdFuncTab;
  	private FunctionTab paramFuncTab;
  	private FunctionTab sphFuncTab;
 	private JPanel canvasPanel;
@@ -120,6 +122,7 @@ public class V2GUI {
      	initFunctionTabs();
 		initMenuBar();
 		initIcon();
+		initPicking();
      
      	// Update references.
      	paramFuncTab.updateReferences(paramTemplateFunc);
@@ -142,6 +145,44 @@ public class V2GUI {
      	autoResize();
 	}
 	
+	private void initPicking() {
+		plotter.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (SwingUtilities.isRightMouseButton(e)) {
+					Function result = plotter.getPickedFunction(e);
+					if (result != null)
+						switchToFunction(result);
+				}
+			}
+		});
+		
+	}
+	
+	private void switchToFunction(Function function) {
+		
+		FunctionTab wantedTab = null;
+		if (function instanceof XYZFunction || function instanceof ImplicitMultiFunction) {
+			wantedTab = stdFuncTab;
+		} else if (function instanceof ParametricFunction){
+			wantedTab = paramFuncTab;
+		} else {
+			wantedTab = sphFuncTab;
+		}
+		
+		// The function tabs are a components. They just dont know it...
+		Component[] tabs = tabbedPane.getComponents();
+		
+		for (Component candidate : tabs) {
+			if (candidate == wantedTab) {
+				tabbedPane.setSelectedComponent(candidate);
+				
+				wantedTab.setSelected(function);
+			}
+		}
+	}
+
 	private void initIcon() {
 		Image icon = new ImageIcon("Icons/128.png").getImage();
 		icon = icon.getScaledInstance(16, 16, Image.SCALE_SMOOTH);

@@ -1,8 +1,12 @@
 package munk.graph.gui;
 
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.media.j3d.*;
 import javax.swing.JPanel;
@@ -13,6 +17,8 @@ import munk.graph.plot.Axes;
 import munk.graph.rotaters.*;
 
 import com.sun.j3d.utils.behaviors.mouse.MouseRotate;
+import com.sun.j3d.utils.picking.PickCanvas;
+import com.sun.j3d.utils.picking.PickResult;
 import com.sun.j3d.utils.universe.SimpleUniverse;
 
 @SuppressWarnings("serial")
@@ -20,12 +26,13 @@ public class Plotter3D extends JPanel{
 	
 	private static final int	OFFSCREEN_SCALE	= 3;
 	private TransformGroup  root;
-	private TransformGroup	plots;
+	private BranchGroup	plots;
 	private BranchGroup axes;
 	private SimpleUniverse universe;
 	private Canvas3D canvas;
 	private BranchGroup	currentAxis;
 	private Canvas3D	offScreenCanvas;
+	private Map<Shape3D, Function> shapeFunctionMap = new HashMap<Shape3D, Function>();
 	
 	public Plotter3D() {
 		this(600, 600);
@@ -45,7 +52,8 @@ public class Plotter3D extends JPanel{
 	    root = new TransformGroup();
 	    root.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
 	    
-	    plots = new TransformGroup();
+	    
+	    plots = new BranchGroup();
 		plots.setCapability(Group.ALLOW_CHILDREN_EXTEND);
 		plots.setCapability(Group.ALLOW_CHILDREN_WRITE);
 	    initAxis();
@@ -65,6 +73,7 @@ public class Plotter3D extends JPanel{
 	     
 	    initView();
 	    add(canvas);
+	    
 	}
 	
 	private Canvas3D createCanvas3D(boolean offscreen) {
@@ -129,10 +138,11 @@ public class Plotter3D extends JPanel{
 	}
 	
 	
-	public void plotFunction(final Function function) {
+	public void plotFunction(Function function) {
 		BranchGroup bg = function.getPlot();
 		
 		if (bg != null) {
+			shapeFunctionMap.put((Shape3D) bg.getUserData(), function);
 			plots.addChild(bg);
 			updateAxes();
 			adjustZoom();
@@ -144,6 +154,7 @@ public class Plotter3D extends JPanel{
 		BranchGroup bg = function.getPlot();
 		
 		if (bg != null) {
+			shapeFunctionMap.remove(bg.getUserData());
 			bg.detach();
 		}
 		adjustZoom();
@@ -215,6 +226,24 @@ public class Plotter3D extends JPanel{
 	
 	public void updateSize(int width,int height){
 		canvas.setSize(width, height);
+	}
+	
+	public Function getPickedFunction(MouseEvent e) {
+		PickCanvas pc = new PickCanvas(canvas, plots);
+		pc.setMode(PickCanvas.GEOMETRY);
+//		pc.setTolerance(4);
+		pc.setShapeLocation(e);
+
+		PickResult result = pc.pickClosest();
+		
+		return (result != null) ? shapeFunctionMap.get(result.getNode(PickResult.SHAPE3D)) : null;
+
+	}
+	
+	
+	@Override
+	public synchronized void addMouseListener(MouseListener l) {
+		canvas.addMouseListener(l);
 	}
 	
 }

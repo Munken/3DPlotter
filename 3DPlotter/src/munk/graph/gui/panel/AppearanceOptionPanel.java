@@ -10,7 +10,7 @@ import javax.vecmath.Color3f;
 import munk.graph.function.AbstractFunction.FILL;
 import munk.graph.function.*;
 import munk.graph.gui.ColorList;
-import munk.graph.gui.FunctionLabel;
+import munk.graph.gui.labels.*;
 
 @SuppressWarnings("serial")
 public class AppearanceOptionPanel extends JPanel {
