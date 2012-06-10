@@ -54,6 +54,7 @@ public class ParamGridOptionPanel extends AbstractGridOptionPanel implements Gri
 		add(tMax, gbc_textField_1);
 
 		tSlider = new JSlider();
+		tSlider.setFocusable(false);
 		GridBagConstraints gbc_slider_1 = new GridBagConstraints();
 		gbc_slider_1.fill = GridBagConstraints.HORIZONTAL;
 		gbc_slider_1.gridwidth = 3;
@@ -86,6 +87,7 @@ public class ParamGridOptionPanel extends AbstractGridOptionPanel implements Gri
 		add(uMax, gbc_textField_3);
 
 		uSlider = new JSlider();
+		uSlider.setFocusable(false);
 		GridBagConstraints gbc_slider = new GridBagConstraints();
 		gbc_slider.fill = GridBagConstraints.HORIZONTAL;
 		gbc_slider.gridwidth = 3;
