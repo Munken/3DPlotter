@@ -233,7 +233,10 @@ public class Plotter3D extends JPanel{
 		
 		Node n = result.getNode();
 		
-		return (Function) ((n != null) ? n.getUserData() : null);
+		if (n != null && n.getUserData() instanceof Function)
+			return (Function) n.getUserData();
+		else
+			return null;
 
 	}
 	
