@@ -5,8 +5,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.media.j3d.*;
 import javax.swing.JPanel;
@@ -17,8 +15,7 @@ import munk.graph.plot.Axes;
 import munk.graph.rotaters.*;
 
 import com.sun.j3d.utils.behaviors.mouse.MouseRotate;
-import com.sun.j3d.utils.picking.PickCanvas;
-import com.sun.j3d.utils.picking.PickResult;
+import com.sun.j3d.utils.pickfast.PickCanvas;
 import com.sun.j3d.utils.universe.SimpleUniverse;
 
 @SuppressWarnings("serial")
@@ -32,7 +29,6 @@ public class Plotter3D extends JPanel{
 	private Canvas3D canvas;
 	private BranchGroup	currentAxis;
 	private Canvas3D	offScreenCanvas;
-	private Map<Shape3D, Function> shapeFunctionMap = new HashMap<Shape3D, Function>();
 	
 	public Plotter3D() {
 		this(600, 600);
@@ -142,7 +138,6 @@ public class Plotter3D extends JPanel{
 		BranchGroup bg = function.getPlot();
 		
 		if (bg != null) {
-			shapeFunctionMap.put((Shape3D) bg.getUserData(), function);
 			plots.addChild(bg);
 			updateAxes();
 			adjustZoom();
@@ -154,7 +149,6 @@ public class Plotter3D extends JPanel{
 		BranchGroup bg = function.getPlot();
 		
 		if (bg != null) {
-			shapeFunctionMap.remove(bg.getUserData());
 			bg.detach();
 		}
 		adjustZoom();
@@ -230,13 +224,16 @@ public class Plotter3D extends JPanel{
 	
 	public Function getPickedFunction(MouseEvent e) {
 		PickCanvas pc = new PickCanvas(canvas, plots);
-		pc.setMode(PickCanvas.GEOMETRY);
+		pc.setMode(PickInfo.PICK_GEOMETRY);
 //		pc.setTolerance(4);
 		pc.setShapeLocation(e);
+		pc.setFlags(PickInfo.NODE);
 
-		PickResult result = pc.pickClosest();
+		PickInfo result = pc.pickClosest();
 		
-		return (result != null) ? shapeFunctionMap.get(result.getNode(PickResult.SHAPE3D)) : null;
+		Node n = result.getNode();
+		
+		return (Function) ((n != null) ? n.getUserData() : null);
 
 	}
 	
