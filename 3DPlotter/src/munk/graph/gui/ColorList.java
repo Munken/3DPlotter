@@ -43,6 +43,7 @@ public class ColorList extends ArrayList<Color3f> {
 	public ColorIcon[] getIconList(){
 		ColorIcon[] iconList = new ColorIcon[this.size()];
 		int i = 0;
+		
 		for(Color3f c : this){
 			iconList[i] = new ColorIcon(c);
 			i++;
@@ -72,29 +73,30 @@ public class ColorList extends ArrayList<Color3f> {
 	 * Save the color list, when a new color has been added.
 	 */
 	public boolean add(Color3f color){
-		Boolean returnBoolean = super.add(color);
+		boolean returnBoolean = super.add(color);
 		try{
-		ObjectWriter.ObjectToFile(new File("Files/config.color"), this);
+			ObjectWriter.ObjectToFile(new File("Files/config.color"), this);
 		}
 		catch(IOException e){
 			e.printStackTrace();
 		}
 		return returnBoolean;
 	}
-	
+
 	/*
 	 * Save the color list, when a new color has been removed.
 	 */
 	public Color3f remove(int i){
 		Color3f returnColor = null;
+		
 		if(this.size() > 1){
-		returnColor = super.remove(i);
-		try{
-		ObjectWriter.ObjectToFile(new File("Files/config.color"), this);
-		}
-		catch(IOException e){
-			e.printStackTrace();
-		}
+			returnColor = super.remove(i);
+			try{
+				ObjectWriter.ObjectToFile(new File("Files/config.color"), this);
+			}
+			catch(IOException e){
+				e.printStackTrace();
+			}
 		}
 		return returnColor;
 	}

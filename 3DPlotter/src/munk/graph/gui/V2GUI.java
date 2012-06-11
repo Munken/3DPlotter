@@ -151,8 +151,9 @@ public class V2GUI {
 			public void mouseClicked(MouseEvent e) {
 				if (SwingUtilities.isRightMouseButton(e)) {
 					Function result = plotter.getPickedFunction(e);
-					if (result != null)
+					if (result != null) {
 						switchToFunction(result);
+					}
 				}
 			}
 		});
