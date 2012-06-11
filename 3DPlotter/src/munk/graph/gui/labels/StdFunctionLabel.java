@@ -33,6 +33,7 @@ public class StdFunctionLabel extends AbstractFunctionLabel{
 		add(btnDelete, gbc_btnDelete);
 
 		exprField = new JTextField(function.getExpression()[0]);
+		exprField.addKeyListener(blinkFunctionListener());
 		GridBagConstraints gbc_list = new GridBagConstraints();
 		gbc_list.insets = new Insets(0, 0, 5, 5);
 		gbc_list.fill = GridBagConstraints.BOTH;

@@ -1,4 +1,4 @@
-package munk.graph.gui.panel;
+package munk.graph.gui.panel.tab;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -30,6 +30,8 @@ import munk.graph.gui.Plotter3D;
 import munk.graph.gui.labels.*;
 import munk.graph.gui.listener.FunctionEvent;
 import munk.graph.gui.listener.FunctionListener;
+import munk.graph.gui.panel.AppearanceOptionPanel;
+import munk.graph.gui.panel.gridoption.GridOptionPanel;
 
 import com.graphbuilder.math.ExpressionParseException;
 import com.graphbuilder.math.UndefinedVariableException;

@@ -1,4 +1,4 @@
-package munk.graph.gui.panel;
+package munk.graph.gui.panel.gridoption;
 
 import munk.graph.function.Function;
 import munk.graph.gui.listener.FunctionListener;

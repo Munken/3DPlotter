@@ -16,6 +16,7 @@ import munk.graph.appearance.Colors;
 import munk.graph.function.*;
 import munk.graph.function.implicit.*;
 import munk.graph.gui.panel.*;
+import munk.graph.gui.panel.tab.*;
 import munk.graph.gui.labels.FunctionLabel;
 
 import com.graphbuilder.math.ExpressionParseException;

@@ -1,4 +1,4 @@
-package munk.graph.gui.panel;
+package munk.graph.gui.panel.gridoption;
 
 import java.awt.*;
 import java.awt.event.*;

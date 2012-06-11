@@ -1,14 +1,16 @@
-package munk.graph.gui.panel;
+package munk.graph.gui.panel.tab;
 
 import java.util.HashMap;
 
 import javax.vecmath.Color3f;
 
 import munk.graph.function.Function;
-import munk.graph.function.FunctionUtil;
 import munk.graph.function.IllegalEquationException;
+import munk.graph.function.ParametricFunction;
 import munk.graph.gui.ColorList;
-import munk.graph.gui.labels.FunctionLabel;
+import munk.graph.gui.labels.*;
+import munk.graph.gui.panel.gridoption.GridOptionPanel;
+import munk.graph.gui.panel.gridoption.ParamGridOptionPanel;
 import munk.graph.gui.GuiUtil;
 import munk.graph.gui.Plotter3D;
 
@@ -16,24 +18,25 @@ import com.graphbuilder.math.ExpressionParseException;
 import com.graphbuilder.math.UndefinedVariableException;
 
 @SuppressWarnings("serial")
-public class XYZFunctionTab extends AbstractFunctionTab {
-	
-	public XYZFunctionTab(ColorList colorList, HashMap<Function, FunctionLabel> map, Function templateFunc, Plotter3D plotter) throws Exception{
+public class ParametricFunctionTab extends AbstractFunctionTab {
+
+	private static final String[] LABEL_NAMES = {"x: ", "y: ", "z: "};
+	public ParametricFunctionTab(ColorList colorList, HashMap<Function, FunctionLabel> map, Function templateFunc, Plotter3D plotter) throws Exception{
 		super(colorList, map, templateFunc, plotter);
 		super.init();
 	}
 
 	public GridOptionPanel getGridOptionPanel(){
-		return new StdGridOptionPanel(new String[]{"-1","1","-1","1","-1","1"});
+		return new ParamGridOptionPanel(new String[]{"0","2*pi","0","2*pi"});
 	}
-	
+
 	public int getNoOfInputs(){
-		return 1;
+		return 3;
 	}
-	
+
 	public void addPlot(Function function) {
 		FunctionLabel label = null;
-		label = addXYZPlot(function);
+		label = addParametricPlot(function);
 		label.addFunctionListener(createFunctionListener());
 		map.put(function, label);
 		spawnNewPlotterThread(function);
@@ -47,6 +50,13 @@ public class XYZFunctionTab extends AbstractFunctionTab {
 				bounds[i] = tmp;
 			}
 		}
-		return FunctionUtil.createFunction(expressions, color, bounds, stepSize);
+		return new ParametricFunction(expressions, color, bounds, stepSize);
 	}
+
+	@Override
+	protected String[] labelNames() {
+		return LABEL_NAMES;
+	}
+	
+	
 }

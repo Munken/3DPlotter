@@ -1,14 +1,16 @@
-package munk.graph.gui.panel;
+package munk.graph.gui.panel.tab;
 
 import java.util.HashMap;
 
 import javax.vecmath.Color3f;
 
 import munk.graph.function.Function;
+import munk.graph.function.FunctionUtil;
 import munk.graph.function.IllegalEquationException;
-import munk.graph.function.implicit.SphericalFunction;
 import munk.graph.gui.ColorList;
-import munk.graph.gui.labels.*;
+import munk.graph.gui.labels.FunctionLabel;
+import munk.graph.gui.panel.gridoption.GridOptionPanel;
+import munk.graph.gui.panel.gridoption.StdGridOptionPanel;
 import munk.graph.gui.GuiUtil;
 import munk.graph.gui.Plotter3D;
 
@@ -16,21 +18,21 @@ import com.graphbuilder.math.ExpressionParseException;
 import com.graphbuilder.math.UndefinedVariableException;
 
 @SuppressWarnings("serial")
-public class SphericalFunctionTab extends AbstractFunctionTab {
-
-	public SphericalFunctionTab(ColorList colorList, HashMap<Function, FunctionLabel> map, Function templateFunc, Plotter3D plotter) throws Exception{
+public class XYZFunctionTab extends AbstractFunctionTab {
+	
+	public XYZFunctionTab(ColorList colorList, HashMap<Function, FunctionLabel> map, Function templateFunc, Plotter3D plotter) throws Exception{
 		super(colorList, map, templateFunc, plotter);
 		super.init();
 	}
 
 	public GridOptionPanel getGridOptionPanel(){
-		return new SphGridOptionPanel(new String[]{"0","1","0","pi","0","2*pi"});
+		return new StdGridOptionPanel(new String[]{"-1","1","-1","1","-1","1"});
 	}
 	
 	public int getNoOfInputs(){
 		return 1;
 	}
-
+	
 	public void addPlot(Function function) {
 		FunctionLabel label = null;
 		label = addXYZPlot(function);
@@ -47,6 +49,6 @@ public class SphericalFunctionTab extends AbstractFunctionTab {
 				bounds[i] = tmp;
 			}
 		}
-		return new SphericalFunction(expressions, color, bounds, stepSize);
+		return FunctionUtil.createFunction(expressions, color, bounds, stepSize);
 	}
 }
