@@ -44,11 +44,12 @@ public abstract class AbstractFunction implements Function{
 	}
 	
 	private BranchGroup setApperancePackInBranchGroup(Shape3D shape, Node handle) {
+		shape.setUserData(this);
+		
 		shape.setCapability(Shape3D.ALLOW_APPEARANCE_WRITE);
 
 		BranchGroup bg = new BranchGroup();
 		bg.setCapability(BranchGroup.ALLOW_DETACH);
-		bg.setUserData(shape);
 		bg.addChild(handle);
 		bg.compile();
 		return bg;

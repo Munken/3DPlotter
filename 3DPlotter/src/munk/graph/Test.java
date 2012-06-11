@@ -1,24 +1,35 @@
 package munk.graph;
 
-import javax.vecmath.Point3f;
-import munk.graph.plot.*;
+import munk.graph.appearance.Colors;
+import munk.graph.function.IllegalEquationException;
+import munk.graph.function.implicit.ImplicitMultiFunction;
+import munk.graph.function.implicit.ImplicitSlowFunction;
+
+import com.graphbuilder.math.ExpressionParseException;
+import com.graphbuilder.math.UndefinedVariableException;
 
 
 public class Test {
 	
 	
-	public static void main(String[] args) {
-		int n = 3;
-		Point3f p = new Point3f(1,1,1);
+	public static void main(String[] args) throws ExpressionParseException, InterruptedException, IllegalEquationException, UndefinedVariableException {
 		
-		Point3f[][] pa = new Point3f[n][n];
+		ImplicitMultiFunction m = new ImplicitMultiFunction(new String[] {"x^2 + y^2 + z^3= 1.5"}, 
+				Colors.BLUE, new String[] {"-2","2","-2","2","-2","2"}, new float[] {0.1f, 0.1f, 0.1f});
 		
-		for (int i = 0; i < n; i++) {
-			for (int j = 0; j < n; j++) {
-				pa[i][j] = p;
-			}
-		}
 		
-		PlotUtil.buildQuadStripArray(pa);
+		ImplicitSlowFunction isf = new ImplicitSlowFunction(new String[] {"x^2 + y^2 + z^2 = 1"}, 
+				Colors.BLUE, new String[] {"-1","1","-1","1","-1","1"}, new float[] {0.05f, 0.05f, 0.05f});
+		
+		
+		
+		long start = System.currentTimeMillis();
+//		p.plotFunction(isf);
+		isf.getPlot();
+		System.out.println(System.currentTimeMillis() - start);
+		
+
 	}
+
+
 }

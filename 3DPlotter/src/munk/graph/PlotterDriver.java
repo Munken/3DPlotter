@@ -8,6 +8,7 @@ import javax.swing.JTextField;
 import munk.graph.appearance.Colors;
 import munk.graph.function.IllegalEquationException;
 import munk.graph.function.implicit.*;
+import munk.graph.plot.implicit.*;
 import munk.graph.gui.Plotter3D;
 
 import com.graphbuilder.math.ExpressionParseException;
@@ -48,11 +49,22 @@ public class PlotterDriver {
 //		p.plotFunction(it);
 		
 		SphericalFunction sf = new SphericalFunction(new String[]{"r=0.5*cos(theta)^10 + 0.1*sin(phi)"}, Colors.BLUE, recBound, stepSize);
-		ImplicitMultiFunction m = new ImplicitMultiFunction(new String[] {"x^2 + y^2 + z^2 = 1.5"}, 
-				Colors.BLUE, new String[] {"-2","2","-2","2","-2","2"}, new float[] {0.1f, 0.2f, 0.1f});
+		ImplicitMultiFunction m = new ImplicitMultiFunction(new String[] {"x^2 + y^2 + z^3= 1.5"}, 
+				Colors.BLUE, new String[] {"-2","2","-2","2","-2","2"}, new float[] {0.1f, 0.1f, 0.1f});
 		
 		
-		p.plotFunction(m);
+		ImplicitSlowFunction isf = new ImplicitSlowFunction(new String[] {"x^2 + y^2 + z^2 = 1"}, 
+				Colors.BLUE, new String[] {"-1","1","-1","1","-1","1"}, new float[] {0.05f, 0.05f, 0.05f});
+		
+		
+		
+		long start = System.currentTimeMillis();
+		p.plotFunction(isf);
+		System.out.println(System.currentTimeMillis() - start);
+		
+//		ImplicitSlow im = new ImplicitSlow("x^2 + y^2 + z^2 = 1", -2, 2, -2, 2, -2, 2, 0.1f, 0.2f, 0.1f);
+		
+//		p.plotFunction(im.getPlot());
 		
 		
 //		p.plotFunction("z = y", -i, i, -i, i, Colors.MAGENTA);
