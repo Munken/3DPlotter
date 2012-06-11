@@ -72,7 +72,7 @@ public abstract class AbstractGridOptionPanel extends JPanel {
 		return f;
 	}
 	
-	protected MouseListener getKeyListener(final JSlider... sliders) {
+	protected MouseListener getSliderListener(final JSlider... sliders) {
 		return new MouseAdapter() {
 			BoundedRangeModel sharedModel;
 			BoundedRangeModel[] models;
@@ -88,11 +88,6 @@ public abstract class AbstractGridOptionPanel extends JPanel {
 			@Override
 			public void mouseReleased(MouseEvent arg0) {
 					try {
-//						// For now adjust all sliders accordingly.
-//						JSlider j = (JSlider) arg0.getSource();
-//						xSlider.setValue(j.getValue());
-//						ySlider.setValue(j.getValue());
-//						zSlider.setValue(j.getValue());
 						signallAll();
 						
 						if (sharedModel != null) {

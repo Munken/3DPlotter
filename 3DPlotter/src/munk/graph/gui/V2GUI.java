@@ -1,50 +1,22 @@
 package munk.graph.gui;
-import java.awt.Component;
-import java.awt.Desktop;
-import java.awt.Dimension;
-import java.awt.EventQueue;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
+import java.awt.*;
+import java.awt.event.*;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 
 import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
+import javax.swing.*;
 import javax.vecmath.Color3f;
 
 import munk.graph.IO.ObjectReader;
 import munk.graph.IO.ObjectWriter;
 import munk.graph.appearance.Colors;
-import munk.graph.function.Function;
-import munk.graph.function.FunctionUtil;
-import munk.graph.function.IllegalEquationException;
-import munk.graph.function.ParametricFunction;
-import munk.graph.function.TemplateFunction;
-import munk.graph.function.ZippedFunction;
-import munk.graph.function.implicit.SphericalFunction;
-import munk.graph.gui.panel.ColorOptionPanel;
-import munk.graph.gui.panel.FunctionTab;
-import munk.graph.gui.panel.ParametricFunctionTab;
-import munk.graph.gui.panel.SphericalFunctionTab;
-import munk.graph.gui.panel.XYZFunctionTab;
+import munk.graph.function.*;
+import munk.graph.function.implicit.*;
+import munk.graph.gui.panel.*;
+import munk.graph.gui.labels.FunctionLabel;
 
 import com.graphbuilder.math.ExpressionParseException;
 import com.graphbuilder.math.UndefinedVariableException;
@@ -66,7 +38,7 @@ public class V2GUI {
 	private static V2GUI window;
 	private JFrame frame;
 	private JTabbedPane tabbedPane;
- 	private FunctionTab stdFuncTab;
+	private FunctionTab stdFuncTab;
  	private FunctionTab paramFuncTab;
  	private FunctionTab sphFuncTab;
 	private JPanel canvasPanel;
@@ -148,6 +120,8 @@ public class V2GUI {
 		init3Dplotter();
      	initFunctionTabs();
 		initMenuBar();
+		initIcon();
+		initPicking();
      
      	// Update references.
      	paramFuncTab.updateReferences(paramTemplateFunc);
@@ -170,9 +144,53 @@ public class V2GUI {
      	autoResize();
 	}
 	
+	private void initPicking() {
+		plotter.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (SwingUtilities.isRightMouseButton(e)) {
+					Function result = plotter.getPickedFunction(e);
+					if (result != null)
+						switchToFunction(result);
+				}
+			}
+		});
+		
+	}
+	
+	private void switchToFunction(Function function) {
+		
+		FunctionTab wantedTab = null;
+		if (function instanceof XYZFunction || function instanceof ImplicitFunction) {
+			wantedTab = stdFuncTab;
+		} else if (function instanceof ParametricFunction){
+			wantedTab = paramFuncTab;
+		} else {
+			wantedTab = sphFuncTab;
+		}
+		
+		// The function tabs are a components. They just dont know it...
+		Component[] tabs = tabbedPane.getComponents();
+		
+		for (Component candidate : tabs) {
+			if (candidate == wantedTab) {
+				tabbedPane.setSelectedComponent(candidate);
+				
+				wantedTab.setSelected(function);
+			}
+		}
+	}
+
+	private void initIcon() {
+		Image icon = new ImageIcon("Icons/128.png").getImage();
+		icon = icon.getScaledInstance(16, 16, Image.SCALE_SMOOTH);
+		frame.setIconImage(icon);
+	}
+
 	private void initFrame(){
 		frame = new JFrame("Ultra Mega Epic Xtreme Plotter 3D");
-		frame.setBounds(100, 100, 1000, 1000);
+		frame.setBounds(0, 0, 1000, 1000);
      	GridBagLayout gbl = new GridBagLayout();
      	gbl.columnWidths = new int[]{10, 300, 0, 0, 0};
      	gbl.rowHeights = new int[]{2, 0, 5, 0};
@@ -380,6 +398,7 @@ public class V2GUI {
 		menuBar.add(mnFile);
 
 		mntmSaveProject = new JMenuItem("Export workspace", new ImageIcon("Icons/save.png"));
+		mntmSaveProject.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_MASK));
 		mntmSaveProject.addActionListener(new ActionListener() {
 
 			@Override
@@ -398,6 +417,8 @@ public class V2GUI {
 		mnFile.add(mntmSaveProject);
 
 		mntmLoadProject = new JMenuItem("Import workspace", new ImageIcon("Icons/file.png"));
+		mntmLoadProject.setMnemonic('I');
+		mntmLoadProject.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, KeyEvent.CTRL_MASK));
 		mntmLoadProject.addActionListener(new ActionListener() {
 			
 			@Override
@@ -408,6 +429,7 @@ public class V2GUI {
 		mnFile.add(mntmLoadProject);
 		
 		mntmPrintCanvas = new JMenuItem("Save as image", new ImageIcon("Icons/png.png"));
+		mntmPrintCanvas.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, KeyEvent.CTRL_MASK));
 		mntmPrintCanvas.addActionListener(new ActionListener() {
 			
 			@Override

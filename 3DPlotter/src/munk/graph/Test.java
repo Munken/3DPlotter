@@ -1,63 +1,35 @@
 package munk.graph;
 
-import java.awt.*;
-import javax.swing.*;
+import munk.graph.appearance.Colors;
+import munk.graph.function.IllegalEquationException;
+import munk.graph.function.implicit.ImplicitMultiFunction;
+import munk.graph.function.implicit.ImplicitSlowFunction;
 
-class Test extends JFrame
-{
-	JSlider[] sliders = new JSlider[3];
-	BoundedRangeModel[] models = new BoundedRangeModel[sliders.length];
-	JPanel colorPanel = new JPanel();
-	SliderListener listener = new SliderListener();
-	public Test()
-	{
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setLocation(200,100);
-		colorPanel.setPreferredSize(new Dimension(400,200));
-		colorPanel.setBackground(new Color(0,0,0));
-		JPanel panel = new JPanel(new GridLayout(3,1));
-		for(int x =0; x < sliders.length; x++)
-		{
-			sliders[x] = new JSlider(0,255,0);
-			sliders[x].setMajorTickSpacing(20);
-			sliders[x].setMinorTickSpacing(10);
-			sliders[x].setPaintTicks(true);
-			sliders[x].setPaintLabels(true);
-			sliders[x].addChangeListener(listener);
-			models[x] = sliders[x].getModel();
-			panel.add(sliders[x]);
-		}
-		JPanel p = new JPanel();
-		final JCheckBox cbx = new JCheckBox("Lock");
-		p.add(cbx);
-		getContentPane().add(panel,BorderLayout.NORTH);
-		getContentPane().add(colorPanel,BorderLayout.CENTER);
-		getContentPane().add(p,BorderLayout.SOUTH);
-		pack();
-		cbx.addActionListener(new java.awt.event.ActionListener(){
-			public void actionPerformed(java.awt.event.ActionEvent ae){
-				if(cbx.isSelected())
-				{
-					sliders[1].setModel(sliders[0].getModel());
-					sliders[2].setModel(sliders[0].getModel());
-					colorPanel.setBackground(new
-							Color(sliders[0].getValue(),sliders[1].getValue(),sliders[2].getValue()));
-				}
-				else
-				{
-					sliders[1].setModel(models[1]);
-					sliders[2].setModel(models[2]);
-					colorPanel.setBackground(new
-							Color(sliders[0].getValue(),sliders[1].getValue(),sliders[2].getValue()));
-				}}});
+import com.graphbuilder.math.ExpressionParseException;
+import com.graphbuilder.math.UndefinedVariableException;
+
+
+public class Test {
+	
+	
+	public static void main(String[] args) throws ExpressionParseException, InterruptedException, IllegalEquationException, UndefinedVariableException {
+		
+		ImplicitMultiFunction m = new ImplicitMultiFunction(new String[] {"x^2 + y^2 + z^3= 1.5"}, 
+				Colors.BLUE, new String[] {"-2","2","-2","2","-2","2"}, new float[] {0.1f, 0.1f, 0.1f});
+		
+		
+		ImplicitSlowFunction isf = new ImplicitSlowFunction(new String[] {"x^2 + y^2 + z^2 = 1"}, 
+				Colors.BLUE, new String[] {"-1","1","-1","1","-1","1"}, new float[] {0.05f, 0.05f, 0.05f});
+		
+		
+		
+		long start = System.currentTimeMillis();
+//		p.plotFunction(isf);
+		isf.getPlot();
+		System.out.println(System.currentTimeMillis() - start);
+		
+
 	}
-	class SliderListener implements javax.swing.event.ChangeListener
-	{
-		public void stateChanged(javax.swing.event.ChangeEvent ce)
-		{
-			colorPanel.setBackground(new
-					Color(sliders[0].getValue(),sliders[1].getValue(),sliders[2].getValue()));
-		}
-	}
-	public static void main(String[] args){new Test().setVisible(true);}
-} 
+
+
+}

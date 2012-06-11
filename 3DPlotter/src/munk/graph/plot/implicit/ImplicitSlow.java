@@ -22,6 +22,14 @@ public class ImplicitSlow extends AbstractImplicit{
 							float stepsize) throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
 		super(expr, xMin, xMax, yMin, yMax, zMin, zMax, stepsize, stepsize, stepsize);
 	}
+	
+	public ImplicitSlow(String expr, 
+			float xMin, float xMax, 
+			float yMin,	float yMax, 
+			float zMin, float zMax, 
+			float xStepsize, float yStepsize, float zStepsize) throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
+		super(expr, xMin, xMax, yMin, yMax, zMin, zMax, xStepsize, yStepsize, zStepsize);
+}
 
 	protected Shape3D plot() {
 

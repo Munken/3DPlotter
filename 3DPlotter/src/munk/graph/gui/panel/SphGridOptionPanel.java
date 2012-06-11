@@ -58,6 +58,7 @@ public class SphGridOptionPanel extends AbstractGridOptionPanel implements GridO
 		add(xMax, gbc_textField_1);
 
 		xSlider = new JSlider();
+		xSlider.setFocusable(false);
 		GridBagConstraints gbc_slider_1 = new GridBagConstraints();
 		gbc_slider_1.fill = GridBagConstraints.HORIZONTAL;
 		gbc_slider_1.gridwidth = 3;
@@ -90,6 +91,7 @@ public class SphGridOptionPanel extends AbstractGridOptionPanel implements GridO
 		add(yMax, gbc_textField_3);
 
 		ySlider = new JSlider();
+		ySlider.setFocusable(false);
 		GridBagConstraints gbc_slider = new GridBagConstraints();
 		gbc_slider.fill = GridBagConstraints.HORIZONTAL;
 		gbc_slider.gridwidth = 3;
@@ -122,6 +124,7 @@ public class SphGridOptionPanel extends AbstractGridOptionPanel implements GridO
 		add(zMax, gbc_textField_5);
 		
 		zSlider = new JSlider();
+		zSlider.setFocusable(false);
 		GridBagConstraints gbc_slider_2 = new GridBagConstraints();
 		gbc_slider_2.fill = GridBagConstraints.HORIZONTAL;
 		gbc_slider_2.gridwidth = 3;
@@ -138,7 +141,7 @@ public class SphGridOptionPanel extends AbstractGridOptionPanel implements GridO
      	GuiUtil.setupUndoListener(zMax);
 		setGridBounds(bounds);
 		
-		MouseListener sliderListener = getKeyListener(xSlider, ySlider, zSlider);
+		MouseListener sliderListener = getSliderListener(xSlider, ySlider, zSlider);
 		xSlider.addMouseListener(sliderListener);
 		ySlider.addMouseListener(sliderListener);
 		zSlider.addMouseListener(sliderListener);	

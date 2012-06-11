@@ -43,7 +43,9 @@ public abstract class AbstractFunction implements Function{
 		state = FILL.FILL;
 	}
 	
-	private BranchGroup setApperancePackInBranchGroup(Color3f color2, Shape3D shape2, Node handle) {
+	private BranchGroup setApperancePackInBranchGroup(Shape3D shape, Node handle) {
+		shape.setUserData(this);
+		
 		shape.setCapability(Shape3D.ALLOW_APPEARANCE_WRITE);
 
 		BranchGroup bg = new BranchGroup();
@@ -64,7 +66,7 @@ public abstract class AbstractFunction implements Function{
 				plotter = null;
 
 				if (shape != null) 
-					plot = setApperancePackInBranchGroup(getColor(), shape, handle);
+					plot = setApperancePackInBranchGroup(shape, handle);
 
 				setColor(color);
 			}

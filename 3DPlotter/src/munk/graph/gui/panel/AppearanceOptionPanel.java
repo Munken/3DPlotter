@@ -10,13 +10,13 @@ import javax.vecmath.Color3f;
 import munk.graph.function.AbstractFunction.FILL;
 import munk.graph.function.*;
 import munk.graph.gui.ColorList;
-import munk.graph.gui.FunctionLabel;
+import munk.graph.gui.labels.*;
 
 @SuppressWarnings("serial")
 public class AppearanceOptionPanel extends JPanel {
 	
 	private Function selectedFunc;
-	private JComboBox comboBox;
+	private JComboBox<Object> comboBox;
 	private ColorList colorList;
 	private JRadioButton rdbtnGrid;
 	private JRadioButton rdbtnSolid;
@@ -83,7 +83,7 @@ public class AppearanceOptionPanel extends JPanel {
 		});
 		viewGroup.add(rdbtnSolid);
 		
-		comboBox = new JComboBox(colorList.getIconList());
+		comboBox = new JComboBox<Object>(colorList.getIconList());
 		GridBagConstraints gbc_comboBox = new GridBagConstraints();
 		gbc_comboBox.insets = new Insets(0, 0, 5, 5);
 		gbc_comboBox.fill = GridBagConstraints.HORIZONTAL;
@@ -117,7 +117,7 @@ public class AppearanceOptionPanel extends JPanel {
 	}
 
 	public void updateColors(){
-		comboBox.setModel(new JComboBox(colorList.getIconList()).getModel());
+		comboBox.setModel(new JComboBox<Object>(colorList.getIconList()).getModel());
 	}	
 }
 

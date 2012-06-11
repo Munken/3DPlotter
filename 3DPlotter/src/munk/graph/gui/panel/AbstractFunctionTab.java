@@ -25,11 +25,9 @@ import munk.graph.function.Function;
 import munk.graph.function.IllegalEquationException;
 import munk.graph.function.TemplateFunction;
 import munk.graph.gui.ColorList;
-import munk.graph.gui.FunctionLabel;
 import munk.graph.gui.GuiUtil;
-import munk.graph.gui.ParametricFunctionLabel;
 import munk.graph.gui.Plotter3D;
-import munk.graph.gui.StdFunctionLabel;
+import munk.graph.gui.labels.*;
 import munk.graph.gui.listener.FunctionEvent;
 import munk.graph.gui.listener.FunctionListener;
 
@@ -193,7 +191,6 @@ public abstract class AbstractFunctionTab extends JPanel implements FunctionTab{
 						addPlot(equations,templateFunc.getColor(), gridOP.getGridBounds(), gridOP.getGridStepSize());
 					} catch (ExpressionParseException | IllegalEquationException | UndefinedVariableException e1) {
 						signalAll(new ActionEvent(e1, -1, ""));
-						e1.printStackTrace();
 					}
 				}
 
@@ -203,43 +200,45 @@ public abstract class AbstractFunctionTab extends JPanel implements FunctionTab{
 
 			@Override
 			public void focusGained(FocusEvent arg0) {
-				try {
-					setSelected(templateFunc);
-				} catch (ExpressionParseException e) {
-					signalAll(new ActionEvent(e, -1, ""));
-					e.printStackTrace();
-				}
+				setSelected(templateFunc);
 			}
 		});
 	}
 
-	public void setSelected(Function f) throws ExpressionParseException{
-		if(f != selectedFunction){
-			// Deselection.
-			if(selectedFunction != null && selectedFunction == templateFunc){
-				for(int i = 0; i < input.length; i++){
-					input[i].setBackground(NORMAL_COLOR);
+	public void setSelected(Function f) {
+		try {
+			if(f != selectedFunction){
+				// Deselection.
+				if(selectedFunction != null && selectedFunction == templateFunc){
+					for(int i = 0; i < input.length; i++){
+						input[i].setBackground(NORMAL_COLOR);
+					}
 				}
-			}
-			else if (selectedFunction != null){
-				FunctionLabel label = map.get(selectedFunction);
-				if (label != null)
-					label.setSelected(false);
-			}
-			selectedFunction = f;
+				else if (selectedFunction != null){
+					FunctionLabel label = map.get(selectedFunction);
+					if (label != null)
+						label.setSelected(false);
+				}
+				selectedFunction = f;
 
-			// Selection.
-			if(selectedFunction != null && selectedFunction == templateFunc){
-				for(int i = 0; i < input.length; i++){
-					input[i].setBackground(SELECTED_COLOR);
+				// Selection of input fields.
+				if(selectedFunction != null && selectedFunction == templateFunc){
+					for(int i = 0; i < input.length; i++){
+						input[i].setBackground(SELECTED_COLOR);
+					}
+					
+					updateReferences(selectedFunction);
 				}
-				updateReferences(selectedFunction);
 			}
-			else if (selectedFunction != null){
+			
+			// Needed for picking. The caret might not be active, 
+			if (selectedFunction != null && selectedFunction != templateFunc){
 				FunctionLabel selectedLabel = map.get(selectedFunction);
 				updateReferences(selectedFunction);
 				selectedLabel.setSelected(true);
 			}
+		} catch (ExpressionParseException e ) {
+			
 		}
 	}
 	
@@ -252,11 +251,7 @@ public abstract class AbstractFunctionTab extends JPanel implements FunctionTab{
 			
 			@Override
 			public void focusGained(FocusEvent e) {
-				try {
-					setSelected(label.getMother());
-				} catch (ExpressionParseException e1) {
-					e1.printStackTrace();
-				}
+				setSelected(label.getMother());
 			}
 		});
 		innerFuncTab.add(label);
@@ -272,11 +267,7 @@ public abstract class AbstractFunctionTab extends JPanel implements FunctionTab{
 			
 			@Override
 			public void focusGained(FocusEvent e) {
-				try {
-					setSelected(label.getMother());
-				} catch (ExpressionParseException e1) {
-					e1.printStackTrace();
-				}
+				setSelected(label.getMother());
 			}
 		});
 		innerFuncTab.add(label);
@@ -305,7 +296,6 @@ public abstract class AbstractFunctionTab extends JPanel implements FunctionTab{
 							| IllegalEquationException
 							| UndefinedVariableException e1) {
 						signalAll(new ActionEvent(e1, -1, ""));
-						e1.printStackTrace();
 					}
 				}
 				else{
@@ -337,7 +327,6 @@ public abstract class AbstractFunctionTab extends JPanel implements FunctionTab{
 							| IllegalEquationException
 							| UndefinedVariableException e1) {
 						signalAll(new ActionEvent(e1, -1, ""));
-						e1.printStackTrace();
 					}
 				} 
 

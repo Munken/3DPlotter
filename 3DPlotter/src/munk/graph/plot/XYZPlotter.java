@@ -72,12 +72,31 @@ public class XYZPlotter extends AbstractPlotter {
 		this(expr, xMin, xMax, yMin, yMax, stepsizes[0], stepsizes[1]);
 	}
 	
+	public XYZPlotter(String expr, float[] bounds, float[] stepsizes) 
+			throws ExpressionParseException, UndefinedVariableException {
+		this(expr, bounds[0], bounds[1], bounds[2], bounds[3], stepsizes);
+		
+		
+		// x = f(y,z) plot
+		if (rotation == ROT_X) {
+			xMin = bounds[4];
+			xMax = bounds[5];
+			xStepsize = stepsizes[2];
+			
+		// y = f(x,z) plot	
+		} else if (rotation == ROT_Y){
+			yMin = bounds[4];
+			yMax = bounds[5];
+			yStepsize = stepsizes[2];
+		}
+	}
+	
 	static {
 		ROT_X = new Transform3D();
-		ROT_X.rotY(Math.PI/2);
+		ROT_X.rotY(-Math.PI/2);
 		
 		ROT_Y = new Transform3D();
-		ROT_Y.rotX(-Math.PI/2);
+		ROT_Y.rotX(Math.PI/2);
 	}
 	
 

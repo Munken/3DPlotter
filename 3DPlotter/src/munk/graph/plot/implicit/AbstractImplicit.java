@@ -13,8 +13,7 @@ import munk.graph.marching.*;
 import munk.graph.plot.AbstractPlotter;
 
 import com.graphbuilder.math.*;
-import com.sun.j3d.utils.geometry.GeometryInfo;
-import com.sun.j3d.utils.geometry.NormalGenerator;
+import com.sun.j3d.utils.geometry.*;
 
 public abstract class AbstractImplicit extends AbstractPlotter implements ImplicitPlotter {
 	
@@ -95,13 +94,15 @@ public abstract class AbstractImplicit extends AbstractPlotter implements Implic
 	
 	protected Shape3D buildGeomtryFromTriangles(List<Point3f> vertices) {
 		// Build geometry from triangles
-		if (vertices.size() >= 3 && triangles.size() % 3 == 0) {
+		if (vertices.size() >= 3 && vertices.size() % 3 == 0) {
 			GeometryInfo gi = new GeometryInfo(GeometryInfo.TRIANGLE_ARRAY);
 			Point3f[] points = new Point3f[vertices.size()];
 			gi.setCoordinates((Point3f[]) vertices.toArray(points));
 			
 			NormalGenerator ng = new NormalGenerator();
 			ng.generateNormals(gi);
+			Stripifier strip = new Stripifier();
+			strip.stripify(gi);
 					
 			return new Shape3D(gi.getGeometryArray());
 		} else 

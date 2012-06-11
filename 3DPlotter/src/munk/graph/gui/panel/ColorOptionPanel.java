@@ -15,11 +15,12 @@ public class ColorOptionPanel extends JPanel {
 	JColorChooser colorChooser;
 	ArrayList<ActionListener> listeners;
 	ColorList colors;
-	JList iconList;
+	JList<Object> iconList;
 	
 	private static int ADD = 0;
 	private static int REMOVE = 1;
 	private static int CLOSE = 2;
+	
 	
 	public ColorOptionPanel(ColorList colorList){
 		
@@ -51,7 +52,7 @@ public class ColorOptionPanel extends JPanel {
 		gbc_lblCurrent.gridy = 2;
 		add(lblCurrent, gbc_lblCurrent);
 		
-		iconList = new JList(colorList.getIconList());
+		iconList = new JList<Object>(colorList.getIconList());
 		iconList.setFixedCellWidth(30);
 		
 		JScrollPane scrollPane = new JScrollPane(iconList);
@@ -98,7 +99,7 @@ public class ColorOptionPanel extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				signalAll(ADD);
-				iconList.setModel(new JList<>(colors.getIconList()).getModel());
+				iconList.setModel(new JList<Object>(colors.getIconList()).getModel());
 			}
 		});
 		
@@ -107,7 +108,7 @@ public class ColorOptionPanel extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				signalAll(REMOVE);
-				iconList.setModel(new JList<>(colors.getIconList()).getModel());
+				iconList.setModel(new JList<Object>(colors.getIconList()).getModel());
 			}
 		});
 		

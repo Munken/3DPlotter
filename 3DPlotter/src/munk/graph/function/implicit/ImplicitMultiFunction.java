@@ -13,7 +13,7 @@ import com.graphbuilder.math.UndefinedVariableException;
 /*
  * Implicit functions; calculated numerically using Marching Cubes algorithm.
  */
-public class ImplicitMultiFunction extends AbstractFunction {
+public class ImplicitMultiFunction extends AbstractFunction implements ImplicitFunction{
 
 	public ImplicitMultiFunction(String[] expr, Color3f color, String[] bounds, float[] stepSize) 
 												throws ExpressionParseException, IllegalEquationException, UndefinedVariableException{

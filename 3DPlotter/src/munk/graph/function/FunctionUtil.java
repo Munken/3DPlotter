@@ -1,21 +1,15 @@
 package munk.graph.function;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.media.j3d.BranchGroup;
-import javax.media.j3d.Node;
-import javax.media.j3d.Shape3D;
+import javax.media.j3d.*;
 import javax.vecmath.Color3f;
 
-import munk.graph.function.implicit.ImplicitMultiFunction;
+import munk.graph.function.implicit.ImplicitSlowFunction;
 
-import com.graphbuilder.math.Expression;
 import com.graphbuilder.math.ExpressionParseException;
-import com.graphbuilder.math.ExpressionTree;
 import com.graphbuilder.math.UndefinedVariableException;
 
 public class FunctionUtil {
@@ -51,17 +45,23 @@ public class FunctionUtil {
 	 * @throws UndefinedVariableException 
 	 */
 	public static Function createFunction(String[] expressions, Color3f color,
-										String[] bounds, float stepSize[]) 
+										String[] bounds, float[] stepSizes) 
 												throws ExpressionParseException, IllegalEquationException, UndefinedVariableException{
 		
-		String expr = expressions[0];
-		
 		Function result = null;
-		if (isXYZExpression(expr)) {
-			result = new XYZFunction(expressions, color, bounds, stepSize);
-		} 
-		else{
-			result = new ImplicitMultiFunction(expressions, color, bounds, stepSize);
+		
+		if (expressions.length == 1) {
+			String expr = expressions[0];
+
+			if (isXYZExpression(expr)) {
+				result = new XYZFunction(expressions, color, bounds, stepSizes);
+			} 
+			else{
+				//			result = new ImplicitMultiFunction(expressions, color, bounds, stepSize);
+				result = new ImplicitSlowFunction(expressions, color, bounds, stepSizes);
+			}
+		} else {
+			result = new ParametricFunction(expressions, color, bounds, stepSizes);
 		}
 		
 		return result;
@@ -95,26 +95,7 @@ public class FunctionUtil {
 		return false;
 	}
 	
-	public static String[] variableNames (String[] expressions) throws ExpressionParseException {
-		Set<String> variables = new HashSet<String>();
-		
-		for (String ex : expressions) {
-			
-			if (!ex.equals("")) {
-				Expression n = ExpressionTree.parse(ex);
-				String[] variableNames = n.getVariableNames();
-				for (String var : variableNames) {
-					variables.add(var);
-				}
-			} else {
-				throw new ExpressionParseException("You must specify all coordinates", -1);
-			}
-		}
-		
-		String[] varNames = new String[variables.size()];
-		variables.toArray(varNames);
-		return varNames;
-	}
+
 	
 	public static ZippedFunction[] zipFunctionList(List<Function> list){
 		ZippedFunction[] zippedList = new ZippedFunction[list.size()];

@@ -9,7 +9,7 @@ public class Colors {
 	
 	public static final Color3f RED = new Color3f(1, 0, 0);
 	public static final Color3f YELLOW	 = new Color3f(1, 1, 0);
-	public static final Color3f ORANGE	 = new Color3f(1, 0.6f, 0);
+	public static final Color3f ORANGE	 = new Color3f(0.933f, 0.5f, 0);
 	public static final Color3f SKYBLUE = new Color3f(0, .0749f, 1);
 	public static final Color3f INDIGO = new Color3f(0.294f, 0, 0.51f);
 	public static final Color3f GREEN = new Color3f(0, 1, 0);
@@ -18,6 +18,7 @@ public class Colors {
 	public static final Color3f MAGENTA	 = new Color3f(1, 0, 1);
 	public static final Color3f PINK = new Color3f(1, .0784f, .574f);
 	public static final Color3f TURQUISE = new Color3f(0, 0.96f, 1);
+	public static final Color3f TEAL = new Color3f(0.2196f, 0.557f, 0.557f);
 
 	/*
 	 * Render an array of icons of all available colors.

@@ -53,7 +53,7 @@ public class Axes {
 		result.addChild(yArrow(0, yMax, 0, radius));
 		result.addChild(xArrow(xMax, 0, 0, radius));
 		result.addChild(zArrow(0, 0, zMax, radius));
-//		result.addChild(addText(xMax, yMax, zMax, radius));
+		result.addChild(addText(xMax, yMax, zMax, radius));
 		return result;
 	}
 	
@@ -113,36 +113,59 @@ public class Axes {
 
 	}
 	
-	@SuppressWarnings("unused")
+	
 	private TransformGroup addText(float xMax, float yMax, float zMax, float radius) {
+		
+		float scaleFactor = xMax / 10;
+		float textHeight = 0, textWidth = 0, textDepth = 0;
+		Transform3D scaleTrans = new Transform3D();
+		scaleTrans.setScale(scaleFactor);
+		
+		
 		Font3D font = new Font3D(new Font("Test", Font.PLAIN, 1),  new FontExtrusion()); 
-		Text3D xLabel = new Text3D(font, "X");
-		Text3D yLabel = new Text3D(font, "Y");
-		Text3D zLabel = new Text3D(font, "Z");
 		
-		Shape3D xShape = new Shape3D(xLabel);
-		Shape3D yShape = new Shape3D(yLabel);
-		Shape3D zShape = new Shape3D(zLabel);
+		String[] axisLabels = {"X", "Y", "Z"};
+		Color3f[] colors = {X_COLOR, Y_COLOR, Z_COLOR};
+		TransformGroup[] scaledLetters = new TransformGroup[axisLabels.length];
 		
-		Point3d upper = new Point3d();
-		((BoundingBox) xShape.getBounds()).getUpper(upper);
-		float textHeight = (float) upper.y;
-		float textWidth = (float) upper.x;
-		float textDepth = (float) upper.z;
+		for (int i = 0; i < axisLabels.length; i++) {
+			Text3D label = new Text3D(font, axisLabels[i]);
+			Shape3D shape = new Shape3D(label);
+			shape.setAppearance(new ColorAppearance(colors[i]));
+			
+
+			scaledLetters[i] = new TransformGroup(scaleTrans);
+			scaledLetters[i].addChild(shape);
+			
+			if (i == 0) {
+				Point3d upper = new Point3d();
+				((BoundingBox) shape.getBounds()).getUpper(upper);
+				textHeight = (float) upper.y * scaleFactor;
+				textWidth = (float) upper.x * scaleFactor;
+				textDepth = (float) upper.z * scaleFactor;
+			}
+		}
+		
 		
 		float coneFactor = 0.6f*HEIGHT_FACTOR*radius;
-		xLabel.setPosition(new Point3f(xMax + coneFactor, -textHeight/2, 0));
-		yLabel.setPosition(new Point3f(-textWidth/2, yMax + coneFactor, -textDepth/2));
 		
 		
-		xShape.setAppearance(new ColorAppearance(X_COLOR));
-		yShape.setAppearance(new ColorAppearance(Y_COLOR));
-		zShape.setAppearance(new ColorAppearance(Z_COLOR));
+		
+		Transform3D transX = new Transform3D();
+		transX.setTranslation(new Vector3f(xMax + coneFactor, -textHeight/2, 0));
+		TransformGroup xTrans = new TransformGroup(transX);
+		xTrans.addChild(scaledLetters[0]);
+		
+		Transform3D transY = new Transform3D();
+		transY.setTranslation(new Vector3f(-textWidth/2, yMax + coneFactor, -textDepth/2));
+		TransformGroup yTrans = new TransformGroup(transY);
+		yTrans.addChild(scaledLetters[1]);
+
 		
 		TransformGroup zTG = new TransformGroup();
 		Transform3D zRot = new Transform3D();
 		zRot.rotY(-Math.PI/2);
-		zTG.addChild(zShape);
+		zTG.addChild(scaledLetters[2]);
 		Transform3D zTrans = new Transform3D();
 		zTrans.setTranslation(new Vector3f(0, - textHeight/2, zMax + coneFactor));
 		zTrans.mul(zRot);
@@ -150,11 +173,55 @@ public class Axes {
 		
 		TransformGroup tg = new TransformGroup();
 		
-		tg.addChild(xShape);
-		tg.addChild(yShape);
+		tg.addChild(xTrans);
+		tg.addChild(yTrans);
 		tg.addChild(zTG);
 		
 		
 		return tg;
 	}
+//	@SuppressWarnings("unused")
+//	private TransformGroup addText(float xMax, float yMax, float zMax, float radius) {
+//		Font3D font = new Font3D(new Font("Test", Font.PLAIN, 1),  new FontExtrusion()); 
+//		Text3D xLabel = new Text3D(font, "X");
+//		Text3D yLabel = new Text3D(font, "Y");
+//		Text3D zLabel = new Text3D(font, "Z");
+//		
+//		Shape3D xShape = new Shape3D(xLabel);
+//		Shape3D yShape = new Shape3D(yLabel);
+//		Shape3D zShape = new Shape3D(zLabel);
+//		
+//		Point3d upper = new Point3d();
+//		((BoundingBox) xShape.getBounds()).getUpper(upper);
+//		float textHeight = (float) upper.y;
+//		float textWidth = (float) upper.x;
+//		float textDepth = (float) upper.z;
+//		
+//		float coneFactor = 0.6f*HEIGHT_FACTOR*radius;
+//		xLabel.setPosition(new Point3f(xMax + coneFactor, -textHeight/2, 0));
+//		yLabel.setPosition(new Point3f(-textWidth/2, yMax + coneFactor, -textDepth/2));
+//		
+//		
+//		xShape.setAppearance(new ColorAppearance(X_COLOR));
+//		yShape.setAppearance(new ColorAppearance(Y_COLOR));
+//		zShape.setAppearance(new ColorAppearance(Z_COLOR));
+//		
+//		TransformGroup zTG = new TransformGroup();
+//		Transform3D zRot = new Transform3D();
+//		zRot.rotY(-Math.PI/2);
+//		zTG.addChild(zShape);
+//		Transform3D zTrans = new Transform3D();
+//		zTrans.setTranslation(new Vector3f(0, - textHeight/2, zMax + coneFactor));
+//		zTrans.mul(zRot);
+//		zTG.setTransform(zTrans);
+//		
+//		TransformGroup tg = new TransformGroup();
+//		
+//		tg.addChild(xShape);
+//		tg.addChild(yShape);
+//		tg.addChild(zTG);
+//		
+//		
+//		return tg;
+//	}
 }

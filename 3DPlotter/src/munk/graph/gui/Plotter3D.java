@@ -1,6 +1,8 @@
 package munk.graph.gui;
 
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 
@@ -13,6 +15,7 @@ import munk.graph.plot.Axes;
 import munk.graph.rotaters.*;
 
 import com.sun.j3d.utils.behaviors.mouse.MouseRotate;
+import com.sun.j3d.utils.pickfast.PickCanvas;
 import com.sun.j3d.utils.universe.SimpleUniverse;
 
 @SuppressWarnings("serial")
@@ -20,7 +23,7 @@ public class Plotter3D extends JPanel{
 	
 	private static final int	OFFSCREEN_SCALE	= 3;
 	private TransformGroup  root;
-	private TransformGroup	plots;
+	private BranchGroup	plots;
 	private BranchGroup axes;
 	private SimpleUniverse universe;
 	private Canvas3D canvas;
@@ -45,7 +48,8 @@ public class Plotter3D extends JPanel{
 	    root = new TransformGroup();
 	    root.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
 	    
-	    plots = new TransformGroup();
+	    
+	    plots = new BranchGroup();
 		plots.setCapability(Group.ALLOW_CHILDREN_EXTEND);
 		plots.setCapability(Group.ALLOW_CHILDREN_WRITE);
 	    initAxis();
@@ -65,6 +69,7 @@ public class Plotter3D extends JPanel{
 	     
 	    initView();
 	    add(canvas);
+	    
 	}
 	
 	private Canvas3D createCanvas3D(boolean offscreen) {
@@ -129,7 +134,7 @@ public class Plotter3D extends JPanel{
 	}
 	
 	
-	public void plotFunction(final Function function) {
+	public void plotFunction(Function function) {
 		BranchGroup bg = function.getPlot();
 		
 		if (bg != null) {
@@ -188,8 +193,8 @@ public class Plotter3D extends JPanel{
 	    mouseRotate.setTransformGroup(root);
 	    root.addChild(mouseRotate);
 	    
-//	    BoundingSphere bs = new BoundingSphere(new Point3d(0,0,0), 6.0);
-	    mouseRotate.setSchedulingBounds(root.getBounds());
+	    BoundingSphere bs = new BoundingSphere(new Point3d(0,0,0), 6.0);    
+	    mouseRotate.setSchedulingBounds(bs);
 	}
 	
 	private void initAxis() {
@@ -215,6 +220,27 @@ public class Plotter3D extends JPanel{
 	
 	public void updateSize(int width,int height){
 		canvas.setSize(width, height);
+	}
+	
+	public Function getPickedFunction(MouseEvent e) {
+		PickCanvas pc = new PickCanvas(canvas, plots);
+		pc.setMode(PickInfo.PICK_GEOMETRY);
+//		pc.setTolerance(4);
+		pc.setShapeLocation(e);
+		pc.setFlags(PickInfo.NODE);
+
+		PickInfo result = pc.pickClosest();
+		
+		Node n = result.getNode();
+		
+		return (Function) ((n != null) ? n.getUserData() : null);
+
+	}
+	
+	
+	@Override
+	public synchronized void addMouseListener(MouseListener l) {
+		canvas.addMouseListener(l);
 	}
 	
 }
