@@ -141,7 +141,7 @@ public class StdGridOptionPanel extends AbstractGridOptionPanel implements GridO
      	GuiUtil.setupUndoListener(zMax);
 		setGridBounds(bounds);
 		
-		MouseListener sliderListener = getKeyListener(xSlider, ySlider, zSlider);
+		MouseListener sliderListener = getSliderListener(xSlider, ySlider, zSlider);
 		xSlider.addMouseListener(sliderListener);
 		ySlider.addMouseListener(sliderListener);
 		zSlider.addMouseListener(sliderListener);	

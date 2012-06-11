@@ -102,7 +102,7 @@ public class ParamGridOptionPanel extends AbstractGridOptionPanel implements Gri
      	GuiUtil.setupUndoListener(uMax);
      	setGridBounds(bounds);
      	
-		MouseListener sliderListener = getKeyListener(tSlider, uSlider);
+		MouseListener sliderListener = getSliderListener(tSlider, uSlider);
 		tSlider.addMouseListener(sliderListener);
 		uSlider.addMouseListener(sliderListener);	
 		
