@@ -1,9 +1,11 @@
 package com.graphbuilder.math.func;
 
+import com.graphbuilder.math.*;
+
 /**
 The hyperbolic tangent sine function.
 */
-public class AtanhFunction implements Function {
+public class AtanhFunction extends AbstractOneVariableFunction {
 
 	public AtanhFunction() {}
 
@@ -24,4 +26,18 @@ public class AtanhFunction implements Function {
 	public String toString() {
 		return "atanh(x)";
 	}
+	
+	@Override
+	public Expression getOuterDerivative(Expression innerFunction, FuncMap f, String varName) {
+		ValNode oneHalf = new ValNode(0.5);
+		
+		AddNode leftDenom = new AddNode(innerFunction, Expression.ONE);
+		DivNode left = new DivNode(oneHalf, leftDenom);
+		
+		SubNode rightDenom = new SubNode(innerFunction, Expression.ONE);
+		DivNode right = new DivNode(oneHalf, rightDenom);
+		
+		return new SubNode(left, right);
+	}
+	
 }

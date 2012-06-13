@@ -1,5 +1,8 @@
 package com.graphbuilder.math.func;
 
+import com.graphbuilder.math.Expression;
+import com.graphbuilder.math.FuncMap;
+
 /**
 The sum function.
 */
@@ -28,5 +31,10 @@ public class SumFunction implements Function {
 
 	public String toString() {
 		return "sum(x1, x2, ..., xn)";
+	}
+
+	@Override
+	public Expression getDerivative(Expression inner, FuncMap f, String varName) {
+		throw new UnsupportedOperationException();
 	}
 }

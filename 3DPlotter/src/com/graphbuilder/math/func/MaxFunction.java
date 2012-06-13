@@ -1,5 +1,8 @@
 package com.graphbuilder.math.func;
 
+import com.graphbuilder.math.Expression;
+import com.graphbuilder.math.FuncMap;
+
 /**
 The max function.
 */
@@ -30,5 +33,10 @@ public class MaxFunction implements Function {
 
 	public String toString() {
 		return "max(x1, x2, ..., xn)";
+	}
+
+	@Override
+	public Expression getDerivative(Expression inner, FuncMap f, String varName) {
+		return Expression.ZERO;
 	}
 }

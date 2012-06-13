@@ -1,5 +1,8 @@
 package com.graphbuilder.math.func;
 
+import com.graphbuilder.math.Expression;
+import com.graphbuilder.math.FuncMap;
+
 /**
 The power function.
 
@@ -26,5 +29,10 @@ public class PowFunction implements Function {
 
 	public String toString() {
 		return "pow(x, y)";
+	}
+	
+	@Override
+	public Expression getDerivative(Expression inner, FuncMap f, String varName) {
+		throw new UnsupportedOperationException();
 	}
 }

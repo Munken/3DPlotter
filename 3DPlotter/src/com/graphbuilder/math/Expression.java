@@ -13,11 +13,22 @@ non-null.
 public abstract class Expression {
 
 	protected Expression parent = null;
+	
+	public static final ValNode MINUS_ONE = new ValNode(-1);
+	public static final ValNode ZERO = new ValNode(0);	
+	public static final ValNode ONE = new ValNode(1.0);
+	public static final ValNode TWO = new ValNode(2);
 
 	/**
 	Returns the result of evaluating the expression tree rooted at this node.
 	*/
 	public abstract double eval(VarMap v, FuncMap f);
+	
+	/**
+	 * Return the derivative of the expression
+	 */
+	
+	public abstract Expression getDerivative(FuncMap f, String variable);
 
 	/**
 	Returns true if this node is a descendent of the specified node, false otherwise.  By this
@@ -49,14 +60,15 @@ public abstract class Expression {
 	@throws IllegalArgumentException If the specified expression is not accepted.
 	*/
 	protected void checkBeforeAccept(Expression x) {
-		if (x == null)
-			throw new IllegalArgumentException("expression cannot be null");
-
-		if (x.parent != null)
-			throw new IllegalArgumentException("expression must be removed parent");
-
-		if (isDescendent(x))
-			throw new IllegalArgumentException("cyclic reference");
+		return;
+//		if (x == null)
+//			throw new IllegalArgumentException("expression cannot be null");
+//
+//		if (x.parent != null)
+//			throw new IllegalArgumentException("expression must be removed parent");
+//
+//		if (isDescendent(x))
+//			throw new IllegalArgumentException("cyclic reference");
 	}
 
 	/**

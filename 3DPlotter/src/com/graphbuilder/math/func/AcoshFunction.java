@@ -1,9 +1,11 @@
 package com.graphbuilder.math.func;
 
+import com.graphbuilder.math.*;
+
 /**
 The hyperbolic arc cosine function.
 */
-public class AcoshFunction implements Function {
+public class AcoshFunction extends AbstractOneVariableFunction {
 
 	public AcoshFunction() {}
 
@@ -26,5 +28,20 @@ public class AcoshFunction implements Function {
 
 	public String toString() {
 		return "acosh(x)";
+	}
+
+	@Override
+	protected Expression getOuterDerivative(Expression inner, FuncMap fm, String varName) {
+		FuncNode first = new FuncNode("sqrt", false);
+		SubNode firstInside = new SubNode(Expression.ONE, inner);
+		first.add(firstInside);
+		
+		FuncNode second = new FuncNode("sqrt", false);
+		AddNode secondInside = new AddNode(Expression.ONE, inner);
+		second.add(secondInside);
+		
+		MultNode denom = new MultNode(first, second);
+		
+		return new DivNode(Expression.ONE, denom);
 	}
 }

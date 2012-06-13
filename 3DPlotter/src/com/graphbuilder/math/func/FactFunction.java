@@ -1,5 +1,8 @@
 package com.graphbuilder.math.func;
 
+import com.graphbuilder.math.Expression;
+import com.graphbuilder.math.FuncMap;
+
 /**
 The factorial function.
 */
@@ -31,5 +34,10 @@ public class FactFunction implements Function {
 
 	public String toString() {
 		return "fact(n)";
+	}
+
+	@Override
+	public Expression getDerivative(Expression inner, FuncMap f, String varName) {
+		return Expression.ZERO;
 	}
 }

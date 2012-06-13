@@ -21,4 +21,9 @@ public class SubNode extends OpNode {
 	public String getSymbol() {
 		return "-";
 	}
+
+	@Override
+	public SubNode getDerivative(FuncMap f, String varName) {
+		return new SubNode(leftChild.getDerivative(f, varName), rightChild.getDerivative(f, varName));
+	}
 }

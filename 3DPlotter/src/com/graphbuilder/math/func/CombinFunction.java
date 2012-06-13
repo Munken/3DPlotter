@@ -1,6 +1,6 @@
 package com.graphbuilder.math.func;
 
-import com.graphbuilder.math.PascalsTriangle;
+import com.graphbuilder.math.*;
 
 /**
 The combination function.
@@ -30,5 +30,10 @@ public class CombinFunction implements Function {
 
 	public String toString() {
 		return "combin(n, r)";
+	}
+
+	@Override
+	public Expression getDerivative(Expression inner, FuncMap f, String varName) {
+		return Expression.ZERO;
 	}
 }

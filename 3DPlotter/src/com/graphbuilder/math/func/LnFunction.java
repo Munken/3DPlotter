@@ -1,11 +1,13 @@
 package com.graphbuilder.math.func;
 
+import com.graphbuilder.math.*;
+
 /**
 The natural logarithm function.
 
 @see java.lang.Math#log(double)
 */
-public class LnFunction implements Function {
+public class LnFunction extends AbstractOneVariableFunction {
 
 	public LnFunction() {}
 
@@ -25,5 +27,10 @@ public class LnFunction implements Function {
 
 	public String toString() {
 		return "ln(x)";
+	}
+
+	@Override
+	public Expression getOuterDerivative(Expression inner, FuncMap f, String varName) {
+		return new DivNode(Expression.ONE, inner);
 	}
 }

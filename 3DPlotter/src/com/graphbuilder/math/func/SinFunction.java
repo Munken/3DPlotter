@@ -1,11 +1,13 @@
 package com.graphbuilder.math.func;
 
+import com.graphbuilder.math.*;
+
 /**
 The sine function.
 
 @see java.lang.Math#sin(double)
 */
-public class SinFunction implements Function {
+public class SinFunction extends AbstractOneVariableFunction {
 
 	public SinFunction() {}
 
@@ -25,5 +27,12 @@ public class SinFunction implements Function {
 
 	public String toString() {
 		return "sin(x)";
+	}
+
+	@Override
+	public Expression getOuterDerivative(Expression inner, FuncMap f, String varName) {
+		FuncNode cos = new FuncNode("cos", false);
+		cos.add(inner);
+		return cos;
 	}
 }

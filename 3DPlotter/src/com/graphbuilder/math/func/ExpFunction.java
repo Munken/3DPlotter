@@ -1,11 +1,13 @@
 package com.graphbuilder.math.func;
 
+import com.graphbuilder.math.*;
+
 /**
 The exp function.
 
 @see java.lang.Math#exp(double)
 */
-public class ExpFunction implements Function {
+public class ExpFunction extends AbstractOneVariableFunction {
 
 	public ExpFunction() {}
 
@@ -25,5 +27,13 @@ public class ExpFunction implements Function {
 
 	public String toString() {
 		return "exp(x)";
+	}
+
+	@Override
+	public Expression getOuterDerivative(Expression inner, FuncMap f, String varName) {
+		FuncNode exp = new FuncNode("exp", false);
+		exp.add(inner);
+		
+		return exp;
 	}
 }

@@ -21,4 +21,15 @@ public class DivNode extends OpNode {
 	public String getSymbol() {
 		return "/";
 	}
+
+	@Override
+	public DivNode getDerivative(FuncMap f, String varName) {
+		MultNode topLeft = new MultNode(leftChild.getDerivative(f, varName), rightChild);
+		MultNode topRight = new MultNode(leftChild, rightChild.getDerivative(f, varName));
+		SubNode top = new SubNode(topLeft, topRight);
+		
+		PowNode bottom = new PowNode(rightChild, TWO);
+		
+		return new DivNode(top, bottom);
+	}
 }

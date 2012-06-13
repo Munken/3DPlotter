@@ -1,11 +1,13 @@
 package com.graphbuilder.math.func;
 
+import com.graphbuilder.math.*;
+
 /**
 The absolute function.
 
 @see java.lang.Math#abs(double)
 */
-public class AbsFunction implements Function {
+public class AbsFunction extends AbstractOneVariableFunction {
 
 	public AbsFunction() {}
 
@@ -25,5 +27,13 @@ public class AbsFunction implements Function {
 
 	public String toString() {
 		return "abs(x)";
+	}
+
+	@Override
+	public Expression getOuterDerivative(Expression inner, FuncMap f, String varName) {
+		FuncNode sign = new FuncNode("sign", false);
+		sign.add(inner);
+		
+		return sign;
 	}
 }

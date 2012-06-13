@@ -1,11 +1,14 @@
 package com.graphbuilder.math.func;
 
+import com.graphbuilder.math.*;
+
+
 /**
 The arc cosine function.
 
 @see java.lang.Math#acos(double)
 */
-public class AcosFunction implements Function {
+public class AcosFunction extends AbstractOneVariableFunction {
 
 	public AcosFunction() {}
 
@@ -25,5 +28,15 @@ public class AcosFunction implements Function {
 
 	public String toString() {
 		return "acos(x)";
+	}
+
+	@Override
+	protected Expression getOuterDerivative(Expression innerFunction, FuncMap fm, String varName) {
+		FuncNode sqrt = new FuncNode("sqrt", true);
+		MultNode innerFunctionSquared = new MultNode(innerFunction, Expression.TWO);
+		SubNode inner = new SubNode(Expression.ONE, innerFunctionSquared);
+		
+		sqrt.add(inner);
+		return new DivNode(Expression.ONE, sqrt);
 	}
 }

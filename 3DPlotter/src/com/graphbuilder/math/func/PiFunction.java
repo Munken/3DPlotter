@@ -1,5 +1,8 @@
 package com.graphbuilder.math.func;
 
+import com.graphbuilder.math.Expression;
+import com.graphbuilder.math.FuncMap;
+
 /**
 The constant Pi.
 
@@ -25,5 +28,10 @@ public class PiFunction implements Function {
 
 	public String toString() {
 		return "pi()";
+	}
+
+	@Override
+	public Expression getDerivative(Expression inner, FuncMap f, String varName) {
+		return Expression.ZERO;
 	}
 }

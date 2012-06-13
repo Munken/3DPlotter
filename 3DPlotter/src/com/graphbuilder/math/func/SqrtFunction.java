@@ -1,11 +1,13 @@
 package com.graphbuilder.math.func;
 
+import com.graphbuilder.math.*;
+
 /**
 The square root function.
 
 @see java.lang.Math#sqrt(double)
 */
-public class SqrtFunction implements Function {
+public class SqrtFunction extends AbstractOneVariableFunction {
 
 	public SqrtFunction() {}
 
@@ -25,5 +27,15 @@ public class SqrtFunction implements Function {
 
 	public String toString() {
 		return "sqrt(x)";
+	}
+
+	@Override
+	public Expression getOuterDerivative(Expression inner, FuncMap f, String varName) {
+		ValNode nominator = new ValNode(0.5);
+		
+		FuncNode sqrt = new FuncNode("sqrt", false);
+		sqrt.add(inner);
+		
+		return new DivNode(nominator, sqrt);
 	}
 }

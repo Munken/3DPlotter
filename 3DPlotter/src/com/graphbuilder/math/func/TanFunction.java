@@ -1,5 +1,7 @@
 package com.graphbuilder.math.func;
 
+import com.graphbuilder.math.*;
+
 /**
 The tangent function.
 
@@ -25,5 +27,15 @@ public class TanFunction implements Function {
 
 	public String toString() {
 		return "tan(x)";
+	}
+
+	@Override
+	public Expression getDerivative(Expression inner, FuncMap f, String varName) {
+		FuncNode cos = new FuncNode("cos", false);
+		cos.add(inner);
+		
+		PowNode cosSquared = new PowNode(cos, Expression.TWO);
+		
+		return new DivNode(Expression.ONE, cosSquared);
 	}
 }

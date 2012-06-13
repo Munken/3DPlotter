@@ -1,5 +1,7 @@
 package com.graphbuilder.math.func;
 
+import com.graphbuilder.math.*;
+
 /**
 The ceiling function.
 
@@ -25,5 +27,10 @@ public class CeilFunction implements Function {
 
 	public String toString() {
 		return "ceil(x)";
+	}
+
+	@Override
+	public Expression getDerivative(Expression inner, FuncMap f, String varName) {
+		return Expression.ZERO;
 	}
 }
