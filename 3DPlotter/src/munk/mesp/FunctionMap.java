@@ -16,7 +16,29 @@ public class FunctionMap {
 	}
 	
 	public void loadDefaultFunctions() {
+		// > 0 parameters
+		setFunction("avg", new Avg());
+		setFunction("max", new Max());
+		setFunction("min", new Min());
+		
+		// 0 parameter
+		setFunction("e", new EulerNumber());
+		setFunction("pi", new Pi());
+		setFunction("rand", new Rand());
+		
+		// 1 parameter
+		setFunction("sign", new Sign());
+		setFunction("round", new Round());
+		setFunction("ceil", new Ceil());
+		setFunction("floor", new Floor());
+		setFunction("abs", new Abs());
+		
 		setFunction("sqrt", new Sqrt());
+		
+		// Logaritms
+		setFunction("ln", new Ln());
+		setFunction("log", new Log());
+		setFunction("lg", new Lg());
 		
 		// Normal trig formulas
 		setFunction("cos", new Cos());
@@ -34,6 +56,9 @@ public class FunctionMap {
 		setFunction("asinh", new Asinh());
 		setFunction("acosh", new Acosh());
 		setFunction("atanh", new Atanh());
+		
+		// 2 parameter
+		setFunction("mod", new Mod());
 	}
 	
 	public FunctionNode getFunction(String functionName, boolean negate) {
