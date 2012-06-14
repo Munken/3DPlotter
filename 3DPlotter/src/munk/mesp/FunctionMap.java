@@ -16,8 +16,16 @@ public class FunctionMap {
 	}
 	
 	public void loadDefaultFunctions() {
+		setFunction("sqrt", new Sqrt());
+		
+		// Normal trig formulas
 		setFunction("cos", new Cos());
 		setFunction("sin", new Sin());
+		setFunction("tan", new Tan());
+		
+		setFunction("acos", new Acos());
+		setFunction("asin", new Asin());
+		setFunction("atan", new Atan());
 	}
 	
 	public FunctionNode getFunction(String functionName, boolean negate) {

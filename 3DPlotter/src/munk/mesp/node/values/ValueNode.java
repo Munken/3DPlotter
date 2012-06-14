@@ -4,6 +4,8 @@ import munk.mesp.*;
 
 public class ValueNode extends AbstractExpression {
 	
+	public static final ValueNode MINUS_ONE = new ValueNode(-1);
+	public static final ValueNode HALF = new ValueNode(0.5);
 	public static final ValueNode ZERO = new ValueNode(0);	
 	public static final ValueNode ONE = new ValueNode(1);
 	public static final ValueNode TWO = new ValueNode(2);

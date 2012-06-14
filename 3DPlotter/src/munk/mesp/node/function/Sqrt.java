@@ -2,18 +2,20 @@ package munk.mesp.node.function;
 
 import munk.mesp.Expression;
 import munk.mesp.VariableValues;
+import munk.mesp.node.operator.*;
+import munk.mesp.node.values.ValueNode;
 
-public class Sin extends DifferentialOneVariableFunctionNode {
+public class Sqrt extends DifferentialOneVariableFunctionNode {
 
-	public Sin() {
+	public Sqrt() {
 		this(false);
 	}
 	
-	public Sin(boolean negate) {
-		super("sin", negate);
+	public Sqrt(boolean negate) {
+		super("sqrt", negate);
 	}
 	
-	public Sin(Expression inner, boolean negate) {
+	public Sqrt(Expression inner, boolean negate) {
 		this(negate);
 		addChild(inner);
 	}
@@ -22,12 +24,13 @@ public class Sin extends DifferentialOneVariableFunctionNode {
 	public double eval(VariableValues varVal) {
 		double innerValue = getInner().eval(varVal);
 		
-		return Math.sin(innerValue);
+		return Math.sqrt(innerValue);
 	}
 
 	@Override
 	public Expression getOuterDerivative(String variable) {
-		return new Cos(getInner(), isNegate());
+		return new DivideNode(ValueNode.HALF, this);
 	}
 
 }
+
