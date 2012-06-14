@@ -30,4 +30,9 @@ public class ValueNode extends AbstractExpression {
 		return ZERO;
 	}
 
+	@Override
+	public void toString(StringBuffer buffer) {
+		buffer.append(value);
+	}
+
 }

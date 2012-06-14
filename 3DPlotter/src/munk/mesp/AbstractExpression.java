@@ -71,6 +71,15 @@ public abstract class AbstractExpression implements Expression {
 		}
 	}
 	
+	/**
+	Returns a string that represents the expression tree rooted at this node.
+	*/
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		toString(sb);
+		return sb.toString();
+	}
+	
 	public void ensureVariablesDefined(VariableValues map) throws UndefinedVariableException {
 		String[] variables = getVariableNames();
 		for (String var : variables) {

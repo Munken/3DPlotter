@@ -10,6 +10,8 @@ public interface Expression {
 	
 	public String[] getFunctionNames();
 	
+	public void toString(StringBuffer buffer);
+	
 	public void ensureVariablesDefined(VariableValues map) throws UndefinedVariableException;
 
 }

@@ -21,7 +21,20 @@ public class VariableNode extends NamedNode {
 
 	@Override
 	public Expression getDerivative(String variable) {
-		return ValueNode.ONE;
+		return (getName().equals(variable)) ? ValueNode.ONE : ValueNode.ZERO;
+	}
+
+	@Override
+	public void toString(StringBuffer buffer) {
+		if (getNegate()) {
+			buffer.append("(");
+			buffer.append("-");
+		}
+		
+		buffer.append(getName());
+		
+		if (getNegate())
+			buffer.append(")");
 	}
 
 }
