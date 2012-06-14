@@ -2,7 +2,7 @@ package munk.mesp;
 
 import java.util.*;
 
-import munk.mesp.node.function.FunctionNode;
+import munk.mesp.node.function.*;
 
 public class FunctionMap {
 	
@@ -13,6 +13,11 @@ public class FunctionMap {
 
 	public FunctionMap(boolean caseSensitive) {
 		this.caseSensitive = caseSensitive;
+	}
+	
+	public void loadDefaultFunctions() {
+		setFunction("cos", new Cos());
+		setFunction("sin", new Sin());
 	}
 	
 	public FunctionNode getFunction(String functionName, boolean negate) {

@@ -11,6 +11,11 @@ public abstract class AbstractFunctionNode extends AbstractExpression implements
 	private boolean negate = false;
 	private List<Expression> children = new ArrayList<Expression>();
 	
+	public AbstractFunctionNode(String name, boolean negate) {
+		this.name = name;
+		this.negate = negate;
+	}
+	
 	@Override
 	public void toString(StringBuffer buffer) {
 
@@ -50,6 +55,10 @@ public abstract class AbstractFunctionNode extends AbstractExpression implements
 			}
 		};
 	}
+	
+	protected Expression getChild(int i) {
+		return children.get(i);
+	}
 
 	@Override
 	public void setNegate(boolean negate) {
@@ -76,6 +85,13 @@ public abstract class AbstractFunctionNode extends AbstractExpression implements
 	
 	protected abstract int nParameters();
 	
-	public abstract FunctionNode clone();
+	public FunctionNode clone() {
+		try {
+			return (FunctionNode) super.clone();
+		} catch (CloneNotSupportedException e) {
+			// Tada !
+		}
+		return null;
+	}
 
 }
