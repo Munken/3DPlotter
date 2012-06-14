@@ -26,6 +26,14 @@ public class FunctionMap {
 		setFunction("acos", new Acos());
 		setFunction("asin", new Asin());
 		setFunction("atan", new Atan());
+		
+		setFunction("cosh", new Cosh());
+		setFunction("sinh", new Sinh());
+		setFunction("tanh", new Tanh());
+		
+		setFunction("asinh", new Asinh());
+		setFunction("acosh", new Acosh());
+		setFunction("atanh", new Atanh());
 	}
 	
 	public FunctionNode getFunction(String functionName, boolean negate) {
