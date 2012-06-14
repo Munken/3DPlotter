@@ -21,8 +21,7 @@ public class VariableNode extends NamedNode {
 
 	@Override
 	public Expression getDerivative(String variable) {
-		// TODO Auto-generated method stub
-		return null;
+		return ValueNode.ONE;
 	}
 
 }
