@@ -86,14 +86,6 @@ public class ImplicitSlowMulti extends AbstractImplicit {
 		List<Point3f> result = concatResults(future);
 		return buildGeomtryFromTriangles(result);
 	}
-	
-	private float nextStartValue(float start, float stepsize, int nSteps) {
-		float result = start;
-		for (int i = 0; i < nSteps - 1; i++) {
-			result += stepsize;
-		}
-		return result;
-	}
 
 	private List<Point3f> concatResults(List<Future<List<Point3f>>> future) {
 		List<List<Point3f>> results = new ArrayList<List<Point3f>>(future.size());

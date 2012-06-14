@@ -135,7 +135,9 @@ public class Plotter3D extends JPanel{
 	
 	
 	public void plotFunction(Function function) {
+//		long start = System.currentTimeMillis();
 		BranchGroup bg = function.getPlot();
+//		System.out.println(System.currentTimeMillis() - start);
 		
 		if (bg != null) {
 			plots.addChild(bg);
@@ -231,13 +233,15 @@ public class Plotter3D extends JPanel{
 
 		PickInfo result = pc.pickClosest();
 		
-		Node n = result.getNode();
+		if (result != null) {
+			Node n = result.getNode();
+			
+			if (n.getUserData() instanceof Function)
+				return (Function) n.getUserData();
+			
+		}
 		
-		if (n != null && n.getUserData() instanceof Function)
-			return (Function) n.getUserData();
-		else
-			return null;
-
+		return null;
 	}
 	
 	

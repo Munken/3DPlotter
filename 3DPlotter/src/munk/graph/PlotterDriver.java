@@ -1,14 +1,13 @@
 package munk.graph;
 
 import java.awt.BorderLayout;
+import java.awt.event.*;
 
-import javax.swing.JFrame;
-import javax.swing.JTextField;
+import javax.swing.*;
 
 import munk.graph.appearance.Colors;
 import munk.graph.function.IllegalEquationException;
 import munk.graph.function.implicit.*;
-import munk.graph.plot.implicit.*;
 import munk.graph.gui.Plotter3D;
 
 import com.graphbuilder.math.ExpressionParseException;
@@ -83,26 +82,6 @@ public class PlotterDriver {
 //		p.plotParametricFunction("0.5*cos(t)", "t/5", "0.5*sin(t)", 0, (float) (5*Math.PI));
 		
 		final JTextField function = new JTextField();
-//		function.addKeyListener(new KeyAdapter() {
-//			
-//			@Override
-//			public void keyReleased(KeyEvent e) {
-//				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-//
-////							p.plotFunction(function.getText(), -i, i, -i, i, Colors.RED);
-//							try {
-//								
-//								ImplicitIterativeFunction ip = 
-//										new ImplicitIterativeFunction(function.getText(), Colors.RED, recBound, 0.1f);
-//								p.plotFunction(ip);
-//							} catch (ExpressionParseException | IllegalEquationException | UndefinedVariableException e1) {
-//								// TODO Auto-generated catch block
-//								e1.printStackTrace();
-//							}
-//
-//				}
-//			}
-//		});
 		frame.add(function,BorderLayout.NORTH);
      	frame.add(p);
 

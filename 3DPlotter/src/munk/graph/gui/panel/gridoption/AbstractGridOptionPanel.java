@@ -88,7 +88,9 @@ public abstract class AbstractGridOptionPanel extends JPanel {
 			@Override
 			public void mouseReleased(MouseEvent arg0) {
 					try {
-						signallAll();
+						if (stepsizeHasChanged()) {
+							signallAll();
+						}
 						
 						if (sharedModel != null) {
 							int value = sharedModel.getValue();
@@ -114,6 +116,18 @@ public abstract class AbstractGridOptionPanel extends JPanel {
 						sliders[i].setModel(sharedModel);
 					}
 				}
+			}
+			
+			private boolean stepsizeHasChanged() throws ExpressionParseException {
+				float[] oldStepsize = selectedFunction.getStepsize();
+				float[] newStepsize = getGridStepSize();
+				
+				for (int i = 0; i < oldStepsize.length; i++) {
+					if (oldStepsize[i] != newStepsize[i])
+						return true;
+				}
+				
+				return false;
 			}
 			
 		};

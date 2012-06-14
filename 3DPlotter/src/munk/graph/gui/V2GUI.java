@@ -14,10 +14,11 @@ import munk.graph.IO.ObjectReader;
 import munk.graph.IO.ObjectWriter;
 import munk.graph.appearance.Colors;
 import munk.graph.function.*;
-import munk.graph.function.implicit.*;
-import munk.graph.gui.panel.*;
-import munk.graph.gui.panel.tab.*;
+import munk.graph.function.implicit.ImplicitFunction;
+import munk.graph.function.implicit.SphericalFunction;
 import munk.graph.gui.labels.FunctionLabel;
+import munk.graph.gui.panel.ColorOptionPanel;
+import munk.graph.gui.panel.tab.*;
 
 import com.graphbuilder.math.ExpressionParseException;
 import com.graphbuilder.math.UndefinedVariableException;
@@ -96,13 +97,13 @@ public class V2GUI {
 		// Initialize variables.
 		colorList = new ColorList();
 		filePath = File.separator+"tmp";
-		
 		try {
 			initialize();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
 	}
 
 	/**
@@ -209,6 +210,10 @@ public class V2GUI {
      	gbc_tabbedPane.gridx = 1;
      	gbc_tabbedPane.gridy = 1;
      	frame.getContentPane().add(tabbedPane, gbc_tabbedPane);
+     	
+
+
+     	
 	}
 	
 	private void init3Dplotter(){
@@ -232,6 +237,8 @@ public class V2GUI {
      	gbc_canvasPanel.gridy = 1;
      	gbc_canvasPanel.gridx = 3;
      	frame.getContentPane().add(canvasPanel, gbc_canvasPanel);
+     	
+
 	}
 
 	private void initFunctionTabs() throws Exception{

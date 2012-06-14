@@ -1,32 +1,19 @@
 package munk.graph.gui.panel.tab;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.*;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import javax.swing.*;
+import javax.swing.Timer;
 import javax.vecmath.Color3f;
 
-import munk.graph.function.Function;
-import munk.graph.function.IllegalEquationException;
-import munk.graph.function.TemplateFunction;
-import munk.graph.gui.ColorList;
-import munk.graph.gui.GuiUtil;
-import munk.graph.gui.Plotter3D;
+import munk.graph.appearance.Colors;
+import munk.graph.function.*;
+import munk.graph.gui.*;
 import munk.graph.gui.labels.*;
 import munk.graph.gui.listener.FunctionEvent;
 import munk.graph.gui.listener.FunctionListener;
@@ -35,13 +22,18 @@ import munk.graph.gui.panel.gridoption.GridOptionPanel;
 
 import com.graphbuilder.math.ExpressionParseException;
 import com.graphbuilder.math.UndefinedVariableException;
+import java.awt.Toolkit;
 
 @SuppressWarnings("serial")
 public abstract class AbstractFunctionTab extends JPanel implements FunctionTab{
 	
 	// Constants.
-	static final Color	NORMAL_COLOR	= Color.WHITE;
-	static final Color SELECTED_COLOR = new Color(189, 214, 224);
+	private static final Color	NORMAL_COLOR	= Color.WHITE;
+	private static final Color SELECTED_COLOR = new Color(189, 214, 224);
+	private static final ExecutorService PLOTTING_QUEUE = Executors.newSingleThreadExecutor(); // Only plot one at a time
+	
+	
+	private static Function ACTIVE_FUNCTION;
 	
 	// GUI variables.
 	private JPanel outerFuncTab;
@@ -58,16 +50,20 @@ public abstract class AbstractFunctionTab extends JPanel implements FunctionTab{
 	private Function templateFunc;
 	private Function selectedFunction;
 	private Plotter3D plotter;
-	private ExecutorService plottingQueue = Executors.newSingleThreadExecutor(); // Only plot one at a time
 	private ColorList colorList;
 	private ArrayList<ActionListener> listeners = new ArrayList<ActionListener>();;
+	
 
 	public AbstractFunctionTab(ColorList colorList, HashMap<Function, FunctionLabel> map, Function templateFunc, Plotter3D plotter) throws Exception{
 		this.templateFunc = templateFunc;
 		this.map = map;
 		this.plotter = plotter;
 		this.colorList = colorList;
+		
+		addFunctionKeyboardShortcuts();
 	}
+
+
 	
 	protected void init() throws ExpressionParseException{
 		input = new JTextField[getNoOfInputs()];
@@ -209,6 +205,8 @@ public abstract class AbstractFunctionTab extends JPanel implements FunctionTab{
 
 	public void setSelected(Function f) {
 		try {
+			
+			ACTIVE_FUNCTION = f;
 			if(f != selectedFunction){
 				// Deselection.
 				if(selectedFunction != null && selectedFunction == templateFunc){
@@ -390,7 +388,7 @@ public abstract class AbstractFunctionTab extends JPanel implements FunctionTab{
 			}
 			
 		};
-		plottingQueue.execute(worker);
+		PLOTTING_QUEUE.execute(worker);
 	}
 	
 	@Override
@@ -415,6 +413,58 @@ public abstract class AbstractFunctionTab extends JPanel implements FunctionTab{
 		for(ActionListener a : listeners){
 			a.actionPerformed(e);
 		}
+	}
+	
+	private void addFunctionKeyboardShortcuts() {
+		addShortcutBlinker();
+		addShortcutDelete();
+	}
+	
+	private void addShortcutDelete() {
+		getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("ctrl D"), "Delete Function");
+		getActionMap().put("Delete Function", new AbstractAction() {
+			
+			
+			public void actionPerformed(ActionEvent e) {
+				if (ACTIVE_FUNCTION == null)
+					return;
+				
+				deletePlot(ACTIVE_FUNCTION);
+				
+			};
+		});
+	}
+
+
+
+	private void addShortcutBlinker() {
+		getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("ctrl B"), "Blink Function");
+		getActionMap().put("Blink Function", new AbstractAction() {
+			
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (ACTIVE_FUNCTION == null)
+					return;
+				
+				
+				setEnabled(false);
+				final Color3f oldColor = ACTIVE_FUNCTION.getColor();
+				ACTIVE_FUNCTION.setColor(Colors.WHITE);
+				
+				Timer timer = new Timer(300, new ActionListener() {
+					
+					@Override
+					public void actionPerformed(ActionEvent e) {	
+						ACTIVE_FUNCTION.setColor(oldColor);
+						setEnabled(true);
+					}
+				});
+				
+				timer.setRepeats(false);
+				timer.start();
+			}
+		});
 	}
 }
 
