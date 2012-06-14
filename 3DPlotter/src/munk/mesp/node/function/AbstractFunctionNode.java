@@ -9,7 +9,7 @@ public abstract class AbstractFunctionNode extends AbstractExpression implements
 
 	private String name;
 	private boolean negate = false;
-	private List<Expression> children = new ArrayList<Expression>(nParameters());
+	private List<Expression> children = new ArrayList<Expression>(1);
 	
 	public AbstractFunctionNode(String name, boolean negate) {
 		this.name = name;
@@ -89,7 +89,7 @@ public abstract class AbstractFunctionNode extends AbstractExpression implements
 	public FunctionNode clone() {
 		try {
 			AbstractFunctionNode node = (AbstractFunctionNode) super.clone();
-			node.children = new ArrayList<Expression>(node.nParameters());
+			node.children = new ArrayList<Expression>(1);
 			return node;
 		} catch (CloneNotSupportedException e) {
 			// Tada !
