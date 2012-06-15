@@ -49,5 +49,18 @@ public class VariableNode extends NamedNode {
 	public <T> T accept(ExpressionVisitor<T> visitor) {
 		return visitor.visit(this);
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		
+		if (this.getClass() == obj.getClass()) {
+			VariableNode node = (VariableNode) obj;
+			
+			return getName().equals(node.getName());
+		}
+		return false;
+	}
 
 }

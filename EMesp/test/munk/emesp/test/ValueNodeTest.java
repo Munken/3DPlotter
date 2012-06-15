@@ -1,6 +1,8 @@
 package munk.emesp.test;
 
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import junit.framework.Assert;
 import munk.emesp.VariableValues;
 import munk.emesp.node.values.ValueNode;
@@ -19,6 +21,18 @@ public class ValueNodeTest {
 			double eval = value.eval(null);
 			
 			Assert.assertEquals(eval, val, 10E-5);
+		}
+		
+	}
+	
+	@Test 
+	public void valueNodeEquality() {
+		for (double val : values) {
+			ValueNode value = new ValueNode(val);
+			ValueNode value2 = new ValueNode(val);
+			
+			Assert.assertEquals(value, value2);
+			Assert.assertFalse(value.equals(null));
 		}
 	}
 	
@@ -44,6 +58,16 @@ public class ValueNodeTest {
 			
 			Assert.assertEquals(eval, -val, 10E-5);
 		}
+	}
+	
+	@Test 
+	public void variableNodeEquality() {
+		VariableNode var1 = new VariableNode("x");
+		VariableNode var2 = new VariableNode("y");
+		VariableNode var3 = new VariableNode("x");
+		
+		assertEquals(var1, var3);
+		assertFalse(var2.equals(var3));
 	}
 
 }

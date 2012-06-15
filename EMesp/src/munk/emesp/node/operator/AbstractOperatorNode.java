@@ -35,5 +35,19 @@ public abstract class AbstractOperatorNode extends AbstractExpression implements
 		getRightChild().toString(buffer);
 		buffer.append(")");
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		
+		if (this.getClass() == obj.getClass()) {
+			AbstractOperatorNode node = (AbstractOperatorNode) obj;
+			
+			return getLeftChild().equals(node.getLeftChild()) &&
+					getRightChild().equals(node.getRightChild());
+		}
+		return false;
+	}
 
 }

@@ -1,6 +1,9 @@
 package munk.emesp.test;
 
+import static org.junit.Assert.assertEquals;
 import junit.framework.Assert;
+import munk.emesp.Expression;
+import munk.emesp.ExpressionParser;
 import munk.emesp.node.operator.*;
 import munk.emesp.node.values.ValueNode;
 
@@ -18,6 +21,10 @@ public class OperatorNodeTest {
 		double value = div.eval(null);
 		
 		Assert.assertEquals(value, left/right, 10E-5);
+		
+		Expression ex = ExpressionParser.parse(left + "/" + right, null);
+		
+		assertEquals(div, ex);
 	}
 	
 	@Test
@@ -27,6 +34,10 @@ public class OperatorNodeTest {
 		double value = div.eval(null);
 		
 		Assert.assertEquals(value, left*right, 10E-5);
+		
+		Expression ex = ExpressionParser.parse(left + "*" + right, null);
+		
+		assertEquals(div, ex);
 	}
 	
 	@Test
@@ -36,6 +47,10 @@ public class OperatorNodeTest {
 		double value = div.eval(null);
 		
 		Assert.assertEquals(value, left+right, 10E-5);
+		
+		Expression ex = ExpressionParser.parse(left + "+" + right, null);
+		
+		assertEquals(div, ex);
 	}
 	
 	@Test
@@ -45,6 +60,10 @@ public class OperatorNodeTest {
 		double value = div.eval(null);
 		
 		Assert.assertEquals(value, left-right, 10E-5);
+		
+		Expression ex = ExpressionParser.parse(left + "-" + right, null);
+		
+		assertEquals(div, ex);
 	}
 	
 	@Test
@@ -54,6 +73,10 @@ public class OperatorNodeTest {
 		double value = div.eval(null);
 		
 		Assert.assertEquals(value, Math.pow(left, right), 10E-5);
+		
+		Expression ex = ExpressionParser.parse(left + "^" + right, null);
+		
+		assertEquals(div, ex);
 	}
 
 }
