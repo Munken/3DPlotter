@@ -1,6 +1,7 @@
 package munk.emesp.node.values;
 
 import munk.emesp.*;
+import munk.emesp.visitor.ExpressionVisitor;
 
 public class ValueNode extends AbstractExpression {
 	
@@ -35,6 +36,11 @@ public class ValueNode extends AbstractExpression {
 	@Override
 	public void toString(StringBuffer buffer) {
 		buffer.append(value);
+	}
+	
+	@Override
+	public <T> T accept(ExpressionVisitor<T> visitor) {
+		return visitor.visit(this);
 	}
 
 }

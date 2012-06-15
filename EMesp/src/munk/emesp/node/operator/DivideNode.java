@@ -3,6 +3,7 @@ package munk.emesp.node.operator;
 import munk.emesp.Expression;
 import munk.emesp.VariableValues;
 import munk.emesp.node.values.ValueNode;
+import munk.emesp.visitor.ExpressionVisitor;
 
 public class DivideNode extends AbstractOperatorNode{
 
@@ -31,6 +32,11 @@ public class DivideNode extends AbstractOperatorNode{
 		PowerNode denominator = new PowerNode(getRightChild(), ValueNode.TWO);
 		
 		return new DivideNode(nominator, denominator);
+	}
+	
+	@Override
+	public <T> T accept(ExpressionVisitor<T> visitor) {
+		return visitor.visit(this);
 	}
 
 }

@@ -4,6 +4,7 @@ import java.util.*;
 
 import munk.emesp.AbstractExpression;
 import munk.emesp.Expression;
+import munk.emesp.visitor.ExpressionVisitor;
 
 public abstract class AbstractFunctionNode extends AbstractExpression implements FunctionNode {
 
@@ -95,6 +96,10 @@ public abstract class AbstractFunctionNode extends AbstractExpression implements
 			// Tada !
 		}
 		return null;
+	}
+	
+	public <T> T accept(ExpressionVisitor<T> visitor) {
+		return visitor.visit(this);
 	}
 
 }

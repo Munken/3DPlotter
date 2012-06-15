@@ -15,7 +15,7 @@ public class Max extends AbstractFunctionNode{
 
 	@Override
 	protected int nParameters() {
-		return 2;
+		return Integer.MAX_VALUE;
 	}
 
 	@Override

@@ -15,7 +15,7 @@ public abstract class NamedNode extends AbstractExpression {
 	/**
 	Returns true if the term should negate the result before returning it in the eval method.
 	*/
-	public boolean getNegate() {
+	public boolean isNegate() {
 		return negate;
 	}
 

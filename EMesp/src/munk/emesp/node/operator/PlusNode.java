@@ -2,6 +2,7 @@ package munk.emesp.node.operator;
 
 import munk.emesp.Expression;
 import munk.emesp.VariableValues;
+import munk.emesp.visitor.ExpressionVisitor;
 
 public class PlusNode extends AbstractOperatorNode {
 
@@ -25,6 +26,11 @@ public class PlusNode extends AbstractOperatorNode {
 	@Override
 	public String getSymbol() {
 		return "+";
+	}
+	
+	@Override
+	public <T> T accept(ExpressionVisitor<T> visitor) {
+		return visitor.visit(this);
 	}
 
 }

@@ -3,6 +3,7 @@ package munk.emesp.node.operator;
 import munk.emesp.Expression;
 import munk.emesp.VariableValues;
 import munk.emesp.node.values.ValueNode;
+import munk.emesp.visitor.ExpressionVisitor;
 
 public class PowerNode extends AbstractOperatorNode{
 
@@ -30,6 +31,11 @@ public class PowerNode extends AbstractOperatorNode{
 		MultiplyNode front = new MultiplyNode(getRightChild(), getLeftChild().getDerivative(variable));
 		
 		return new MultiplyNode(front, lowerPower);
+	}
+	
+	@Override
+	public <T> T accept(ExpressionVisitor<T> visitor) {
+		return visitor.visit(this);
 	}
 
 }

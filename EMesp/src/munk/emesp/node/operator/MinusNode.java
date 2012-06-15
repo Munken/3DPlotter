@@ -2,6 +2,7 @@ package munk.emesp.node.operator;
 
 import munk.emesp.Expression;
 import munk.emesp.VariableValues;
+import munk.emesp.visitor.ExpressionVisitor;
 
 public class MinusNode extends AbstractOperatorNode{
 
@@ -27,6 +28,11 @@ public class MinusNode extends AbstractOperatorNode{
 		Expression right = getRightChild().getDerivative(variable);
 		
 		return new MinusNode(left, right);
+	}
+
+	@Override
+	public <T> T accept(ExpressionVisitor<T> visitor) {
+		return visitor.visit(this);
 	}
 
 }
