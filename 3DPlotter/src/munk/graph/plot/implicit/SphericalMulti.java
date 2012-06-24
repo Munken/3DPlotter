@@ -2,50 +2,63 @@ package munk.graph.plot.implicit;
 
 import munk.emesp.exceptions.IllegalExpressionException;
 
-public class SphericalMulti extends ImplicitMulti {
+public class SphericalMulti extends ImplicitSlowMulti {
 
+	
 	float phiMin;
 	float phiMax;
 	float thetaMin;
 	float thetaMax;
 	float rMin;
 	float rMax;
-	
-	public SphericalMulti(String expression, float rMin, float rMax,
-			float thetaMin, float thetaMax, float phiMin, float phiMax, float[] stepsizes)
-			throws IllegalExpressionException {
-		// Set up a maximum cube.
-		super(expression, -rMax, rMax, -rMax, rMax, -rMax, rMax, new float[]{stepsizes[0],stepsizes[0],stepsizes[0]});
-		this.rMin = rMin;
-		this.rMax = rMax;
-		this.thetaMin = thetaMin;
-		this.thetaMax = thetaMax;
+		
+	public SphericalMulti(String expression, 
+			float rMin, float rMax,
+			float thetaMin, float thetaMax, 
+			float phiMin, float phiMax,
+			float rStepsize, float thetaStepsize, float phiStepsize) 
+					throws IllegalExpressionException {
+		
+		super(expression, 
+				-rMax, rMax, -rMax, rMax, -rMax, rMax, 
+					rStepsize, thetaStepsize, phiStepsize);
+
 		this.phiMin = phiMin;
 		this.phiMax = phiMax;
+		this.thetaMin = thetaMin;
+		this.thetaMax = thetaMax;
+		this.rMin = rMin;
+		this.rMax = rMax;
+		
 	}
 
-	protected boolean validPosition(int x, int y, int z) {
-		boolean validCube = super.validPosition(x, y, z);
+	public SphericalMulti(String expression, 
+			float[] bounds,	float[] stepsize) 
+					throws IllegalExpressionException {
 		
-		if (validCube) {
-			float xReal = x*stepsizes[0]-rMax;
-			float yReal = y*stepsizes[0]-rMax;
-			float zReal = z*stepsizes[0]-rMax;
-			// Radius bounds.
-			double r = Math.sqrt(Math.pow(xReal, 2)+ Math.pow(yReal, 2) + Math.pow(zReal, 2));
-			if((r+0.1f) > rMin && (r-0.1f) < rMax){
-				//Phi bounds.
-				//			if(Math.atan(yReal/xReal) > phiMin && Math.atan(yReal/xReal) < phiMax){
-				// Theta bounds
-				//				if(Math.acos(zReal/r) > thetaMin && Math.acos(zReal/r) < thetaMax){
-				return true;
-				//				}
-				//			}
-			}
-			
+		this(expression, 
+				bounds[0], bounds[1], bounds[2], bounds[3], bounds[4], bounds[5],
+				stepsize[0], stepsize[1], stepsize[2]);
+	}
+
+	@Override
+	protected boolean validCube(float x, float y, float z) {
+		double r = Math.sqrt(x*x + y*y + z*z);
+		
+		if (r > rMax || r < rMin) 
 			return false;
-		}
-		else 
+		
+		double phi = Math.atan2(y, x) + Math.PI;
+		if (phi < phiMin || phi > phiMax)
 			return false;
-	}	
+		
+		
+		double theta = Math.acos(z / r); 
+		if (theta < thetaMin || theta > thetaMax)
+			return false;
+		
+		
+		return true;
+	}
+
 }

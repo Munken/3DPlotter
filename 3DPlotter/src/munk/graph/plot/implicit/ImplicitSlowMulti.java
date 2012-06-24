@@ -12,7 +12,7 @@ import munk.emesp.exceptions.IllegalExpressionException;
 import munk.graph.marching.MarchingCubes;
 import munk.graph.marching.Triangle;
 
-public class ImplicitSlowMulti extends AbstractImplicit {
+public abstract class ImplicitSlowMulti extends AbstractImplicit {
 	
 	private String expression;
 	
@@ -117,6 +117,7 @@ public class ImplicitSlowMulti extends AbstractImplicit {
 		};
 	}
 	
+	protected abstract boolean validCube(float x, float y, float z);
 	
 	
 	private class SubCubeMarcher {
@@ -162,51 +163,53 @@ public class ImplicitSlowMulti extends AbstractImplicit {
 					float x = xStart;
 					for (int i = 0; i < xLength - 1; i++) {
 						
-						corners[0].x = x;
-						corners[0].y = y;
-						corners[0].z = z;
-						values[0] = lower[j][i];
-						
-						corners[1].x = x + xStepsize;
-						corners[1].y = y;
-						corners[1].z = z; 
-						values[1] = lower[j][i+1];
-						
-						corners[2].x = x + xStepsize;
-						corners[2].y = y + yStepsize;
-						corners[2].z = z;
-						values[2] = lower[j+1][i+1];
-						
-						corners[3].x = x;
-						corners[3].y = y + yStepsize;
-						corners[3].z = z;
-						values[3] = lower[j+1][i];
-						
-						corners[4].x = x;
-						corners[4].y = y;
-						corners[4].z = z + zStepsize;
-						values[4] = upper[j][i];
-						
-						corners[5].x = x + xStepsize;
-						corners[5].y = y;
-						corners[5].z = z + zStepsize;
-						values[5] = upper[j][i+1];
-						
-						corners[6].x = x + xStepsize;
-						corners[6].y = y + yStepsize;
-						corners[6].z = z + zStepsize;
-						values[6] = value(corners[6]);
-						upper[j+1][i+1] = values[6];
-						
-						corners[7].x = x;
-						corners[7].y = y + yStepsize;
-						corners[7].z = z + zStepsize;
-						values[7] = upper[j+1][i];					
-						
-						int nFacets = marchCube(values, corners, tri);
-						
-						if (nFacets > 0) {
-							addTriangles(nFacets, tri, points);
+						if (validCube(x, y, z)) {
+							corners[0].x = x;
+							corners[0].y = y;
+							corners[0].z = z;
+							values[0] = lower[j][i];
+
+							corners[1].x = x + xStepsize;
+							corners[1].y = y;
+							corners[1].z = z; 
+							values[1] = lower[j][i+1];
+
+							corners[2].x = x + xStepsize;
+							corners[2].y = y + yStepsize;
+							corners[2].z = z;
+							values[2] = lower[j+1][i+1];
+
+							corners[3].x = x;
+							corners[3].y = y + yStepsize;
+							corners[3].z = z;
+							values[3] = lower[j+1][i];
+
+							corners[4].x = x;
+							corners[4].y = y;
+							corners[4].z = z + zStepsize;
+							values[4] = upper[j][i];
+
+							corners[5].x = x + xStepsize;
+							corners[5].y = y;
+							corners[5].z = z + zStepsize;
+							values[5] = upper[j][i+1];
+
+							corners[6].x = x + xStepsize;
+							corners[6].y = y + yStepsize;
+							corners[6].z = z + zStepsize;
+							values[6] = value(corners[6]);
+							upper[j+1][i+1] = values[6];
+
+							corners[7].x = x;
+							corners[7].y = y + yStepsize;
+							corners[7].z = z + zStepsize;
+							values[7] = upper[j+1][i];					
+
+							int nFacets = marchCube(values, corners, tri);
+
+							if (nFacets > 0) {
+								addTriangles(nFacets, tri, points);
+							}
 						}
 						
 						x += xStepsize;
@@ -224,7 +227,7 @@ public class ImplicitSlowMulti extends AbstractImplicit {
 			
 			return points;
 		}
-		
+
 		private float value() {
 			return (float) expr.eval(vm);
 		}
