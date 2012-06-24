@@ -1,5 +1,6 @@
 package munk.emesp;
 
+import munk.emesp.exceptions.ExpressionParseException;
 import munk.emesp.node.function.FunctionNode;
 import munk.emesp.node.operator.*;
 import munk.emesp.node.values.ValueNode;
@@ -20,7 +21,7 @@ public class ExpressionParser {
 		return build(s, 0, functionMap);
 	}
 	
-	private static Expression build(String s, int indexErrorOffset, FunctionMap functionMap) {
+	private static Expression build(String s, int indexErrorOffset, FunctionMap functionMap) throws ExpressionParseException {
 
 		// do not remove (required condition for functions with no parameters, e.g. Pi())
 		if (s.trim().length() == 0)
@@ -207,7 +208,7 @@ public class ExpressionParser {
 		return build(s1, s2);
 	}
 
-	private static Expression build(Stack s1, Stack s2) {
+	private static Expression build(Stack s1, Stack s2) throws ExpressionParseException {
 		Stack s3 = new Stack();
 		Stack s4 = new Stack();
 

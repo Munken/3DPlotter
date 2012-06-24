@@ -1,5 +1,6 @@
 package munk.emesp;
 
+import munk.emesp.exceptions.UndefinedVariableException;
 import munk.emesp.node.function.FunctionNode;
 import munk.emesp.node.operator.OperatorNode;
 import munk.emesp.node.values.VariableNode;

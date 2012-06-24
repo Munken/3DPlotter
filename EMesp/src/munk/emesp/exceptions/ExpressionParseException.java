@@ -1,4 +1,4 @@
-package munk.emesp;
+package munk.emesp.exceptions;
 
 /**
 Exception thrown if expression cannot be parsed correctly.
@@ -8,19 +8,13 @@ Exception thrown if expression cannot be parsed correctly.
 @see com.graphbuilder.math.ExpressionTree
 */
 @SuppressWarnings("serial")
-public class ExpressionParseException extends RuntimeException {
+public class ExpressionParseException extends IllegalExpressionException {
 
-	private String descrip;
 	private int index = 0;
 
 	public ExpressionParseException(String descrip, int index) {
 		super(descrip);
-		this.descrip = descrip;
 		this.index = index;
-	}
-
-	public String getDescription() {
-		return descrip;
 	}
 
 	public int getIndex() {
@@ -28,6 +22,6 @@ public class ExpressionParseException extends RuntimeException {
 	}
 
 	public String toString() {
-		return "(" + index + ") " + descrip;
+		return "(" + getIndex() + ") " + getMessage();
 	}
 }

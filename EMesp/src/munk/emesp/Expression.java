@@ -1,5 +1,6 @@
 package munk.emesp;
 
+import munk.emesp.exceptions.UndefinedVariableException;
 import munk.emesp.visitor.ExpressionVisitor;
 
 public interface Expression {

@@ -4,6 +4,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static munk.emesp.ExpressionParser.parse;
 import munk.emesp.*;
+import munk.emesp.exceptions.ExpressionParseException;
 import munk.emesp.node.values.ValueNode;
 import munk.emesp.node.values.VariableNode;
 import munk.emesp.visitor.IsConstantVisitor;
@@ -23,7 +24,7 @@ public class IsConstantVisitorTest {
 	}
 	
 	@Test
-	public void testVisitPlusNode() {
+	public void testVisitPlusNode() throws ExpressionParseException {
 		Expression constant = parse("2 + 2", null);
 		Expression notConstant = parse("2 + x", null);
 		
@@ -32,7 +33,7 @@ public class IsConstantVisitorTest {
 	}
 
 	@Test
-	public void testVisitMinusNode() {
+	public void testVisitMinusNode() throws ExpressionParseException {
 		Expression constant = parse("2 - 2", null);
 		Expression notConstant = parse("2 - x", null);
 		
@@ -41,7 +42,7 @@ public class IsConstantVisitorTest {
 	}
 
 	@Test
-	public void testVisitDivideNode() {
+	public void testVisitDivideNode() throws ExpressionParseException {
 		Expression constant = parse("2 / 2", null);
 		Expression notConstant = parse("2 / x", null);
 		
@@ -50,7 +51,7 @@ public class IsConstantVisitorTest {
 	}
 
 	@Test
-	public void testVisitMultiplyNode() {
+	public void testVisitMultiplyNode() throws ExpressionParseException {
 		Expression constant = parse("2 * 2", null);
 		Expression notConstantRight = parse("2 * x", null);
 		Expression notConstantLeft = parse("x * 2", null);
@@ -61,7 +62,7 @@ public class IsConstantVisitorTest {
 	}
 
 	@Test
-	public void testVisitPowerNode() {
+	public void testVisitPowerNode() throws ExpressionParseException {
 		Expression constant = parse("2 ^ 2", null);
 		Expression notConstant = parse("2 ^ x", null);
 		
@@ -70,7 +71,7 @@ public class IsConstantVisitorTest {
 	}
 	
 	@Test
-	public void testFunctionNode() {
+	public void testFunctionNode() throws ExpressionParseException {
 		Expression constant = parse("sin(2 + 2 * (7 * 9 + 1))", fm);
 		Expression notConstant = parse("sin(2 * x + 1)", fm);
 		
@@ -99,7 +100,7 @@ public class IsConstantVisitorTest {
 	}
 	
 	@Test
-	public void testCompoundExpression() {
+	public void testCompoundExpression() throws ExpressionParseException {
 		Expression constant = parse("2 * (2 + 3) / (2 + 3/2 * 89)", null);
 		Expression notConstant = parse("2 * (2 + x) / (y + 3/2 * y)", null);
 		

@@ -4,6 +4,7 @@ import static munk.emesp.ExpressionParser.parse;
 import static org.junit.Assert.assertEquals;
 import munk.emesp.Expression;
 import munk.emesp.FunctionMap;
+import munk.emesp.exceptions.ExpressionParseException;
 import munk.emesp.node.function.Cos;
 import munk.emesp.node.values.ValueNode;
 import munk.emesp.node.values.VariableNode;
@@ -24,7 +25,7 @@ public class CollapseConstantsVisitorTest {
 	}
 	
 	@Test
-	public void testVisitPlusNode() {
+	public void testVisitPlusNode() throws ExpressionParseException {
 		Expression collapsable = parse("0 + 2 + (2 + 5)", null);
 		Expression collapsed = collapsable.accept(collapser);
 		Expression expected = new ValueNode(9);
@@ -37,7 +38,7 @@ public class CollapseConstantsVisitorTest {
 	}
 	
 	@Test
-	public void plusZeroCollapsing() {
+	public void plusZeroCollapsing() throws ExpressionParseException {
 		Expression collapsable = parse("0 + x", null);
 		Expression collapsed = collapsable.accept(collapser);
 		Expression expected = new VariableNode("x");
@@ -46,7 +47,7 @@ public class CollapseConstantsVisitorTest {
 	}
 
 	@Test
-	public void testVisitMinusNode() {
+	public void testVisitMinusNode() throws ExpressionParseException {
 		Expression collapsable = parse("7 - 5", null);
 		Expression collapsed = collapsable.accept(collapser);
 		Expression expected = new ValueNode(2);
@@ -59,7 +60,7 @@ public class CollapseConstantsVisitorTest {
 	}
 	
 	@Test
-	public void minusZeroCollapsing() {
+	public void minusZeroCollapsing() throws ExpressionParseException {
 		Expression collapsable = parse("0 - x", null);
 		Expression collapsed = collapsable.accept(collapser);
 		Expression expected = new VariableNode("x");
@@ -68,7 +69,7 @@ public class CollapseConstantsVisitorTest {
 	}
 
 	@Test
-	public void testVisitDivideNode() {
+	public void testVisitDivideNode() throws ExpressionParseException {
 		Expression collapsable = parse("7 / 5", null);
 		Expression collapsed = collapsable.accept(collapser);
 		Expression expected = new ValueNode(7. / 5);
@@ -83,7 +84,7 @@ public class CollapseConstantsVisitorTest {
 	}
 	
 	@Test
-	public void divideWithOne() {
+	public void divideWithOne() throws ExpressionParseException {
 		Expression divideWithOne = parse("x / 1", null);
 		Expression x = divideWithOne.accept(collapser);
 		Expression expected2 = new VariableNode("x");
@@ -91,7 +92,7 @@ public class CollapseConstantsVisitorTest {
 	}
 
 	@Test
-	public void testVisitMultiplyNode() {
+	public void testVisitMultiplyNode() throws ExpressionParseException {
 		Expression collapsable = parse("7 * 5", null);
 		Expression collapsed = collapsable.accept(collapser);
 		Expression expected = new ValueNode(35);
@@ -104,7 +105,7 @@ public class CollapseConstantsVisitorTest {
 	}
 	
 	@Test
-	public void multiplyZeroCollapsing() {
+	public void multiplyZeroCollapsing() throws ExpressionParseException {
 		Expression collapsable = parse("0 * x", null);
 		Expression collapsed = collapsable.accept(collapser);
 		Expression expected = new ValueNode(0);
@@ -113,7 +114,7 @@ public class CollapseConstantsVisitorTest {
 	}
 	
 	@Test
-	public void multiplyOneCollapsing() {
+	public void multiplyOneCollapsing() throws ExpressionParseException {
 		Expression collapsable = parse("1 * y", null);
 		Expression collapsed = collapsable.accept(collapser);
 		Expression expected = new VariableNode("y");
@@ -122,7 +123,7 @@ public class CollapseConstantsVisitorTest {
 	}
 
 	@Test
-	public void testVisitPowerNode() {
+	public void testVisitPowerNode() throws ExpressionParseException {
 		Expression divideWithOne = parse("2^4", null);
 		Expression x = divideWithOne.accept(collapser);
 		Expression expected = new ValueNode(16);
@@ -130,7 +131,7 @@ public class CollapseConstantsVisitorTest {
 	}
 	
 	@Test
-	public void ToZerothPower() {
+	public void ToZerothPower() throws ExpressionParseException {
 		Expression divideWithOne = parse("2^0", null);
 		Expression x = divideWithOne.accept(collapser);
 		Expression expected = new ValueNode(1);
@@ -138,7 +139,7 @@ public class CollapseConstantsVisitorTest {
 	}
 	
 	@Test
-	public void OneToNthPower() {
+	public void OneToNthPower() throws ExpressionParseException {
 		Expression divideWithOne = parse("1^1000", null);
 		Expression x = divideWithOne.accept(collapser);
 		Expression expected = new ValueNode(1);
@@ -146,7 +147,7 @@ public class CollapseConstantsVisitorTest {
 	}
 	
 	@Test
-	public void PowerOfZero() {
+	public void PowerOfZero() throws ExpressionParseException {
 		Expression divideWithOne = parse("0^4", null);
 		Expression x = divideWithOne.accept(collapser);
 		Expression expected = new ValueNode(0);
@@ -154,7 +155,7 @@ public class CollapseConstantsVisitorTest {
 	}
 
 	@Test
-	public void testVisitValueNode() {
+	public void testVisitValueNode() throws ExpressionParseException {
 		Expression divideWithOne = parse("1", null);
 		Expression x = divideWithOne.accept(collapser);
 		Expression expected = new ValueNode(1);
@@ -162,7 +163,7 @@ public class CollapseConstantsVisitorTest {
 	}
 
 	@Test
-	public void testVisitVariableNode() {
+	public void testVisitVariableNode() throws ExpressionParseException {
 		Expression divideWithOne = parse("x", null);
 		Expression x = divideWithOne.accept(collapser);
 		Expression expected = new VariableNode("x");
@@ -170,7 +171,7 @@ public class CollapseConstantsVisitorTest {
 	}
 
 	@Test
-	public void sinFunctionCollapse() {
+	public void sinFunctionCollapse() throws ExpressionParseException {
 		Expression sin = parse("sin(0 * ( 1 + 20 * (9 + 3)))", fm);
 		Expression sinCollaps = sin.accept(collapser);
 		ValueNode sin0 = ValueNode.ZERO;
@@ -193,7 +194,7 @@ public class CollapseConstantsVisitorTest {
 	}
 	
 	@Test
-	public void AllInOneCollapsing() {
+	public void AllInOneCollapsing() throws ExpressionParseException {
 		Expression collapsable = parse("5 * 7 - 0*(x + 0*y) - 1*(2*7 + 7)", null);
 		Expression collapsed = collapsable.accept(collapser);
 		Expression expected = new ValueNode(5*7 - (2*7 + 7));

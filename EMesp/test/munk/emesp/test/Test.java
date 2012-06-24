@@ -1,6 +1,7 @@
 package munk.emesp.test;
 
 import munk.emesp.*;
+import munk.emesp.exceptions.ExpressionParseException;
 import munk.emesp.visitor.CollapseConstantsVisitor;
 
 public class Test {

@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import junit.framework.Assert;
 import munk.emesp.Expression;
 import munk.emesp.ExpressionParser;
+import munk.emesp.exceptions.ExpressionParseException;
 import munk.emesp.node.operator.*;
 import munk.emesp.node.values.ValueNode;
 
@@ -15,7 +16,7 @@ public class OperatorNodeTest {
 	double right = 24.5;
 	
 	@Test
-	public void divideNodeTest() {
+	public void divideNodeTest() throws ExpressionParseException {
 		DivideNode div = new DivideNode(new ValueNode(left), new ValueNode(right));
 		
 		double value = div.eval(null);
@@ -28,7 +29,7 @@ public class OperatorNodeTest {
 	}
 	
 	@Test
-	public void multiplyNodeTest() {
+	public void multiplyNodeTest() throws ExpressionParseException {
 		MultiplyNode div = new MultiplyNode(new ValueNode(left), new ValueNode(right));
 		
 		double value = div.eval(null);
@@ -41,7 +42,7 @@ public class OperatorNodeTest {
 	}
 	
 	@Test
-	public void plusNodeTest() {
+	public void plusNodeTest() throws ExpressionParseException {
 		PlusNode div = new PlusNode(new ValueNode(left), new ValueNode(right));
 		
 		double value = div.eval(null);
@@ -54,7 +55,7 @@ public class OperatorNodeTest {
 	}
 	
 	@Test
-	public void minusNodeTest() {
+	public void minusNodeTest() throws ExpressionParseException {
 		MinusNode div = new MinusNode(new ValueNode(left), new ValueNode(right));
 		
 		double value = div.eval(null);
@@ -67,7 +68,7 @@ public class OperatorNodeTest {
 	}
 	
 	@Test
-	public void powerNodeTest() {
+	public void powerNodeTest() throws ExpressionParseException {
 		PowerNode div = new PowerNode(new ValueNode(left), new ValueNode(right));
 		
 		double value = div.eval(null);

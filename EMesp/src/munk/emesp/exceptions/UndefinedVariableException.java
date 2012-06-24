@@ -1,10 +1,9 @@
-package munk.emesp;
+package munk.emesp.exceptions;
 
 @SuppressWarnings("serial")
-public class UndefinedVariableException extends Exception{
+public class UndefinedVariableException extends IllegalExpressionException {
 
 	public UndefinedVariableException() {
-		// TODO Auto-generated constructor stub
 	}
 	
 	public UndefinedVariableException(String message) {
