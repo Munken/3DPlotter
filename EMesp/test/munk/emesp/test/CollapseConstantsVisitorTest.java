@@ -4,6 +4,7 @@ import static munk.emesp.ExpressionParser.parse;
 import static org.junit.Assert.assertEquals;
 import munk.emesp.Expression;
 import munk.emesp.FunctionMap;
+import munk.emesp.node.function.Cos;
 import munk.emesp.node.values.ValueNode;
 import munk.emesp.node.values.VariableNode;
 import munk.emesp.visitor.CollapseConstantsVisitor;
@@ -182,6 +183,13 @@ public class CollapseConstantsVisitorTest {
 		ValueNode cos0 = ValueNode.ONE;
 		
 		assertEquals(cosCollaps, cos0);
+		
+		
+		Expression cosX = parse("cos(x)", fm);
+		Expression cosXCollaps = cosX.accept(collapser);
+		Cos cosToX = new Cos(new VariableNode("x"), false);
+		
+		assertEquals(cosXCollaps, cosToX);
 	}
 	
 	@Test

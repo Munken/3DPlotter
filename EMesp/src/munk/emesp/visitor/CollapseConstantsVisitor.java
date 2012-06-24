@@ -99,7 +99,7 @@ public class CollapseConstantsVisitor implements ExpressionVisitor<Expression>{
 				return new ValueNode(leftValue * rightValue);
 			} else if (leftValue == 1)
 				return collapsedRight;
-		} else if (rightValue == 1)
+		} else if (rightValue != null && rightValue == 1)
 			return collapsedLeft;
 		
 		return new MultiplyNode(collapsedLeft, collapsedRight);

@@ -101,5 +101,32 @@ public abstract class AbstractFunctionNode extends AbstractExpression implements
 	public <T> T accept(ExpressionVisitor<T> visitor) {
 		return visitor.visit(this);
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		
+		if (this.getClass() == obj.getClass()) {
+			AbstractFunctionNode node = (AbstractFunctionNode) obj;
+			
+			if (getNumberChildren() != node.getNumberChildren())
+				return false;
+			
+			List<Expression> otherChildren = new ArrayList<Expression>(node.children);
+			
+			for (Expression child : children) {				
+				int index = otherChildren.indexOf(child);
+				
+				if (index >= 0) {
+					otherChildren.remove(index);
+				} else {
+					return false;
+				}
+			}
+			return true;
+		}
+		return false;
+	}
 
 }
