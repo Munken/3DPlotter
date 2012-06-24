@@ -5,9 +5,8 @@ import java.awt.event.*;
 
 import javax.swing.*;
 
+import munk.emesp.exceptions.IllegalExpressionException;
 import munk.graph.gui.GuiUtil;
-
-import com.graphbuilder.math.ExpressionParseException;
 
 public class ParamGridOptionPanel extends AbstractGridOptionPanel implements GridOptionPanel{
 
@@ -119,7 +118,7 @@ public class ParamGridOptionPanel extends AbstractGridOptionPanel implements Gri
 		tMax.addFocusListener(updateBoundsListener);
 	}
 
-	public String[] getGridBounds() throws ExpressionParseException{
+	public String[] getGridBounds() throws IllegalExpressionException{
 		String[] bounds = new String[4];
 		bounds[0] = tMin.getText();
 		bounds[1] = tMax.getText();
@@ -128,7 +127,7 @@ public class ParamGridOptionPanel extends AbstractGridOptionPanel implements Gri
 		return bounds;
 	}
 	
-	public float[] getGridStepSize() throws ExpressionParseException{
+	public float[] getGridStepSize() throws IllegalExpressionException{
 		float[] bounds = GuiUtil.evalStringArray(getGridBounds());
 		float[] stepSize = new float[2];
 		stepSize[0] = Math.abs(bounds[1]-bounds[0])/tSlider.getValue();
@@ -143,7 +142,7 @@ public class ParamGridOptionPanel extends AbstractGridOptionPanel implements Gri
 		uMax.setText(bounds[3]);
 	}
 	
-	public void setSliders(float[] stepSize) throws ExpressionParseException{
+	public void setSliders(float[] stepSize) throws IllegalExpressionException{
 		float[] bounds = selectedFunction.getBounds();
 		tSlider.setValue((int) (Math.abs(bounds[1]-bounds[0])/stepSize[0]));
 		uSlider.setValue((int) (Math.abs(bounds[1]-bounds[0])/stepSize[1]));

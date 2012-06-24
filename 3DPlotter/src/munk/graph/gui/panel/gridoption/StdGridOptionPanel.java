@@ -5,11 +5,10 @@ import java.awt.event.*;
 
 import javax.swing.*;
 
+import munk.emesp.exceptions.IllegalExpressionException;
 import munk.graph.gui.GuiUtil;
 
-import com.graphbuilder.math.ExpressionParseException;
-
-public class StdGridOptionPanel extends AbstractGridOptionPanel implements GridOptionPanel{
+public class StdGridOptionPanel extends AbstractGridOptionPanel implements GridOptionPanel {
 
 	private static final long serialVersionUID = 1L;
 	private JTextField xMin;
@@ -174,7 +173,7 @@ public class StdGridOptionPanel extends AbstractGridOptionPanel implements GridO
 		return bounds;
 	}
 	
-	public float[] getGridStepSize() throws ExpressionParseException{
+	public float[] getGridStepSize() throws IllegalExpressionException {
 		float[] bounds = GuiUtil.evalStringArray(getGridBounds());
 		float[] stepSize = new float[3];
 		stepSize[0] = Math.abs(bounds[1]-bounds[0])/xSlider.getValue();
@@ -192,7 +191,7 @@ public class StdGridOptionPanel extends AbstractGridOptionPanel implements GridO
 		zMax.setText(bounds[5]);
 	}
 	
-	public void setSliders(float[] stepSize) throws ExpressionParseException{
+	public void setSliders(float[] stepSize) throws IllegalExpressionException {
 		float[] bounds = GuiUtil.evalStringArray(selectedFunction.getBoundsString());
 		xSlider.setValue((int) (Math.abs(bounds[1]-bounds[0])/stepSize[0]));
 		ySlider.setValue((int) (Math.abs(bounds[3]-bounds[2])/stepSize[1]));

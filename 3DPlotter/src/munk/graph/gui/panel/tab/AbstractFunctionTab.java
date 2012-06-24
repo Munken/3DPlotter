@@ -11,8 +11,10 @@ import javax.swing.*;
 import javax.swing.Timer;
 import javax.vecmath.Color3f;
 
+import munk.emesp.exceptions.IllegalExpressionException;
 import munk.graph.appearance.Colors;
-import munk.graph.function.*;
+import munk.graph.function.Function;
+import munk.graph.function.TemplateFunction;
 import munk.graph.gui.*;
 import munk.graph.gui.labels.*;
 import munk.graph.gui.listener.FunctionEvent;
@@ -20,21 +22,17 @@ import munk.graph.gui.listener.FunctionListener;
 import munk.graph.gui.panel.AppearanceOptionPanel;
 import munk.graph.gui.panel.gridoption.GridOptionPanel;
 
-import com.graphbuilder.math.ExpressionParseException;
-import com.graphbuilder.math.UndefinedVariableException;
-import java.awt.Toolkit;
-
 @SuppressWarnings("serial")
 public abstract class AbstractFunctionTab extends JPanel implements FunctionTab{
-	
+
 	// Constants.
 	private static final Color	NORMAL_COLOR	= Color.WHITE;
 	private static final Color SELECTED_COLOR = new Color(189, 214, 224);
 	private static final ExecutorService PLOTTING_QUEUE = Executors.newSingleThreadExecutor(); // Only plot one at a time
-	
-	
+
+
 	private static Function ACTIVE_FUNCTION;
-	
+
 	// GUI variables.
 	private JPanel outerFuncTab;
 	protected JPanel innerFuncTab;
@@ -43,7 +41,7 @@ public abstract class AbstractFunctionTab extends JPanel implements FunctionTab{
 	private GridOptionPanel gridOP;
 	private AppearanceOptionPanel apperanceOP;
 	private JTextField[] input;
-	
+
 	// Other variables.
 	protected HashMap<Function, FunctionLabel> map;
 	protected List<Function> funcList = new ArrayList<Function>();
@@ -52,25 +50,25 @@ public abstract class AbstractFunctionTab extends JPanel implements FunctionTab{
 	private Plotter3D plotter;
 	private ColorList colorList;
 	private ArrayList<ActionListener> listeners = new ArrayList<ActionListener>();;
-	
 
-	public AbstractFunctionTab(ColorList colorList, HashMap<Function, FunctionLabel> map, Function templateFunc, Plotter3D plotter) throws Exception{
+
+	public AbstractFunctionTab(ColorList colorList, HashMap<Function, FunctionLabel> map, Function templateFunc, Plotter3D plotter) {
 		this.templateFunc = templateFunc;
 		this.map = map;
 		this.plotter = plotter;
 		this.colorList = colorList;
-		
+
 		addFunctionKeyboardShortcuts();
 	}
 
 
-	
-	protected void init() throws ExpressionParseException{
+
+	protected void init() throws IllegalExpressionException {
 		input = new JTextField[getNoOfInputs()];
-		
+
 		double[] rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		rowWeights[getNoOfInputs()+2] = 1.0; 
-		
+
 		GridBagLayout gbl_functionPanel = new GridBagLayout();
 		gbl_functionPanel.columnWidths = new int[]{5, 0, 50, 50, 30, 25, 5, 0};
 		gbl_functionPanel.rowHeights = new int[]{10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10};
@@ -78,7 +76,7 @@ public abstract class AbstractFunctionTab extends JPanel implements FunctionTab{
 		gbl_functionPanel.rowWeights = rowWeights;
 		this.setLayout(gbl_functionPanel);
 
-		
+
 		// Function input field.
 		for(int i = 0; i < getNoOfInputs(); i++){
 			// Creation.
@@ -90,14 +88,14 @@ public abstract class AbstractFunctionTab extends JPanel implements FunctionTab{
 			gbc_stdFuncInput.anchor = GridBagConstraints.NORTH;
 			gbc_stdFuncInput.gridx = 2;
 			gbc_stdFuncInput.gridy = i+1;
-			
+
 			// Setup.
 			GuiUtil.setupUndoListener(input[i]);
 			setupInputListeners(input[i]);
 			this.add(input[i], gbc_stdFuncInput);
-			
+
 		}
-		
+
 		// Labels for the input fields
 		String[] labelNames = labelNames();
 		for (int i = 0; i < labelNames.length; i++) {
@@ -108,7 +106,7 @@ public abstract class AbstractFunctionTab extends JPanel implements FunctionTab{
 			gbc_FuncLabel.anchor = GridBagConstraints.CENTER;
 			gbc_FuncLabel.gridx = 1;
 			gbc_FuncLabel.gridy = i+1;
-			
+
 			JLabel label = new JLabel(labelNames[i]);
 			this.add(label, gbc_FuncLabel);
 		}
@@ -161,18 +159,17 @@ public abstract class AbstractFunctionTab extends JPanel implements FunctionTab{
 		outerFuncTab.add(innerFuncTab, gbc_innerFuncPanel);
 		innerFuncTab.setLayout(new BoxLayout(innerFuncTab, BoxLayout.Y_AXIS));
 	}
-	
+
 	public abstract void addPlot(Function newFunction);
+
 	public abstract Function createNewFunction(String[] expressions, Color3f color, 
-												String[] bounds, float[] stepSize) 
-					throws ExpressionParseException, 
-					UndefinedVariableException, 
-					IllegalEquationException;
-	
+			String[] bounds, float[] stepSize) 
+					throws IllegalExpressionException;
+
 	protected String[] labelNames() {
 		return new String[0];
 	}
-	
+
 
 	private void setupInputListeners(final JTextField currentInput){
 		currentInput.addKeyListener(new KeyAdapter() {
@@ -187,7 +184,7 @@ public abstract class AbstractFunctionTab extends JPanel implements FunctionTab{
 							equations[i] = input[i].getText();
 						}
 						addPlot(equations,templateFunc.getColor(), gridOP.getGridBounds(), gridOP.getGridStepSize());
-					} catch (ExpressionParseException | IllegalEquationException | UndefinedVariableException e1) {
+					} catch (IllegalExpressionException e1) {
 						signalAll(new ActionEvent(e1, -1, ""));
 					}
 				}
@@ -205,7 +202,7 @@ public abstract class AbstractFunctionTab extends JPanel implements FunctionTab{
 
 	public void setSelected(Function f) {
 		try {
-			
+
 			ACTIVE_FUNCTION = f;
 			if(f != selectedFunction){
 				// Deselection.
@@ -226,29 +223,29 @@ public abstract class AbstractFunctionTab extends JPanel implements FunctionTab{
 					for(int i = 0; i < input.length; i++){
 						input[i].setBackground(SELECTED_COLOR);
 					}
-					
+
 					updateReferences(selectedFunction);
 				}
 			}
-			
+
 			// Needed for picking. The caret might not be active, 
 			if (selectedFunction != null && selectedFunction != templateFunc){
 				FunctionLabel selectedLabel = map.get(selectedFunction);
 				updateReferences(selectedFunction);
 				selectedLabel.setSelected(true);
 			}
-		} catch (ExpressionParseException e ) {
-			
+		} catch (IllegalExpressionException e ) {
+
 		}
 	}
-	
+
 	protected FunctionLabel addXYZPlot(Function newFunction) {
 		funcList.add(newFunction);
-		
+
 		final StdFunctionLabel label = new StdFunctionLabel(newFunction);
-		
+
 		label.addFocusListener(new FocusAdapter() {
-			
+
 			@Override
 			public void focusGained(FocusEvent e) {
 				setSelected(label.getMother());
@@ -257,14 +254,14 @@ public abstract class AbstractFunctionTab extends JPanel implements FunctionTab{
 		innerFuncTab.add(label);
 		return label;
 	}
-	
+
 	protected FunctionLabel addParametricPlot(final Function newFunction) {
 		funcList.add(newFunction);
-		
+
 		final ParametricFunctionLabel label = new ParametricFunctionLabel(newFunction);
-		
+
 		label.addFocusListener(new FocusAdapter() {
-			
+
 			@Override
 			public void focusGained(FocusEvent e) {
 				setSelected(label.getMother());
@@ -277,12 +274,12 @@ public abstract class AbstractFunctionTab extends JPanel implements FunctionTab{
 	/*
 	 * Add new plot.
 	 */
-	public void addPlot(String[] expr, Color3f color, String[] bounds, float[] stepSize) throws ExpressionParseException, IllegalEquationException, UndefinedVariableException{
+	public void addPlot(String[] expr, Color3f color, String[] bounds, float[] stepSize) throws IllegalExpressionException {
 		// Create the function.
 		Function newFunction = createNewFunction(expr,color,bounds,stepSize);
 		addPlot(newFunction);
 	}
-	
+
 	private FunctionListener createGridOptionPanelListener() {
 		return new FunctionListener() {
 
@@ -290,11 +287,10 @@ public abstract class AbstractFunctionTab extends JPanel implements FunctionTab{
 			public void functionChanged(FunctionEvent e) {
 				Function func = e.getOldFunction();
 				if(func.getClass() != TemplateFunction.class){
+
 					try {
 						updatePlot(func, func.getExpression(), func.getColor(), e.getStringBounds(), e.getStepsize());
-					} catch (ExpressionParseException
-							| IllegalEquationException
-							| UndefinedVariableException e1) {
+					} catch (IllegalExpressionException e1) {
 						signalAll(new ActionEvent(e1, -1, ""));
 					}
 				}
@@ -305,15 +301,15 @@ public abstract class AbstractFunctionTab extends JPanel implements FunctionTab{
 			}
 		};
 	}
-	
+
 	protected FunctionListener createFunctionListener() {
 		return new FunctionListener() {
-			
+
 			@Override
 			public void functionChanged(FunctionEvent e) {
 				FunctionEvent.ACTION action = e.getAction();
 				Function func = e.getOldFunction();
-				
+
 				if (action == FunctionEvent.ACTION.VISIBILITY) {
 					plotter.showPlot(func);
 
@@ -323,9 +319,7 @@ public abstract class AbstractFunctionTab extends JPanel implements FunctionTab{
 				} else if (action == FunctionEvent.ACTION.UPDATE) {
 					try {
 						updatePlot(func, e.getNewExpr(), e.getColor(), e.getStringBounds(), e.getStepsize());
-					} catch (ExpressionParseException
-							| IllegalEquationException
-							| UndefinedVariableException e1) {
+					} catch (IllegalExpressionException e1) {
 						signalAll(new ActionEvent(e1, -1, ""));
 					}
 				} 
@@ -337,7 +331,7 @@ public abstract class AbstractFunctionTab extends JPanel implements FunctionTab{
 	/*
 	 * Update a function.
 	 */
-	private void updatePlot(Function oldFunc, String newExpr[], Color3f newColor, String[] bounds, float[] stepSize) throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
+	private void updatePlot(Function oldFunc, String newExpr[], Color3f newColor, String[] bounds, float[] stepSize) throws IllegalExpressionException {
 		// Try evaluating the function.
 		Function newFunc =  createNewFunction(newExpr, newColor, bounds, stepSize);
 		newFunc.setView(oldFunc.getView());
@@ -369,7 +363,7 @@ public abstract class AbstractFunctionTab extends JPanel implements FunctionTab{
 	 */
 	protected void spawnNewPlotterThread(final Function function) {
 		SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
-			
+
 			@Override
 			protected Void doInBackground() throws Exception {
 
@@ -379,58 +373,58 @@ public abstract class AbstractFunctionTab extends JPanel implements FunctionTab{
 				plotter.plotFunction(function);
 				return null;
 			}
-			
+
 			@Override
 			protected void done() {
 				FunctionLabel label = map.get(function);
 				if (label != null)
 					label.setIndeterminate(false);
 			}
-			
+
 		};
 		PLOTTING_QUEUE.execute(worker);
 	}
-	
+
 	@Override
 	public void updateColors() {
 		apperanceOP.updateColors();
 	}
-	
-	public void updateReferences(Function f) throws ExpressionParseException{
+
+	public void updateReferences(Function f) throws IllegalExpressionException {
 		gridOP.updateFuncReference(f);
 		apperanceOP.updateFuncReference(f);
 	}
-	
+
 	public List<Function> getFunctionList(){
 		return funcList;
 	}
-	
+
 	public void addActionListener(ActionListener a){
 		listeners.add(a);
 	}
-	
+
 	private void signalAll(ActionEvent e){
 		for(ActionListener a : listeners){
 			a.actionPerformed(e);
 		}
 	}
-	
+
 	private void addFunctionKeyboardShortcuts() {
 		addShortcutBlinker();
 		addShortcutDelete();
 	}
-	
+
 	private void addShortcutDelete() {
 		getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("ctrl D"), "Delete Function");
 		getActionMap().put("Delete Function", new AbstractAction() {
-			
-			
+
+
 			public void actionPerformed(ActionEvent e) {
 				if (ACTIVE_FUNCTION == null)
 					return;
-				
+
 				deletePlot(ACTIVE_FUNCTION);
-				
+
 			};
 		});
 	}
@@ -440,27 +434,27 @@ public abstract class AbstractFunctionTab extends JPanel implements FunctionTab{
 	private void addShortcutBlinker() {
 		getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("ctrl B"), "Blink Function");
 		getActionMap().put("Blink Function", new AbstractAction() {
-			
-			
+
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (ACTIVE_FUNCTION == null)
 					return;
-				
-				
+
+
 				setEnabled(false);
 				final Color3f oldColor = ACTIVE_FUNCTION.getColor();
 				ACTIVE_FUNCTION.setColor(Colors.WHITE);
-				
+
 				Timer timer = new Timer(300, new ActionListener() {
-					
+
 					@Override
 					public void actionPerformed(ActionEvent e) {	
 						ACTIVE_FUNCTION.setColor(oldColor);
 						setEnabled(true);
 					}
 				});
-				
+
 				timer.setRepeats(false);
 				timer.start();
 			}

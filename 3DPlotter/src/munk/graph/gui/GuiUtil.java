@@ -10,10 +10,10 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.Document;
 import javax.swing.undo.*;
 
+import munk.emesp.*;
+import munk.emesp.exceptions.ExpressionParseException;
 import munk.graph.gui.paranthesismatching.BracketMatcher;
 import munk.graph.gui.paranthesismatching.UpdateEvent;
-
-import com.graphbuilder.math.*;
 
 public class GuiUtil {
 	
@@ -136,18 +136,29 @@ public class GuiUtil {
 		return robot.createScreenCapture(bounds);
 	}
 	
-	/*
+	/**
 	 * Evaluate expression, accounting only for constants.
+	 * @param expr
+	 * @return
+	 * @throws ExpressionParseException
 	 */
-	public static float evalString(String expr) throws ExpressionParseException{
-			VarMap varMap = new VarMap();
-			// Add more constants here.
-			varMap.setValue("pi", 3.14159265);
-			varMap.setValue("e", 2.71828183);
-			return (float) ExpressionTree.parse(expr).eval(varMap, new FuncMap());
+	public static float evalString(String expr) throws ExpressionParseException {
+		VariableValues varMap = new VariableValues();
+		// Add more constants here.
+		varMap.setValue("pi", Math.PI);
+		varMap.setValue("e", Math.E);
+		Expression ex = ExpressionParser.parse(expr, FunctionMap.getDefaultFunctionMap());
+		
+		return (float) ex.eval(varMap);
 	}
 	
-	public static float[] evalStringArray(String[] input) throws ExpressionParseException{
+	/**
+	 * 
+	 * @param input
+	 * @return
+	 * @throws ExpressionParseException When the expression is not a valid mathematical expression
+	 */
+	public static float[] evalStringArray(String[] input) throws ExpressionParseException {
 		float[] returnFloat = new float[input.length];
 		for(int i = 0; i < input.length ; i++){
 			returnFloat[i] = evalString(input[i]);

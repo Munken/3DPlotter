@@ -1,9 +1,6 @@
 package munk.graph.plot.implicit;
 
-import munk.graph.function.IllegalEquationException;
-
-import com.graphbuilder.math.ExpressionParseException;
-import com.graphbuilder.math.UndefinedVariableException;
+import munk.emesp.exceptions.IllegalExpressionException;
 
 public class SphericalMulti extends ImplicitMulti {
 
@@ -16,8 +13,7 @@ public class SphericalMulti extends ImplicitMulti {
 	
 	public SphericalMulti(String expression, float rMin, float rMax,
 			float thetaMin, float thetaMax, float phiMin, float phiMax, float[] stepsizes)
-			throws ExpressionParseException, IllegalEquationException,
-			UndefinedVariableException {
+			throws IllegalExpressionException {
 		// Set up a maximum cube.
 		super(expression, -rMax, rMax, -rMax, rMax, -rMax, rMax, new float[]{stepsizes[0],stepsizes[0],stepsizes[0]});
 		this.rMin = rMin;

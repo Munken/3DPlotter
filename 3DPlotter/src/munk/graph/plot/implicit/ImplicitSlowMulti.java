@@ -1,24 +1,18 @@
 package munk.graph.plot.implicit;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.*;
 
 import javax.media.j3d.Shape3D;
 import javax.vecmath.Point3f;
 
-import munk.graph.function.IllegalEquationException;
+import munk.emesp.*;
+import munk.emesp.exceptions.IllegalExpressionException;
 import munk.graph.marching.MarchingCubes;
 import munk.graph.marching.Triangle;
 
-import com.graphbuilder.math.*;
-
 public class ImplicitSlowMulti extends AbstractImplicit {
-	
-	private static final FuncMap FUNC_MAP;
-	static {
-		FUNC_MAP = new FuncMap();
-		FUNC_MAP.loadDefaultFunctions();
-	}
 	
 	private String expression;
 	
@@ -26,9 +20,7 @@ public class ImplicitSlowMulti extends AbstractImplicit {
 	public ImplicitSlowMulti(String expression, float xMin, float xMax,
 			float yMin, float yMax, float zMin, float zMax, float xStepsize,
 			float yStepsize, float zStepsize) 
-					throws ExpressionParseException,
-						    IllegalEquationException, 
-						    UndefinedVariableException {
+					throws IllegalExpressionException {
 		super(expression, xMin, xMax, yMin, yMax, zMin, zMax, xStepsize, yStepsize,
 				zStepsize);
 		
@@ -36,9 +28,7 @@ public class ImplicitSlowMulti extends AbstractImplicit {
 	}
 	
 	public ImplicitSlowMulti(String expression, float[] bounds, float[] stepsizes) 
-					throws ExpressionParseException,
-						    IllegalEquationException, 
-						    UndefinedVariableException {
+					throws IllegalExpressionException {
 		this(expression, 
 				bounds[0], bounds[1], bounds[2], 
 				bounds[3], bounds[4], bounds[5], 
@@ -111,8 +101,6 @@ public class ImplicitSlowMulti extends AbstractImplicit {
 			points.addAll(list);
 		}
 		
-//		Collections.sort(points, createPoint3fComparator());
-		
 		return points;
 	}
 
@@ -133,14 +121,14 @@ public class ImplicitSlowMulti extends AbstractImplicit {
 	
 	private class SubCubeMarcher {
 		
+		VariableValues vm;
 		Expression expr;
-		VarMap vm;
 		float xStart, yStart, zStart;
 		int xLength, yLength, zLength;
 
 		
 		private SubCubeMarcher(String expression, float xStart, float yStart, float zStart,
-				int xLength, int yLength, int zLength) {
+				int xLength, int yLength, int zLength) throws IllegalExpressionException {
 			this.xStart = xStart;
 			this.yStart = yStart;
 			this.zStart = zStart;
@@ -148,12 +136,8 @@ public class ImplicitSlowMulti extends AbstractImplicit {
 			this.yLength = yLength;
 			this.zLength = zLength;
 			
-			try {
-				vm = new VarMap();
-				expr = ExpressionTree.parse(expression);
-			} catch(ExpressionParseException e) {
-				// The
-			}
+			expr = ExpressionParser.parse(expression, FunctionMap.getDefaultFunctionMap());
+			vm = new VariableValues();
 		}
 		
 		private List<Point3f> marchCubes() {
@@ -242,7 +226,7 @@ public class ImplicitSlowMulti extends AbstractImplicit {
 		}
 		
 		private float value() {
-			return (float) expr.eval(vm, FUNC_MAP);
+			return (float) expr.eval(vm);
 		}
 		
 		private float value(Point3f point) {

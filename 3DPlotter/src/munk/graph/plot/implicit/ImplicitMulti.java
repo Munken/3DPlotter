@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.media.j3d.Shape3D;
 import javax.vecmath.Point3f;
 
-import munk.graph.function.IllegalEquationException;
+import munk.emesp.exceptions.IllegalExpressionException;
 import munk.graph.marching.*;
 
 import com.graphbuilder.math.*;
@@ -42,7 +42,7 @@ public abstract class ImplicitMulti extends AbstractImplicit{
 			 float xMin, float xMax, 
 			 float yMin, float yMax, 
 			 float zMin, float zMax, 
-			 float[] stepsizes) throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
+			 float[] stepsizes) throws IllegalExpressionException {
 		super(expression, xMin, xMax, yMin, yMax, zMin, zMax, stepsizes[0], stepsizes[1], stepsizes[2]);
 		
 		this.stepsizes = stepsizes;

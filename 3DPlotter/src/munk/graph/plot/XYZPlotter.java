@@ -8,9 +8,8 @@ import java.util.regex.Pattern;
 import javax.media.j3d.*;
 import javax.vecmath.Point3f;
 
-
-
-import com.graphbuilder.math.*;
+import munk.emesp.*;
+import munk.emesp.exceptions.*;
 
 public class XYZPlotter extends AbstractPlotter {
 	
@@ -27,9 +26,8 @@ public class XYZPlotter extends AbstractPlotter {
 	private float	yMin;
 	private float	yMax;
 
-	private VarMap vm;
-	private FuncMap fm;
 	private Expression expression;
+	private VariableValues vm;
 	
 	private String var1 = "x";
 	private String var2 = "y";
@@ -41,39 +39,36 @@ public class XYZPlotter extends AbstractPlotter {
 
 	
 	private XYZPlotter(String expr, float xMin, float xMax, float yMin, float yMax) 
-							throws ExpressionParseException, UndefinedVariableException{
+							throws IllegalExpressionException {
 		this.xMin = xMin;
 		this.xMax = xMax;
 		this.yMin = yMin;
 		this.yMax = yMax;
 		
 		expr = preParse(expr);
-		expression = ExpressionTree.parse(expr);
+		expression = ExpressionParser.parse(expr, FunctionMap.getDefaultFunctionMap());
 		
-		vm = new VarMap();
+		vm = new VariableValues();
 		vm.setValue(var1, xMin);
 		vm.setValue(var2, yMin);
-		
-		fm = new FuncMap();
-		fm.loadDefaultFunctions();
 
 		expression.ensureVariablesDefined(vm);
 	}
 	
 	public XYZPlotter(String expr, float xMin, float xMax, float yMin, float yMax, float xStepsize, float yStepsize) 
-							throws ExpressionParseException, UndefinedVariableException{
+			throws IllegalExpressionException {
 		this(expr, xMin, xMax, yMin, yMax);
 		this.xStepsize = xStepsize;
 		this.yStepsize = yStepsize;
 	}
 	
 	public XYZPlotter(String expr, float xMin, float xMax, float yMin, float yMax, float[] stepsizes) 
-			throws ExpressionParseException, UndefinedVariableException{
+			throws IllegalExpressionException {
 		this(expr, xMin, xMax, yMin, yMax, stepsizes[0], stepsizes[1]);
 	}
 	
 	public XYZPlotter(String expr, float[] bounds, float[] stepsizes) 
-			throws ExpressionParseException, UndefinedVariableException {
+			throws IllegalExpressionException {
 		this(expr, bounds[0], bounds[1], bounds[2], bounds[3], stepsizes);
 		
 		
@@ -127,7 +122,7 @@ public class XYZPlotter extends AbstractPlotter {
 			for (int x = 0; x < xSize; x++) {
 				vm.setValue(var1, factorV1 * xValues[x]);
 				
-				float value = (float) expression.eval(vm, fm);
+				float value = (float) expression.eval(vm);
 				points[y][x] = new Point3f(xValues[x], yValues[y], value);
 			}
 		}

@@ -1,22 +1,18 @@
 package munk.graph;
 
 import java.awt.BorderLayout;
-import java.awt.event.*;
 
-import javax.swing.*;
+import javax.swing.JFrame;
+import javax.swing.JTextField;
 
 import munk.graph.appearance.Colors;
-import munk.graph.function.IllegalEquationException;
 import munk.graph.function.implicit.*;
 import munk.graph.gui.Plotter3D;
-
-import com.graphbuilder.math.ExpressionParseException;
-import com.graphbuilder.math.UndefinedVariableException;
 
 public class PlotterDriver {
 	
 	@SuppressWarnings("unused")
-	public static void main(String[] args) throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
+	public static void main(String[] args) throws Exception {
 		final JFrame frame = new JFrame("Mega ultra");
 		
 		final Plotter3D p = new Plotter3D();

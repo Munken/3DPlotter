@@ -8,11 +8,12 @@ import java.util.regex.Pattern;
 import javax.media.j3d.Shape3D;
 import javax.vecmath.Point3f;
 
-import munk.graph.function.IllegalEquationException;
+import munk.emesp.*;
+import munk.emesp.exceptions.IllegalExpressionException;
 import munk.graph.marching.*;
+import munk.graph.marching.Triangle;
 import munk.graph.plot.AbstractPlotter;
 
-import com.graphbuilder.math.*;
 import com.sun.j3d.utils.geometry.*;
 
 public abstract class AbstractImplicit extends AbstractPlotter implements ImplicitPlotter {
@@ -39,8 +40,7 @@ public abstract class AbstractImplicit extends AbstractPlotter implements Implic
 	private Shape3D plot;
 	
 	private Expression ex;
-	private VarMap vm;
-	private FuncMap fm;
+	private VariableValues vm;
 	
 	public AbstractImplicit(String expression, 
 							float xMin, float xMax, 
@@ -48,7 +48,7 @@ public abstract class AbstractImplicit extends AbstractPlotter implements Implic
 							float zMin, float zMax, 
 							float xStepsize, float yStepsize, float zStepsize) 
 									
-									throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
+									throws IllegalExpressionException {
 		
 		expression = preParse(expression);
 		this.xMin = xMin - xStepsize/2;
@@ -63,14 +63,11 @@ public abstract class AbstractImplicit extends AbstractPlotter implements Implic
 		yLength = (int) Math.ceil((yMax - yMin) / yStepsize) + 1;
 		zLength = (int) Math.ceil((zMax - zMin) / zStepsize) + 1;
 		
-		ex = ExpressionTree.parse(expression);
-		vm = new VarMap();
+		ex = ExpressionParser.parse(expression, FunctionMap.getDefaultFunctionMap());
+		vm = new VariableValues();
 		vm.setValue("x", xMin);
 		vm.setValue("y", yMin);
 		vm.setValue("z", zMin);
-		
-		fm = new FuncMap();
-		fm.loadDefaultFunctions();
 		
 		ex.ensureVariablesDefined(vm);
 	}
@@ -157,7 +154,7 @@ public abstract class AbstractImplicit extends AbstractPlotter implements Implic
 		vm.setValue("y", y);
 		vm.setValue("z", z);
 		
-		return (float) ex.eval(vm, fm);
+		return (float) ex.eval(vm);
 //		return x*x + y*y + z*z - 1;
 	}
 	
@@ -194,11 +191,11 @@ public abstract class AbstractImplicit extends AbstractPlotter implements Implic
 		return result;
 	}
 	
-	protected String preParse(String expr) throws IllegalEquationException {
+	protected String preParse(String expr) throws IllegalExpressionException {
 		Matcher m = PATTERN.matcher(expr);
 		boolean matches = m.matches();
 		if (!matches)
-			throw new IllegalEquationException("The expression must be of the form <Expression> = <Expression>");
+			throw new IllegalExpressionException ("The expression must be of the form <Expression> = <Expression>");
 		
 		String lhs = m.group(1).trim();
 		String rhs = m.group(2).trim();

@@ -4,11 +4,8 @@ import javax.media.j3d.GeometryArray;
 import javax.media.j3d.Shape3D;
 import javax.vecmath.Point3f;
 
-import munk.graph.function.IllegalEquationException;
+import munk.emesp.exceptions.IllegalExpressionException;
 import munk.graph.plot.PlotUtil;
-
-import com.graphbuilder.math.ExpressionParseException;
-import com.graphbuilder.math.UndefinedVariableException;
 
 public class Parametric2D extends AbstractParametric{
 	
@@ -29,7 +26,7 @@ public class Parametric2D extends AbstractParametric{
 	public Parametric2D(String xExpr, String yExpr, String zExpr, 
 						float tMin, float tMax, float uMin, float uMax, 
 						String[] varNames, float[] stepSize) 
-								throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
+								throws IllegalExpressionException {
 		
 		super(xExpr, yExpr, zExpr, varNames, new float[] {tMin, uMin});
 		
@@ -49,7 +46,7 @@ public class Parametric2D extends AbstractParametric{
 	
 	public Parametric2D(String xExpr, String yExpr, String zExpr, 
 			float tMin, float tMax, float uMin, float uMax, float[] stepSizes) 
-					throws ExpressionParseException, IllegalEquationException, UndefinedVariableException  {
+					throws IllegalExpressionException {
 		this(xExpr, yExpr, zExpr, tMin, tMax, uMin, uMax, STD_VAR_NAMES, stepSizes);
 	}
 	

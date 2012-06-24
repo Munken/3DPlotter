@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 import javax.media.j3d.*;
 import javax.vecmath.Color3f;
 
+import munk.emesp.exceptions.IllegalExpressionException;
 import munk.graph.function.implicit.ImplicitSlowFunction;
 
 import com.graphbuilder.math.ExpressionParseException;
@@ -46,7 +47,7 @@ public class FunctionUtil {
 	 */
 	public static Function createFunction(String[] expressions, Color3f color,
 										String[] bounds, float[] stepSizes) 
-												throws ExpressionParseException, IllegalEquationException, UndefinedVariableException{
+												throws IllegalExpressionException {
 		
 		Function result = null;
 		
@@ -67,7 +68,7 @@ public class FunctionUtil {
 		return result;
 	}
 
-	public static Function loadFunction(ZippedFunction zip) throws ExpressionParseException, IllegalEquationException, UndefinedVariableException{
+	public static Function loadFunction(ZippedFunction zip) throws IllegalExpressionException {
 		Function result = createFunction(zip.getExpression(), zip.getColor(), zip.getBounds(), zip.getStepsize());
 		result.setSelected(zip.isSelected());
 		result.setVisible(zip.isVisible());

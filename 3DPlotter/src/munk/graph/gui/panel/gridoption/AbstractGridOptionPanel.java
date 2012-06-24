@@ -5,10 +5,11 @@ import java.util.ArrayList;
 
 import javax.swing.*;
 
-import munk.graph.function.*;
-import munk.graph.gui.listener.*;
-
-import com.graphbuilder.math.ExpressionParseException;
+import munk.emesp.exceptions.IllegalExpressionException;
+import munk.graph.function.Function;
+import munk.graph.function.TemplateFunction;
+import munk.graph.gui.listener.FunctionEvent;
+import munk.graph.gui.listener.FunctionListener;
 
 public abstract class AbstractGridOptionPanel extends JPanel {
 
@@ -16,12 +17,12 @@ public abstract class AbstractGridOptionPanel extends JPanel {
 	private ArrayList<FunctionListener> listeners = new ArrayList<FunctionListener>();
 	protected Function selectedFunction;
 	
-	protected abstract void setSliders(float[] f) throws ExpressionParseException;
+	protected abstract void setSliders(float[] f) throws IllegalExpressionException;
 	protected abstract void setGridBounds(String[] s);
-	protected abstract String[] getGridBounds() throws ExpressionParseException;
-	protected abstract float[] getGridStepSize() throws ExpressionParseException;
+	protected abstract String[] getGridBounds() throws IllegalExpressionException;
+	protected abstract float[] getGridStepSize() throws IllegalExpressionException;
 	
-	public void updateFuncReference(Function f) throws ExpressionParseException{
+	public void updateFuncReference(Function f) throws IllegalExpressionException{
 		selectedFunction = f;
 		setSliders(f.getStepsize());
 		setGridBounds(f.getBoundsString());
@@ -31,7 +32,7 @@ public abstract class AbstractGridOptionPanel extends JPanel {
 		listeners.add(f);
 	}
 	
-	protected void signallAll() throws ExpressionParseException{
+	protected void signallAll() throws IllegalExpressionException{
 		for(FunctionListener f : listeners){
 			f.functionChanged(new FunctionEvent(selectedFunction, getGridBounds(), getGridStepSize()));
 		}
@@ -46,7 +47,7 @@ public abstract class AbstractGridOptionPanel extends JPanel {
      			if (e.getKeyCode() == KeyEvent.VK_ENTER && selectedFunction.getClass() != TemplateFunction.class) {
      				try {
 						signallAll();
-					} catch (ExpressionParseException e1) {
+					} catch (IllegalExpressionException e1) {
 						e1.printStackTrace();
 					}
      			}
@@ -63,7 +64,7 @@ public abstract class AbstractGridOptionPanel extends JPanel {
 				if(selectedFunction.getClass() == TemplateFunction.class){
 					try {
 						selectedFunction.setBoundsString(currentPanel.getGridBounds());
-					} catch (ExpressionParseException e) {
+					} catch (IllegalExpressionException e) {
 						e.printStackTrace();
 					}
 				}
@@ -101,7 +102,7 @@ public abstract class AbstractGridOptionPanel extends JPanel {
 							}
 						}
 						sharedModel = null;
-					} catch (ExpressionParseException e) {
+					} catch (IllegalExpressionException e) {
 						e.printStackTrace();
 					}
 			}
@@ -118,7 +119,7 @@ public abstract class AbstractGridOptionPanel extends JPanel {
 				}
 			}
 			
-			private boolean stepsizeHasChanged() throws ExpressionParseException {
+			private boolean stepsizeHasChanged() throws IllegalExpressionException {
 				float[] oldStepsize = selectedFunction.getStepsize();
 				float[] newStepsize = getGridStepSize();
 				

@@ -4,12 +4,14 @@ import java.awt.event.*;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.vecmath.Color3f;
 
+import munk.emesp.exceptions.IllegalExpressionException;
 import munk.graph.IO.ObjectReader;
 import munk.graph.IO.ObjectWriter;
 import munk.graph.appearance.Colors;
@@ -19,9 +21,6 @@ import munk.graph.function.implicit.SphericalFunction;
 import munk.graph.gui.labels.FunctionLabel;
 import munk.graph.gui.panel.ColorOptionPanel;
 import munk.graph.gui.panel.tab.*;
-
-import com.graphbuilder.math.ExpressionParseException;
-import com.graphbuilder.math.UndefinedVariableException;
 
 
 /**
@@ -138,8 +137,7 @@ public class V2GUI {
      	// Test function
      	try {
 			stdFuncTab.addPlot(new String[]{"y = sin(x*5)*cos(z*5)"}, Colors.RED, new String[]{"-1","1","-1","1","-1","1"}, new float[]{(float) 0.1,(float) 0.1,(float) 0.1});
-		} catch (ExpressionParseException | IllegalEquationException
-				| UndefinedVariableException e) {
+		} catch (IllegalExpressionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -365,7 +363,11 @@ public class V2GUI {
 								"Import Dialog", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null));
 
 				if(eraseWorkspace){
-					for (Function f : map.keySet()) {
+					java.util.List<Function> functions = new ArrayList<Function>(map.keySet());
+					
+					for (int i = functions.size() - 1; i >= 0; i--) {
+						Function f = functions.get(i);
+						
 						if(f.getClass() == ParametricFunction.class){
 							paramFuncTab.deletePlot(f);
 						}
@@ -393,8 +395,9 @@ public class V2GUI {
 					}
 				}
 			}
-			catch(IOException | ClassCastException | ClassNotFoundException | ExpressionParseException | IllegalArgumentException | UndefinedVariableException | IllegalEquationException ex){
+			catch(Exception ex){
 				JOptionPane.showMessageDialog(frame,new JLabel("Unable to import workspace from file.",JLabel.CENTER));
+				ex.printStackTrace();
 			} 
 		}
 	}

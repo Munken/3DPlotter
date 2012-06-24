@@ -2,10 +2,9 @@ package munk.graph.function;
 
 import javax.vecmath.Color3f;
 
+import munk.emesp.exceptions.*;
 import munk.graph.gui.GuiUtil;
 import munk.graph.plot.XYZPlotter;
-
-import com.graphbuilder.math.*;
 
 /*
  * XYZ functions; to be evaluated directly by Mesp.
@@ -13,7 +12,7 @@ import com.graphbuilder.math.*;
 public class XYZFunction extends AbstractFunction {
 	
 	public XYZFunction(String[] expr, Color3f color, String[] bounds, float[] stepSize) 
-			throws ExpressionParseException, UndefinedVariableException{
+			throws IllegalExpressionException   {
 		super(expr,color,bounds, stepSize,
 				new XYZPlotter(expr[0], GuiUtil.evalStringArray(bounds), stepSize));
 	}
