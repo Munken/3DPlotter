@@ -39,7 +39,6 @@ public class ParametricFunction extends AbstractFunction {
 									throws IllegalExpressionException {
 		
 		String[] varNames = variableNames(expressions);
-		System.out.println(Arrays.toString(varNames));
 		int nVariables = varNames.length;
 		
 		String xExpr = expressions[0];

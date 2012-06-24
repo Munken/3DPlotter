@@ -54,21 +54,24 @@ public abstract class AbstractExpression implements Expression {
 			OperatorNode o = (OperatorNode) x;
 			getTermNames(o.getLeftChild(), b, varNames);
 			getTermNames(o.getRightChild(), b, varNames);
-			
+
 		}
 		else if (varNames && x instanceof VariableNode) {
-				VariableNode v = (VariableNode) x;
-				if (!b.contains(v.getName()))
-					b.add(v.getName());
+			VariableNode v = (VariableNode) x;
+			if (!b.contains(v.getName()))
+				b.add(v.getName());
 		}
-		else if (!varNames &&x instanceof FunctionNode) {
+		else if (x instanceof FunctionNode) {
 			FunctionNode f = (FunctionNode) x;
 
-				if (!b.contains(f.getName()))
-					b.add(f.getName());
+			if (varNames){
+				for (Expression child : f.getChildren())
+					getTermNames(child, b, varNames);
 
-			for (Expression child : f.getChildren())
-				getTermNames(child, b, varNames);
+			}
+			else if (!b.contains(f.getName())) {
+				b.add(f.getName());
+			}
 		}
 	}
 	
