@@ -9,10 +9,21 @@ public class FunctionMap {
 	private Map<String, FunctionNode> map = new HashMap<String, FunctionNode>();
 	private boolean caseSensitive = false;
 	
+	private static final FunctionMap DEFAULT;
+	
+	static {
+		DEFAULT = new FunctionMap();
+		DEFAULT.loadDefaultFunctions();
+	}
+	
 	public FunctionMap() {}
 
 	public FunctionMap(boolean caseSensitive) {
 		this.caseSensitive = caseSensitive;
+	}
+	
+	public static FunctionMap getDefaultFunctionMap() {
+		return DEFAULT;
 	}
 	
 	public void loadDefaultFunctions() {
