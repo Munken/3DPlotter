@@ -1,5 +1,7 @@
 package munk.graph.function;
 
+import java.util.Arrays;
+
 import javax.media.j3d.*;
 import javax.vecmath.Color3f;
 
@@ -158,5 +160,21 @@ public abstract class AbstractFunction implements Function{
 	
 	public void setBoundsString(String[] bounds){
 		this.boundsString = bounds;
+	}
+	
+	@Override
+	public boolean equals(Object other) {
+		if (this == other) return true;
+		if (other == null) return false;
+		
+		if (getClass() == other.getClass()) {
+			AbstractFunction af = (AbstractFunction) other;
+			
+			return Arrays.deepEquals(getExpression(), af.getExpression()) &&
+					Arrays.equals(bounds, af.bounds) &&
+					Arrays.equals(stepSize, stepSize);		
+		}
+		
+		return false;
 	}
 }

@@ -63,7 +63,7 @@ public abstract class AbstractImplicit extends AbstractPlotter implements Implic
 		yLength = (int) Math.ceil((yMax - yMin) / yStepsize) + 1;
 		zLength = (int) Math.ceil((zMax - zMin) / zStepsize) + 1;
 		
-		ex = ExpressionParser.parse(expression, FunctionMap.getDefaultFunctionMap());
+		ex = ExpressionParser.parse(expression, FunctionMap.getDefault());
 		vm = new VariableValues();
 		vm.setValue("x", xMin);
 		vm.setValue("y", yMin);

@@ -7,7 +7,6 @@ import javax.swing.JTextField;
 
 import munk.graph.appearance.Colors;
 import munk.graph.function.SphericalSimple;
-import munk.graph.function.implicit.*;
 import munk.graph.gui.Plotter3D;
 
 public class PlotterDriver {

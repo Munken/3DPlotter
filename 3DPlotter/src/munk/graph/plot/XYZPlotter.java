@@ -51,7 +51,7 @@ public class XYZPlotter extends AbstractPlotter {
 		this.yMax = yMax;
 		
 		expr = preParse(expr);
-		expression = ExpressionParser.parse(expr, FunctionMap.getDefaultFunctionMap());
+		expression = ExpressionParser.parse(expr, FunctionMap.getDefault());
 		derivativeVar1 = expression.getDerivative(var1);
 		derivativeVar1 = derivativeVar1.accept(CollapseConstantsVisitor.getInstance());
 		derivativeVar2 = expression.getDerivative(var2);

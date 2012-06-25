@@ -147,7 +147,7 @@ public class GuiUtil {
 		// Add more constants here.
 		varMap.setValue("pi", Math.PI);
 		varMap.setValue("e", Math.E);
-		Expression ex = ExpressionParser.parse(expr, FunctionMap.getDefaultFunctionMap());
+		Expression ex = ExpressionParser.parse(expr, FunctionMap.getDefault());
 		
 		return (float) ex.eval(varMap);
 	}

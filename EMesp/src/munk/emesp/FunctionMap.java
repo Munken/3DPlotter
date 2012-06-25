@@ -22,7 +22,7 @@ public class FunctionMap {
 		this.caseSensitive = caseSensitive;
 	}
 	
-	public static FunctionMap getDefaultFunctionMap() {
+	public static FunctionMap getDefault() {
 		return DEFAULT;
 	}
 	
