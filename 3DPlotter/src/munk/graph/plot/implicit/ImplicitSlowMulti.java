@@ -14,8 +14,7 @@ import munk.graph.marching.Triangle;
 
 public abstract class ImplicitSlowMulti extends AbstractImplicit {
 	
-	private String expression;
-	
+	private Expression expr;
 	
 	public ImplicitSlowMulti(String expression, float xMin, float xMax,
 			float yMin, float yMax, float zMin, float zMax, float xStepsize,
@@ -24,7 +23,8 @@ public abstract class ImplicitSlowMulti extends AbstractImplicit {
 		super(expression, xMin, xMax, yMin, yMax, zMin, zMax, xStepsize, yStepsize,
 				zStepsize);
 		
-		this.expression = preParse(expression);
+		expression = preParse(expression);
+		expr = ExpressionParser.parse(expression, FunctionMap.getDefaultFunctionMap());
 	}
 	
 	public ImplicitSlowMulti(String expression, float[] bounds, float[] stepsizes) 
@@ -35,6 +35,17 @@ public abstract class ImplicitSlowMulti extends AbstractImplicit {
 				stepsizes[0], stepsizes[1], stepsizes[2]);
 	}
 
+	
+//	private void deriviateExpression() {
+//		derivativeX = expr.getDerivative("x");
+//		derivativeX = derivativeX.accept(CollapseConstantsVisitor.getInstance());
+//		
+//		derivativeY = expr.getDerivative("y");
+//		derivativeY = derivativeY.accept(CollapseConstantsVisitor.getInstance());
+//		
+//		derivativeZ = expr.getDerivative("z");
+//		derivativeZ = derivativeZ.accept(CollapseConstantsVisitor.getInstance());
+//	}
 
 
 	@Override
@@ -44,30 +55,30 @@ public abstract class ImplicitSlowMulti extends AbstractImplicit {
 		ExecutorService threadPool = Executors.newFixedThreadPool(4);
 		
 		
-		int zSteps = N + zLength / N + zLength % N;	float zStart = zMin;		
+		int zSteps = N + zLength / N + zLength % N;	
+		float zStart = zMin;		
 		for (int i = 0; i < N; i++) {
 			
-			int ySteps = N + yLength / N + yLength % N;	float yStart = yMin;			
+			int ySteps = N + yLength / N + yLength % N;	
+			float yStart = yMin;			
 			for (int j = 0; j < N; j++) {
 				
-				int xSteps = N + xLength / N + xLength % N;	float xStart = xMin;				
+				int xSteps = N + xLength / N + xLength % N;	
+				float xStart = xMin;				
 				for (int k = 0; k < N; k++) {
 
 					Callable<List<Point3f>> callable = createSubMarcher(xStart, yStart, zStart, xSteps, ySteps, zSteps);
 					Future<List<Point3f>> f = threadPool.submit(callable);
 					future.add(f);
 
-//					xStart = nextStartValue(xStart, xStepsize, xSteps);
 					xStart += (xSteps - 1) * xStepsize;
 					xSteps = xLength / N;
 				}
 				
-//				yStart = nextStartValue(yStart, yStepsize, ySteps);
 				yStart += (ySteps - 1) * yStepsize;				
 				ySteps = yLength / N;
 			}
 			
-//			zStart = nextStartValue(zStart, zStepsize, zSteps);
 			zStart += (zSteps - 1) * zStepsize;			
 			zSteps = zLength / N;
 			
@@ -89,7 +100,6 @@ public abstract class ImplicitSlowMulti extends AbstractImplicit {
 				
 				totalSize += result.size();
 			} catch (InterruptedException | ExecutionException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
@@ -111,7 +121,7 @@ public abstract class ImplicitSlowMulti extends AbstractImplicit {
 			
 			@Override
 			public List<Point3f> call() throws Exception {
-				SubCubeMarcher scm = new SubCubeMarcher(expression, xStart, yStart, zStart, xSteps, ySteps, zSteps);
+				SubCubeMarcher scm = new SubCubeMarcher(xStart, yStart, zStart, xSteps, ySteps, zSteps);
 				return scm.marchCubes();
 			}
 		};
@@ -123,12 +133,11 @@ public abstract class ImplicitSlowMulti extends AbstractImplicit {
 	private class SubCubeMarcher {
 		
 		VariableValues vm;
-		Expression expr;
 		float xStart, yStart, zStart;
 		int xLength, yLength, zLength;
 
 		
-		private SubCubeMarcher(String expression, float xStart, float yStart, float zStart,
+		private SubCubeMarcher(float xStart, float yStart, float zStart,
 				int xLength, int yLength, int zLength) throws IllegalExpressionException {
 			this.xStart = xStart;
 			this.yStart = yStart;
@@ -137,7 +146,6 @@ public abstract class ImplicitSlowMulti extends AbstractImplicit {
 			this.yLength = yLength;
 			this.zLength = zLength;
 			
-			expr = ExpressionParser.parse(expression, FunctionMap.getDefaultFunctionMap());
 			vm = new VariableValues();
 		}
 		
