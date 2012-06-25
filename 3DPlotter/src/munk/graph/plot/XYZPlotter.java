@@ -7,9 +7,11 @@ import java.util.regex.Pattern;
 
 import javax.media.j3d.*;
 import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
 
 import munk.emesp.*;
 import munk.emesp.exceptions.*;
+import munk.emesp.visitor.CollapseConstantsVisitor;
 
 public class XYZPlotter extends AbstractPlotter {
 	
@@ -27,6 +29,8 @@ public class XYZPlotter extends AbstractPlotter {
 	private float	yMax;
 
 	private Expression expression;
+	private Expression derivativeVar1;
+	private Expression derivativeVar2;
 	private VariableValues vm;
 	
 	private String var1 = "x";
@@ -40,6 +44,7 @@ public class XYZPlotter extends AbstractPlotter {
 	
 	private XYZPlotter(String expr, float xMin, float xMax, float yMin, float yMax) 
 							throws IllegalExpressionException {
+		
 		this.xMin = xMin;
 		this.xMax = xMax;
 		this.yMin = yMin;
@@ -47,6 +52,10 @@ public class XYZPlotter extends AbstractPlotter {
 		
 		expr = preParse(expr);
 		expression = ExpressionParser.parse(expr, FunctionMap.getDefaultFunctionMap());
+		derivativeVar1 = expression.getDerivative(var1);
+		derivativeVar1 = derivativeVar1.accept(CollapseConstantsVisitor.getInstance());
+		derivativeVar2 = expression.getDerivative(var2);
+		derivativeVar2 = derivativeVar2.accept(CollapseConstantsVisitor.getInstance());
 		
 		vm = new VariableValues();
 		vm.setValue(var1, xMin);
@@ -115,6 +124,7 @@ public class XYZPlotter extends AbstractPlotter {
 		float[] xValues = initAxisArray(xMin, xSize, xStepsize);
 		float[] yValues = initAxisArray(yMin, ySize, yStepsize);
 		
+		Vector3f[][] normals = new Vector3f[ySize][xSize];
 		Point3f[][] points = new Point3f[ySize][xSize];
 		
 		for (int y = 0; y < ySize; y++) {
@@ -124,11 +134,19 @@ public class XYZPlotter extends AbstractPlotter {
 				
 				float value = (float) expression.eval(vm);
 				points[y][x] = new Point3f(xValues[x], yValues[y], value);
+				
+				float gradX = (float) derivativeVar1.eval(vm);
+				float gradY = (float) derivativeVar2.eval(vm);
+				
+				Vector3f normal = new Vector3f(gradX, gradY, 0);
+				normal.normalize();
+				normals[y][x] = normal;
 			}
 		}
 
 		if (points.length > 1) {
 			GeometryArray quad = PlotUtil.buildQuadArray(points);
+//			GeometryArray quad = buildQuadArray(points, normals);
 
 			shape = new Shape3D(quad);
 
@@ -140,6 +158,38 @@ public class XYZPlotter extends AbstractPlotter {
 		} else 
 			return null;
 	}	
+	
+	private GeometryArray buildQuadArray(Point3f[][] points, Vector3f[][] normals) {
+		int ySize = points.length;
+		int xSize = points[0].length;
+		if (ySize <= 1 || xSize <= 1)
+			return null;
+		
+		
+		
+		
+		QuadArray quad = new QuadArray (4 * (xSize - 1) * (ySize - 1), QuadArray.COORDINATES | QuadArray.NORMALS);
+		int vertice = 0; 
+		
+		for (int y = 0; y < ySize - 1; y++) {
+			for (int x = 0; x < xSize - 1; x++) {
+				
+				quad.setCoordinate (vertice, points[y][x]);
+				quad.setNormal(vertice++, normals[y][x]);
+				
+				quad.setCoordinate (vertice, points[y+1][x]);
+				quad.setNormal(vertice++, normals[y+1][x]);
+				
+				quad.setCoordinate (vertice, points[y+1][x+1]);
+				quad.setNormal(vertice++, normals[y+1][x+1]);
+				
+				quad.setCoordinate (vertice, points[y][x+1]);
+				quad.setNormal(vertice++, normals[y][x+1]);
+			}
+		}
+		
+		return quad;
+	}
 	
 	private String preParse(String expr) {
 		Matcher m = PATTERN.matcher(expr);
