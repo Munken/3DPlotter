@@ -138,15 +138,14 @@ public class XYZPlotter extends AbstractPlotter {
 				float gradX = (float) derivativeVar1.eval(vm);
 				float gradY = (float) derivativeVar2.eval(vm);
 				
-				Vector3f normal = new Vector3f(gradX, gradY, 0);
+				Vector3f normal = new Vector3f(-gradX, -gradY, 1);
 				normal.normalize();
 				normals[y][x] = normal;
 			}
 		}
 
 		if (points.length > 1) {
-			GeometryArray quad = PlotUtil.buildQuadArray(points);
-//			GeometryArray quad = buildQuadArray(points, normals);
+			GeometryArray quad = PlotUtil.buildQuadArray(points, normals);
 
 			shape = new Shape3D(quad);
 
@@ -159,38 +158,7 @@ public class XYZPlotter extends AbstractPlotter {
 			return null;
 	}	
 	
-	private GeometryArray buildQuadArray(Point3f[][] points, Vector3f[][] normals) {
-		int ySize = points.length;
-		int xSize = points[0].length;
-		if (ySize <= 1 || xSize <= 1)
-			return null;
-		
-		
-		
-		
-		QuadArray quad = new QuadArray (4 * (xSize - 1) * (ySize - 1), QuadArray.COORDINATES | QuadArray.NORMALS);
-		int vertice = 0; 
-		
-		for (int y = 0; y < ySize - 1; y++) {
-			for (int x = 0; x < xSize - 1; x++) {
-				
-				quad.setCoordinate (vertice, points[y][x]);
-				quad.setNormal(vertice++, normals[y][x]);
-				
-				quad.setCoordinate (vertice, points[y+1][x]);
-				quad.setNormal(vertice++, normals[y+1][x]);
-				
-				quad.setCoordinate (vertice, points[y+1][x+1]);
-				quad.setNormal(vertice++, normals[y+1][x+1]);
-				
-				quad.setCoordinate (vertice, points[y][x+1]);
-				quad.setNormal(vertice++, normals[y][x+1]);
-			}
-		}
-		
-		return quad;
-	}
-	
+
 	private String preParse(String expr) {
 		Matcher m = PATTERN.matcher(expr);
 		if (m.matches()) {
