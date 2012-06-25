@@ -6,6 +6,7 @@ import javax.swing.JFrame;
 import javax.swing.JTextField;
 
 import munk.graph.appearance.Colors;
+import munk.graph.function.SphericalSimple;
 import munk.graph.function.implicit.*;
 import munk.graph.gui.Plotter3D;
 
@@ -43,16 +44,12 @@ public class PlotterDriver {
 //		ImplicitIterativeFunction it = new ImplicitIterativeFunction("x^2 + y^2 = 1", Colors.BLUE, recBound, 0.1f);
 //		p.plotFunction(it);
 		
-		SphericalFunction sf = new SphericalFunction(new String[]{"r=0.5*cos(theta)^10 + 0.1*sin(phi)"}, Colors.BLUE, recBound, stepSize);
+		SphericalSimple sf = new SphericalSimple(new String[] {"sin(theta/2)*cos(phi)+phi^2"}, 
+				Colors.RED, 
+				new String[] {"0", "1", "0", "" + 2*Math.PI, "0", "" + Math.PI},
+				new float[] {0.1f, 0.1f, 0.1f});
 		
-		ImplicitSlowFunction isf = new ImplicitSlowFunction(new String[] {"x^2 + y^2 + z^2 = 1"}, 
-				Colors.BLUE, new String[] {"-1","1","-1","1","-1","1"}, new float[] {0.05f, 0.05f, 0.05f});
-		
-		
-		
-		long start = System.currentTimeMillis();
-		p.plotFunction(isf);
-		System.out.println(System.currentTimeMillis() - start);
+		p.plotFunction(sf);
 		
 //		ImplicitSlow im = new ImplicitSlow("x^2 + y^2 + z^2 = 1", -2, 2, -2, 2, -2, 2, 0.1f, 0.2f, 0.1f);
 		
