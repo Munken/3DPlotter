@@ -26,6 +26,7 @@ public abstract class AbstractFunctionLabel extends JPanel implements FunctionLa
 		CHANGED,
 		SELECTED;
 	}
+	private STATE state;
 	
 	private static final long	serialVersionUID	= -4247550891717359687L;
 	private Function function;
@@ -168,6 +169,22 @@ public abstract class AbstractFunctionLabel extends JPanel implements FunctionLa
 			return mark;
 		}
 
+	}
+	
+	protected void updateColor() {
+		if (state == STATE.FAILED) {
+			setExpressionFieldBackground(FAILED_COLOR);
+			
+		} else if (state == STATE.CHANGED) {
+			setExpressionFieldBackground(WARNING_COLOR);
+		} else {
+			state = STATE.SELECTED;
+			setExpressionFieldBackground(SELECTED_COLOR);
+		}
+	}
+	
+	protected void setState(STATE state) {
+		this.state = state;
 	}
 	
 

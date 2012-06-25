@@ -23,9 +23,6 @@ public class ParametricFunctionLabel extends AbstractFunctionLabel{
 	private JLabel lblY;
 	private JLabel lblZ;
 	
-	private STATE state;
-	
-
 	public ParametricFunctionLabel (Function function){
 		super(function);
 		
@@ -158,36 +155,33 @@ public class ParametricFunctionLabel extends AbstractFunctionLabel{
 			public void keyReleased(KeyEvent e) {
 				
 				Function currentFunction = getMother();
+				boolean hasChanged = !exprFieldX.getText().equals(currentFunction.getExpression()[0]) 
+						|| !exprFieldY.getText().equals(currentFunction.getExpression()[1]) 
+						|| !exprFieldZ.getText().equals(currentFunction.getExpression()[2]);
+				
 				// They want to update the plot
 				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 					
-					if (!exprFieldX.getText().equals(currentFunction.getExpression()[0]) 
-							|| !exprFieldY.getText().equals(currentFunction.getExpression()[1]) 
-							|| !exprFieldZ.getText().equals(currentFunction.getExpression()[2])) {
+					if (hasChanged) {
 						
 						// Update the plot
 						notifyPlotUpdate(exprFieldX.getText(), exprFieldY.getText(), exprFieldZ.getText());
 						Function newFunction = getMother();
 						
 						if (currentFunction.equals(newFunction)) {
-							state = STATE.FAILED;
+							setState(STATE.FAILED);
 						} else {
-							state = STATE.SELECTED;
+							setState(STATE.SELECTED);
 						}
 					} 
 				}	
 				// Doing something else than plotting
-				else {
-					if (!exprFieldX.getText().equals(currentFunction.getExpression()[0]) 
-							|| !exprFieldY.getText().equals(currentFunction.getExpression()[1]) 
-							|| !exprFieldZ.getText().equals(currentFunction.getExpression()[2])) {
-						state = STATE.CHANGED;
+				else if (hasChanged) {
+					setState(STATE.CHANGED);
 
-					} else {
-						state = STATE.SELECTED;
-					}
+				} else {
+					setState(STATE.SELECTED);
 				}
-				
 				
 				updateColor();
 			}
@@ -222,17 +216,7 @@ public class ParametricFunctionLabel extends AbstractFunctionLabel{
 		}
 	}
 
-	private void updateColor() {
-		if (state == STATE.FAILED) {
-			setExpressionFieldBackground(FAILED_COLOR);
-			
-		} else if (state == STATE.CHANGED) {
-			setExpressionFieldBackground(WARNING_COLOR);
-		} else {
-			state = STATE.SELECTED;
-			setExpressionFieldBackground(SELECTED_COLOR);
-		}
-	}
+
 	
 
 
@@ -260,9 +244,9 @@ public class ParametricFunctionLabel extends AbstractFunctionLabel{
 //				Function newFunction = getMother();
 //				
 //				if (currentFunction.equals(newFunction)) {
-//					state = STATE.FAILED;
+//					setState(STATE.FAILED);
 //				} else {
-//					state = STATE.SELECTED;
+//					setState(STATE.SELECTED);
 //				}
 //			} 
 //		} else if (hasChanged) {
@@ -272,14 +256,14 @@ public class ParametricFunctionLabel extends AbstractFunctionLabel{
 //				ExpressionParser.parse(exprFieldY.getText(), FunctionMap.getDefault());
 //				ExpressionParser.parse(exprFieldZ.getText(), FunctionMap.getDefault());
 //				
-//				state = STATE.CHANGED;
+//				setState(STATE.CHANGED);
 //			} catch (IllegalExpressionException ex) {
 //				
-//				state = STATE.FAILED;
+//				setState(STATE.FAILED);
 //			}
 //			
 //		} else {
-//			state = STATE.SELECTED;
+//			setState(STATE.SELECTED);
 //		}
 //		
 //		if (state == STATE.FAILED) {

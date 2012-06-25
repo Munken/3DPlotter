@@ -464,5 +464,7 @@ public abstract class AbstractFunctionTab extends JPanel implements FunctionTab{
 			}
 		});
 	}
+	
+	
 }
 
