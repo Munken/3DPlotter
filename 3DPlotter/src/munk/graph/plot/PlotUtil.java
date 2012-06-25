@@ -49,6 +49,38 @@ public class PlotUtil {
 		return gi.getGeometryArray();
 	}
 	
+	public static GeometryArray buildQuadArray(Point3f[][] points, Vector3f[][] normals) {
+		int ySize = points.length;
+		int xSize = points[0].length;
+		if (ySize <= 1 || xSize <= 1)
+			return null;
+		
+		
+		
+		
+		QuadArray quad = new QuadArray (4 * (xSize - 1) * (ySize - 1), QuadArray.COORDINATES | QuadArray.NORMALS);
+		int vertice = 0; 
+		
+		for (int y = 0; y < ySize - 1; y++) {
+			for (int x = 0; x < xSize - 1; x++) {
+				
+				quad.setCoordinate (vertice, points[y][x]);
+				quad.setNormal(vertice++, normals[y][x]);
+				
+				quad.setCoordinate (vertice, points[y+1][x]);
+				quad.setNormal(vertice++, normals[y+1][x]);
+				
+				quad.setCoordinate (vertice, points[y+1][x+1]);
+				quad.setNormal(vertice++, normals[y+1][x+1]);
+				
+				quad.setCoordinate (vertice, points[y][x+1]);
+				quad.setNormal(vertice++, normals[y][x+1]);
+			}
+		}
+		
+		return quad;
+	}
+	
 	public static GeometryArray buildQuadStripArray(Point3f[][] points) {
 		int ySize = points.length;
 		int xSize = points[0].length;
