@@ -24,7 +24,7 @@ public abstract class ImplicitSlowMulti extends AbstractImplicit {
 				zStepsize);
 		
 		expression = preParse(expression);
-		expr = ExpressionParser.parse(expression, FunctionMap.getDefaultFunctionMap());
+		expr = ExpressionParser.parse(expression, FunctionMap.getDefault());
 	}
 	
 	public ImplicitSlowMulti(String expression, float[] bounds, float[] stepsizes) 

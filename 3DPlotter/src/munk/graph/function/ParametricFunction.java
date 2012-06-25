@@ -64,7 +64,7 @@ public class ParametricFunction extends AbstractFunction {
 		for (String ex : expressions) {
 			
 			if (!ex.equals("")) {
-				Expression n = ExpressionParser.parse(ex, FunctionMap.getDefaultFunctionMap());
+				Expression n = ExpressionParser.parse(ex, FunctionMap.getDefault());
 				String[] variableNames = n.getVariableNames();
 				for (String var : variableNames) {
 					

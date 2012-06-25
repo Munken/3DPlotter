@@ -21,6 +21,12 @@ import munk.graph.gui.listener.FunctionListener;
 
 public abstract class AbstractFunctionLabel extends JPanel implements FunctionLabel {
 	
+	protected enum STATE {
+		FAILED,
+		CHANGED,
+		SELECTED;
+	}
+	
 	private static final long	serialVersionUID	= -4247550891717359687L;
 	private Function function;
 	

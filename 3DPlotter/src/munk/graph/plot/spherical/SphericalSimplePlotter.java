@@ -40,7 +40,7 @@ public class SphericalSimplePlotter extends AbstractPlotter {
 		this.phiStepsize = phiStepsize;
 		this.thetaStepsize = thetaStepsize;
 		
-		this.expression = ExpressionParser.parse(expression, FunctionMap.getDefaultFunctionMap());
+		this.expression = ExpressionParser.parse(expression, FunctionMap.getDefault());
 		vm = new VariableValues();
 		vm.setValue("phi", phiMin);
 		vm.setValue("theta", thetaMin);

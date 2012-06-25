@@ -25,7 +25,7 @@ public abstract class AbstractParametric extends AbstractPlotter implements Para
 			vm.setValue(var, startValues[i]);
 		}
 		
-		FunctionMap fm = FunctionMap.getDefaultFunctionMap();
+		FunctionMap fm = FunctionMap.getDefault();
 		xNode = ExpressionParser.parse(xExpr, fm);
 		yNode = ExpressionParser.parse(yExpr, fm);
 		zNode = ExpressionParser.parse(zExpr, fm);
