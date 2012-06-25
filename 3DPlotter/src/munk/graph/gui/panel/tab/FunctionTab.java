@@ -19,7 +19,6 @@ public interface FunctionTab {
 	public List<Function> getFunctionList();
 	
 	GridOptionPanel getGridOptionPanel();
-	int getNoOfInputs();
 	
 	public void addPlot(String[] expr, Color3f color, String[] bounds, float[] stepSize) throws IllegalExpressionException;
 	public void addActionListener(ActionListener a);

@@ -15,18 +15,15 @@ import munk.graph.gui.panel.gridoption.SphGridOptionPanel;
 @SuppressWarnings("serial")
 public class SphericalFunctionTab extends AbstractFunctionTab {
 
-	public SphericalFunctionTab(ColorList colorList, HashMap<Function, FunctionLabel> map, Function templateFunc, Plotter3D plotter) throws Exception{
-		super(colorList, map, templateFunc, plotter);
-		super.init();
+	public SphericalFunctionTab(ColorList colorList, HashMap<Function,
+			FunctionLabel> map, Function templateFunc, Plotter3D plotter) {
+		super(colorList, map, templateFunc, plotter, 1);
 	}
 
 	public GridOptionPanel getGridOptionPanel(){
 		return new SphGridOptionPanel(new String[]{"0","1","0","pi","0","2*pi"});
 	}
 	
-	public int getNoOfInputs(){
-		return 1;
-	}
 
 	public void addPlot(Function function) {
 		FunctionLabel label = null;

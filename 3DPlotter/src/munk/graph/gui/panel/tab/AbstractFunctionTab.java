@@ -49,25 +49,29 @@ public abstract class AbstractFunctionTab extends JPanel implements FunctionTab{
 	private Function selectedFunction;
 	private Plotter3D plotter;
 	private ColorList colorList;
-	private ArrayList<ActionListener> listeners = new ArrayList<ActionListener>();;
+	private ArrayList<ActionListener> listeners = new ArrayList<ActionListener>();
+	private int nInputs;
 
 
-	public AbstractFunctionTab(ColorList colorList, HashMap<Function, FunctionLabel> map, Function templateFunc, Plotter3D plotter) {
+	public AbstractFunctionTab(ColorList colorList, HashMap<Function, FunctionLabel> map, 
+			Function templateFunc, Plotter3D plotter, int nInputs) {
 		this.templateFunc = templateFunc;
 		this.map = map;
 		this.plotter = plotter;
 		this.colorList = colorList;
+		this.nInputs = nInputs;
 
 		addFunctionKeyboardShortcuts();
+		init();
 	}
 
 
 
-	protected void init() throws IllegalExpressionException {
-		input = new JTextField[getNoOfInputs()];
+	private void init() {
+		input = new JTextField[nInputs];
 
 		double[] rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
-		rowWeights[getNoOfInputs()+2] = 1.0; 
+		rowWeights[nInputs+2] = 1.0; 
 
 		GridBagLayout gbl_functionPanel = new GridBagLayout();
 		gbl_functionPanel.columnWidths = new int[]{5, 0, 50, 50, 30, 25, 5, 0};
@@ -78,7 +82,7 @@ public abstract class AbstractFunctionTab extends JPanel implements FunctionTab{
 
 
 		// Function input field.
-		for(int i = 0; i < getNoOfInputs(); i++){
+		for(int i = 0; i < nInputs; i++){
 			// Creation.
 			input[i] = new JTextField();
 			GridBagConstraints gbc_stdFuncInput = new GridBagConstraints();
@@ -119,7 +123,7 @@ public abstract class AbstractFunctionTab extends JPanel implements FunctionTab{
 		gbc_mainOP.gridwidth = 5;
 		gbc_mainOP.insets = new Insets(0, 0, 5, 5);
 		gbc_mainOP.gridx = 1;
-		gbc_mainOP.gridy = getNoOfInputs()+1;
+		gbc_mainOP.gridy = nInputs+1;
 		this.add(mainOP, gbc_mainOP);
 
 		gridOP = getGridOptionPanel();
@@ -140,7 +144,7 @@ public abstract class AbstractFunctionTab extends JPanel implements FunctionTab{
 		gbc_funcPanelWrapper.gridwidth = 5;
 		gbc_funcPanelWrapper.insets = new Insets(0, 0, 5, 5);
 		gbc_funcPanelWrapper.gridx = 1;
-		gbc_funcPanelWrapper.gridy = getNoOfInputs()+2;;
+		gbc_funcPanelWrapper.gridy = nInputs+2;;
 		this.add(funcPanelWrapper, gbc_funcPanelWrapper);
 
 		GridBagLayout gbl_stdFuncPanel = new GridBagLayout();
@@ -179,8 +183,8 @@ public abstract class AbstractFunctionTab extends JPanel implements FunctionTab{
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_ENTER && currentInput.isFocusOwner()) {
 					try{
-						String[] equations = new String[getNoOfInputs()];
-						for(int i = 0; i < getNoOfInputs(); i++){
+						String[] equations = new String[nInputs];
+						for(int i = 0; i < nInputs; i++){
 							equations[i] = input[i].getText();
 						}
 						addPlot(equations,templateFunc.getColor(), gridOP.getGridBounds(), gridOP.getGridStepSize());

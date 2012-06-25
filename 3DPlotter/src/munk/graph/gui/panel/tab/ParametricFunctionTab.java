@@ -16,17 +16,13 @@ import munk.graph.gui.panel.gridoption.ParamGridOptionPanel;
 public class ParametricFunctionTab extends AbstractFunctionTab {
 
 	private static final String[] LABEL_NAMES = {"x: ", "y: ", "z: "};
-	public ParametricFunctionTab(ColorList colorList, HashMap<Function, FunctionLabel> map, Function templateFunc, Plotter3D plotter) throws Exception{
-		super(colorList, map, templateFunc, plotter);
-		super.init();
+	public ParametricFunctionTab(ColorList colorList, HashMap<Function, FunctionLabel> map, 
+			Function templateFunc, Plotter3D plotter) {
+		super(colorList, map, templateFunc, plotter, 3);
 	}
 
 	public GridOptionPanel getGridOptionPanel(){
 		return new ParamGridOptionPanel(new String[]{"0","2*pi","0","2*pi"});
-	}
-
-	public int getNoOfInputs(){
-		return 3;
 	}
 
 	public void addPlot(Function function) {

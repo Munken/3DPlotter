@@ -15,17 +15,13 @@ import munk.graph.gui.panel.gridoption.StdGridOptionPanel;
 @SuppressWarnings("serial")
 public class XYZFunctionTab extends AbstractFunctionTab {
 	
-	public XYZFunctionTab(ColorList colorList, HashMap<Function, FunctionLabel> map, Function templateFunc, Plotter3D plotter) throws Exception{
-		super(colorList, map, templateFunc, plotter);
-		super.init();
+	public XYZFunctionTab(ColorList colorList, HashMap<Function, FunctionLabel> map, 
+			Function templateFunc, Plotter3D plotter) {
+		super(colorList, map, templateFunc, plotter, 1);
 	}
 
 	public GridOptionPanel getGridOptionPanel(){
 		return new StdGridOptionPanel(new String[]{"-1","1","-1","1","-1","1"});
-	}
-	
-	public int getNoOfInputs(){
-		return 1;
 	}
 	
 	public void addPlot(Function function) {
