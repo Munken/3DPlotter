@@ -145,7 +145,7 @@ public class XYZPlotter extends AbstractPlotter {
 		}
 
 		if (points.length > 1) {
-			GeometryArray quad = PlotUtil.buildQuadArray(points, normals);
+			GeometryArray quad = PlotUtil.buildQuadStripArray(points, normals);
 
 			shape = new Shape3D(quad);
 

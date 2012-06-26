@@ -81,6 +81,62 @@ public class PlotUtil {
 		return quad;
 	}
 	
+	public static GeometryArray buildQuadStripArray(Point3f[][] points, Vector3f[][] normals) {
+		int ySize = points.length;
+		int xSize = points[0].length;
+		if (ySize <= 1 || xSize <= 1)
+			return null;
+		
+		Point3f[] transPoints = new Point3f[xSize * ySize];
+		Vector3f[] transNormals = new Vector3f[xSize * ySize];
+		int[] indices = new int[4 * (xSize - 1) * (ySize - 1)];
+		
+		int vertex = 0;
+		for (int y = 0; y < ySize - 1; y++) {
+			for (int x = 0; x < xSize - 1; x++) {
+				
+	             int lowerLeft = x + y * xSize;
+	             int lowerRight = (x + 1) + y * xSize;
+	             int topLeft = x + (y + 1) * xSize;
+	             int topRight = (x + 1) + (y + 1) * xSize;
+	             
+	             indices[vertex++] = lowerLeft;
+	             indices[vertex++] = topLeft;
+	             indices[vertex++] = topRight;
+	             indices[vertex++] = lowerRight;
+	             
+	             transPoints[lowerLeft] = points[y][x];
+	             transNormals[lowerLeft] = normals[y][x];
+			}
+		}
+		
+		for (int y = 0; y < ySize; y++) {
+			int x = xSize - 1;
+			int indice = x + y * xSize;
+			
+			transPoints[indice] = points[y][x];
+			transNormals[indice] = normals[y][x];
+		}
+		
+		for (int x = 0; x < ySize; x++) {
+			int y = ySize - 1;
+			int indice = x + y * xSize;
+			
+			transPoints[indice] = points[y][x];
+			transNormals[indice] = normals[y][x];
+		}
+		
+		
+		IndexedQuadArray quad = new IndexedQuadArray(transPoints.length, 
+						QuadArray.COORDINATES | QuadArray.NORMALS, indices.length);
+		
+		quad.setCoordinates(0, transPoints);
+		quad.setCoordinateIndices(0, indices);
+		quad.setNormals(0, transNormals);
+		quad.setNormalIndices(0, indices);
+		return quad;
+	}
+	
 	public static GeometryArray buildQuadStripArray(Point3f[][] points) {
 		int ySize = points.length;
 		int xSize = points[0].length;
