@@ -1,7 +1,6 @@
 package munk.graph.IO;
 
 import java.io.FileWriter;
-import java.io.IOException;
 import java.util.List;
 
 import javax.vecmath.Color3f;
@@ -29,7 +28,7 @@ public class XMLWriter {
 			doc = docBuilder.newDocument();
 			
             //create the root element and add it to the document
-            root = doc.createElement("functions");
+            root = doc.createElement("workspace");
             doc.appendChild(root);
 					
 		} catch (ParserConfigurationException e) {
@@ -67,6 +66,15 @@ public class XMLWriter {
 			else
 				addParametricFunction((ParametricFunction) function);
 		}
+	}
+	
+	public void addColor(Color3f color) {
+		doc.appendChild(createColor(color));
+	}
+	
+	public void addColor(List<Color3f> colors) {
+		for (Color3f c : colors)
+			addColor(c);
 	}
 	
 	public void addStdFunction(XYZFunction output) {
@@ -154,9 +162,12 @@ public class XMLWriter {
 	}
 
 	private Element createColor(Function function) {
+		return createColor(function.getColor());
+	}
+	
+	private Element createColor(Color3f newColor) {
 		Element color = doc.createElement("color");
-		Color3f functionColor = function.getColor();
-		color.setAttribute("rgb", functionColor.x + "," + functionColor.y + "," + functionColor.z);
+		color.setAttribute("rgb", newColor.x + "," + newColor.y + "," + newColor.z);
 		return color;
 	}
 	

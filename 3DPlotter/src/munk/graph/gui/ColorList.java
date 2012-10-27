@@ -73,14 +73,18 @@ public class ColorList extends ArrayList<Color3f> {
 	 * Save the color list, when a new color has been added.
 	 */
 	public boolean add(Color3f color){
-		boolean returnBoolean = super.add(color);
-		try{
-			ObjectWriter.ObjectToFile(new File("Files/config.color"), this);
+		
+		if (!contains(color)) {
+			boolean returnBoolean = super.add(color);
+			try{
+				ObjectWriter.ObjectToFile(new File("Files/config.color"), this);
+			}
+			catch(IOException e){
+				e.printStackTrace();
+			}
+			return returnBoolean; 
 		}
-		catch(IOException e){
-			e.printStackTrace();
-		}
-		return returnBoolean;
+		return false;
 	}
 
 	/*

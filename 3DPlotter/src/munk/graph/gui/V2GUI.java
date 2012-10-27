@@ -382,6 +382,9 @@ public class V2GUI {
 						paramFuncTab.addPlot(f);
 					else 
 						sphFuncTab.addPlot(f);
+					
+					
+					colorList.add(f.getColor());
 				}
 			}
 			catch(Exception ex){
