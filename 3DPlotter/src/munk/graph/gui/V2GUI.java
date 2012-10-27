@@ -367,50 +367,52 @@ public class V2GUI {
 		if(inputFile != null){
 			filePath=inputFile.getPath().replace(inputFile.getName(), "");
 			try{
-				ZippedFunction[][] importLists = (ZippedFunction[][]) ObjectReader.ObjectFromFile(inputFile);
+//				ZippedFunction[][] importLists = (ZippedFunction[][]) ObjectReader.ObjectFromFile(inputFile);
 				// Determine if current workspace should be erased.
-				boolean eraseWorkspace = (map.size() == 0) ||
-						(0 == JOptionPane.showOptionDialog(frame, 
-								"Would you like to erase current workspace during import?",
-								"Import Dialog", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null));
-
-				if(eraseWorkspace){
-					java.util.List<Function> functions = new ArrayList<Function>(map.keySet());
-					
-					for (int i = functions.size() - 1; i >= 0; i--) {
-						Function f = functions.get(i);
-						
-						if(f.getClass() == ParametricFunction.class){
-							paramFuncTab.deletePlot(f);
-						}
-						else if(f.getClass() == SphericalFunction.class){
-							sphFuncTab.deletePlot(f);
-						}
-						else{
-							stdFuncTab.deletePlot(f);
-						}
-					}
-				}
-				//Read new functions from zipped object.
-				for(int i = 0; i < importLists.length; i++){
-					ZippedFunction[] current = importLists[i];
-					for (int j = 0; j < current.length; j++) {
-						if(i==0){
-							stdFuncTab.addPlot(FunctionUtil.loadFunction(current[j]));
-						}
-						if(i==1){
-							paramFuncTab.addPlot(FunctionUtil.loadFunction(current[j]));
-						}
-						if(i==2){
-							sphFuncTab.addPlot(FunctionUtil.loadFunction(current[j]));
-						}
-					}
+				eraseWorkspace();
+				//Read new functions from xml
+				
+				XMLReader reader = new XMLReader(inputFile.getAbsolutePath());
+				java.util.List<Function> importFunctions = reader.processFunctions();
+				
+				for (Function f : importFunctions) {
+					if (f.getClass() == XYZFunction.class)
+						stdFuncTab.addPlot(f);
+					else if (f.getClass() == ParametricFunction.class)
+						paramFuncTab.addPlot(f);
+					else 
+						sphFuncTab.addPlot(f);
 				}
 			}
 			catch(Exception ex){
 				JOptionPane.showMessageDialog(frame,new JLabel("Unable to import workspace from file.",JLabel.CENTER));
 				ex.printStackTrace();
 			} 
+		}
+	}
+
+	private void eraseWorkspace() {
+		boolean eraseWorkspace = (map.size() == 0) ||
+				(0 == JOptionPane.showOptionDialog(frame, 
+						"Would you like to erase current workspace during import?",
+						"Import Dialog", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null));
+
+		if(eraseWorkspace){
+			java.util.List<Function> functions = new ArrayList<Function>(map.keySet());
+			
+			for (int i = functions.size() - 1; i >= 0; i--) {
+				Function f = functions.get(i);
+				
+				if(f.getClass() == ParametricFunction.class){
+					paramFuncTab.deletePlot(f);
+				}
+				else if(f.getClass() == SphericalFunction.class){
+					sphFuncTab.deletePlot(f);
+				}
+				else{
+					stdFuncTab.deletePlot(f);
+				}
+			}
 		}
 	}
 	
