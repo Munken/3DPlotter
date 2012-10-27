@@ -5,6 +5,7 @@ A node of an expression tree that represents a variable.  A VarNode cannot have 
 */
 public class VarNode extends TermNode {
 
+	
 	public VarNode(String name, boolean negate) {
 		super(name, negate);
 	}
@@ -19,4 +20,9 @@ public class VarNode extends TermNode {
 
 		return val;
 	}
+	
+	public ValNode getDerivative(FuncMap f, String varName) {
+		return (name.equals(varName)) ? ONE : ZERO;			
+	}
+	
 }

@@ -6,11 +6,8 @@ import java.util.List;
 import javax.media.j3d.Shape3D;
 import javax.vecmath.Point3f;
 
-import munk.graph.function.IllegalEquationException;
+import munk.emesp.exceptions.IllegalExpressionException;
 import munk.graph.marching.*;
-
-import com.graphbuilder.math.ExpressionParseException;
-import com.graphbuilder.math.UndefinedVariableException;
 
 /**
  * Be adviced these plotter are not maintained !
@@ -35,7 +32,7 @@ public class ImplicitIterative extends AbstractImplicit{
 							 float xMin, float xMax, 
 							 float yMin, float yMax, 
 							 float zMin, float zMax, 
-							 float stepsize) throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
+							 float stepsize) throws IllegalExpressionException {
 		
 		super(expression, xMin, xMax, yMin, yMax, zMin, zMax, stepsize, stepsize, stepsize);
 		this.stepsize = stepsize;

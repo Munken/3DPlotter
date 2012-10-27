@@ -1,9 +1,11 @@
 package com.graphbuilder.math.func;
 
+import com.graphbuilder.math.*;
+
 /**
 The hyperbolic sine function.
 */
-public class SinhFunction implements Function {
+public class SinhFunction extends AbstractOneVariableFunction {
 
 	public SinhFunction() {}
 
@@ -24,5 +26,12 @@ public class SinhFunction implements Function {
 
 	public String toString() {
 		return "sinh(x)";
+	}
+
+	@Override
+	public Expression getOuterDerivative(Expression inner, FuncMap f, String varName) {
+		FuncNode cosh = new FuncNode("cosh", false);
+		cosh.add(inner);
+		return cosh;
 	}
 }

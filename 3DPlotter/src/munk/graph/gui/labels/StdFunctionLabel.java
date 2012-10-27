@@ -83,6 +83,8 @@ public class StdFunctionLabel extends AbstractFunctionLabel{
 				for (FocusListener l : listeners) {
 					l.focusGained(e);
 				}
+				
+				updateColor();
 			}
 
 		});
@@ -92,38 +94,35 @@ public class StdFunctionLabel extends AbstractFunctionLabel{
 
 			@Override
 			public void keyReleased(KeyEvent e) {
-				if(!(exprField.getBackground() == FAILED_COLOR) || !(e.getKeyCode() == KeyEvent.VK_ENTER)){
+				
+				Function currentFunction = getMother();
+				boolean hasChanged = !exprField.getText().equals(currentFunction.getExpression()[0]);
+				
+				// They want to update the plot
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 					
-					if (!exprField.getText().equals(getMother().getExpression()[0])) {
+					if (hasChanged) {
 						
-						if(e.getKeyCode() == KeyEvent.VK_ENTER){
-							notifyPlotUpdate(exprField.getText());
-							
-							if(exprField.getText().equals(getMother().getExpression()[0])){
-								if(selected){
-									setExpressionFieldBackground(SELECTED_COLOR);
-								}
-								else{
-									setExpressionFieldBackground(NORMAL_COLOR);
-								}
-							}
-							else {
-								setExpressionFieldBackground(FAILED_COLOR);
-							}
-							
+						// Update the plot
+						notifyPlotUpdate(exprField.getText());
+						Function newFunction = getMother();
+						
+						if (currentFunction.equals(newFunction)) {
+							setState(STATE.FAILED);
 						} else {
-							setExpressionFieldBackground(WARNING_COLOR);
+							setState(STATE.SELECTED);
 						}
-					} else {
-						if(selected){
-							setExpressionFieldBackground(SELECTED_COLOR);
-						}
-						else{
-							setExpressionFieldBackground(NORMAL_COLOR);
-						}
-					}
+					} 
+				}	
+				// Doing something else than plotting
+				else if (hasChanged) {
+					setState(STATE.CHANGED);
 
+				} else {
+					setState(STATE.SELECTED);
 				}
+				
+				updateColor();
 			}
 		});
 	}
@@ -160,6 +159,5 @@ public class StdFunctionLabel extends AbstractFunctionLabel{
 	protected void setExpressionFieldBackground(Color color) {
 		exprField.setBackground(color);
 	}
-	
 	
 }

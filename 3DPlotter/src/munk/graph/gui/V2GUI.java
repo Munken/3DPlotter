@@ -4,22 +4,22 @@ import java.awt.event.*;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.vecmath.Color3f;
 
-import munk.graph.IO.ObjectReader;
-import munk.graph.IO.ObjectWriter;
+import munk.emesp.exceptions.IllegalExpressionException;
+import munk.graph.IO.*;
 import munk.graph.appearance.Colors;
 import munk.graph.function.*;
-import munk.graph.function.implicit.*;
-import munk.graph.gui.panel.*;
+import munk.graph.function.implicit.ImplicitFunction;
+import munk.graph.function.implicit.SphericalFunction;
 import munk.graph.gui.labels.FunctionLabel;
-
-import com.graphbuilder.math.ExpressionParseException;
-import com.graphbuilder.math.UndefinedVariableException;
+import munk.graph.gui.panel.ColorOptionPanel;
+import munk.graph.gui.panel.tab.*;
 
 
 /**
@@ -95,13 +95,13 @@ public class V2GUI {
 		// Initialize variables.
 		colorList = new ColorList();
 		filePath = File.separator+"tmp";
-		
 		try {
 			initialize();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
 	}
 
 	/**
@@ -136,8 +136,7 @@ public class V2GUI {
      	// Test function
      	try {
 			stdFuncTab.addPlot(new String[]{"y = sin(x*5)*cos(z*5)"}, Colors.RED, new String[]{"-1","1","-1","1","-1","1"}, new float[]{(float) 0.1,(float) 0.1,(float) 0.1});
-		} catch (ExpressionParseException | IllegalEquationException
-				| UndefinedVariableException e) {
+		} catch (IllegalExpressionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -151,8 +150,9 @@ public class V2GUI {
 			public void mouseClicked(MouseEvent e) {
 				if (SwingUtilities.isRightMouseButton(e)) {
 					Function result = plotter.getPickedFunction(e);
-					if (result != null)
+					if (result != null) {
 						switchToFunction(result);
+					}
 				}
 			}
 		});
@@ -207,6 +207,10 @@ public class V2GUI {
      	gbc_tabbedPane.gridx = 1;
      	gbc_tabbedPane.gridy = 1;
      	frame.getContentPane().add(tabbedPane, gbc_tabbedPane);
+     	
+
+
+     	
 	}
 	
 	private void init3Dplotter(){
@@ -230,6 +234,8 @@ public class V2GUI {
      	gbc_canvasPanel.gridy = 1;
      	gbc_canvasPanel.gridx = 3;
      	frame.getContentPane().add(canvasPanel, gbc_canvasPanel);
+     	
+
 	}
 
 	private void initFunctionTabs() throws Exception{
@@ -287,28 +293,43 @@ public class V2GUI {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if(e.getID() == 0){
-					colorList.add((Color3f) e.getSource());
-					stdFuncTab.updateColors();
-					paramFuncTab.updateColors();
-					sphFuncTab.updateColors();
+					addColor((Color3f) e.getSource());
 				}
 				else if(e.getID() == 1){
 					if((int) e.getSource() >= 0){
-					colorList.remove((int) e.getSource());
-					stdFuncTab.updateColors();
-					paramFuncTab.updateColors();
-					sphFuncTab.updateColors();
+					removeColor((int) e.getSource());
 					}
 				}
 				else{
 					colorDialog.setVisible(false);
 				}
 			}
+
+			
 		});
 		colorDialog.getContentPane().add(colorOptionPanel);
 		colorDialog.pack();
 		}
 		colorDialog.setVisible(true);
+	}
+	
+	
+	
+	
+	private void addColor(Color3f color) {
+		colorList.add(color);
+		updateColorChooser();
+	}
+	
+	private void removeColor(int index) {
+		colorList.remove(index);
+		updateColorChooser();
+	}
+
+	private void updateColorChooser() {
+		stdFuncTab.updateColors();
+		paramFuncTab.updateColors();
+		sphFuncTab.updateColors();
 	}
 	
 	private void savePlotToDisk(final File outputFile) {
@@ -342,51 +363,122 @@ public class V2GUI {
 			}
 		});
 	}
+	
+	private void saveAsImage() {
+		String[][] fileEndings = {{"png"}, {"jpg", "jpeg"}, {"gif"}, {"bmp"}};
+		String[] description = {"PNG image", "JPEG image", "GIF image", "Bitmap graphic"};
+		
+		File outputFile = GuiUtil.spawnExportDialog(filePath, fileEndings, description, frame);
+		if(outputFile != null){
+			filePath=outputFile.getPath().replace(outputFile.getName(), "");
 
-	private void importFunctions() {
+			savePlotToDisk(outputFile);
+			
+		}
+	}
+	
+	private void exportColors() {
+		File outputFile = GuiUtil.spawnExportDialog(filePath, frame);
+		if(outputFile != null){
+			filePath=outputFile.getPath().replace(outputFile.getName(), "");
+			try {
+				XMLWriter writer = new XMLWriter();
+				
+				writer.addColor(colorList);
+				writer.output(outputFile.getAbsolutePath());
+			} catch (Exception e) {
+				e.printStackTrace();
+				JOptionPane.showMessageDialog(frame,new JLabel("Unable to write file.",JLabel.CENTER));
+			}
+		}
+	}
+	
+	private void importColors() {
 		File inputFile = GuiUtil.spawnImportDialog(filePath, frame);
 		if(inputFile != null){
 			filePath=inputFile.getPath().replace(inputFile.getName(), "");
 			try{
-				ZippedFunction[][] importLists = (ZippedFunction[][]) ObjectReader.ObjectFromFile(inputFile);
-				// Determine if current workspace should be erased.
-				boolean eraseWorkspace = (map.size() == 0) ||
-						(0 == JOptionPane.showOptionDialog(frame, 
-								"Would you like to erase current workspace during import?",
-								"Import Dialog", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null));
-
-				if(eraseWorkspace){
-					for (Function f : map.keySet()) {
-						if(f.getClass() == ParametricFunction.class){
-							paramFuncTab.deletePlot(f);
-						}
-						else if(f.getClass() == SphericalFunction.class){
-							sphFuncTab.deletePlot(f);
-						}
-						else{
-							stdFuncTab.deletePlot(f);
-						}
-					}
+				XMLReader reader = new XMLReader(inputFile.getAbsolutePath());
+				
+				java.util.List<Color3f> list = reader.processColors();
+				for (Color3f color : list) {
+					colorList.add(color);
 				}
-				//Read new functions from zipped object.
-				for(int i = 0; i < importLists.length; i++){
-					ZippedFunction[] current = importLists[i];
-					for (int j = 0; j < current.length; j++) {
-						if(i==0){
-							stdFuncTab.addPlot(FunctionUtil.loadFunction(current[j]));
-						}
-						if(i==1){
-							paramFuncTab.addPlot(FunctionUtil.loadFunction(current[j]));
-						}
-						if(i==2){
-							sphFuncTab.addPlot(FunctionUtil.loadFunction(current[j]));
-						}
-					}
+				updateColorChooser();
+			}
+			catch(Exception e){
+				JOptionPane.showMessageDialog(frame,new JLabel("Unable to read color list from file.",JLabel.CENTER));
+			}
+		}
+	}
+	
+	private void exportWorkspace() {
+		File outputFile = GuiUtil.spawnExportDialog(filePath, frame);
+		if(outputFile != null){		
+			XMLWriter writer = new XMLWriter();
+			
+			writer.addFunctions(stdFuncTab.getFunctionList());
+			writer.addFunctions(paramFuncTab.getFunctionList());
+			writer.output(outputFile.getAbsolutePath());
+			
+			filePath=outputFile.getPath().replace(outputFile.getName(), "");
+		}
+	}
+
+	private void importWorkspace() {
+		File inputFile = GuiUtil.spawnImportDialog(filePath, frame);
+		if(inputFile != null){
+			filePath=inputFile.getPath().replace(inputFile.getName(), "");
+			try{
+//				ZippedFunction[][] importLists = (ZippedFunction[][]) ObjectReader.ObjectFromFile(inputFile);
+				// Determine if current workspace should be erased.
+				eraseWorkspace();
+				//Read new functions from xml
+				
+				XMLReader reader = new XMLReader(inputFile.getAbsolutePath());
+				java.util.List<Function> importFunctions = reader.processFunctions();
+				
+				for (Function f : importFunctions) {
+					if (f.getClass() == XYZFunction.class)
+						stdFuncTab.addPlot(f);
+					else if (f.getClass() == ParametricFunction.class)
+						paramFuncTab.addPlot(f);
+					else 
+						sphFuncTab.addPlot(f);
+					
+					
+					colorList.add(f.getColor());
 				}
 			}
-			catch(IOException | ClassCastException | ClassNotFoundException | ExpressionParseException | IllegalArgumentException | UndefinedVariableException | IllegalEquationException ex){
+			catch(Exception ex){
 				JOptionPane.showMessageDialog(frame,new JLabel("Unable to import workspace from file.",JLabel.CENTER));
+				ex.printStackTrace();
 			} 
+		}
+	}
+
+	private void eraseWorkspace() {
+		boolean eraseWorkspace = (map.size() == 0) ||
+				(0 == JOptionPane.showOptionDialog(frame, 
+						"Would you like to erase current workspace during import?",
+						"Import Dialog", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null));
+
+		if(eraseWorkspace){
+			java.util.List<Function> functions = new ArrayList<Function>(map.keySet());
+			
+			for (int i = functions.size() - 1; i >= 0; i--) {
+				Function f = functions.get(i);
+				
+				if(f.getClass() == ParametricFunction.class){
+					paramFuncTab.deletePlot(f);
+				}
+				else if(f.getClass() == SphericalFunction.class){
+					sphFuncTab.deletePlot(f);
+				}
+				else{
+					stdFuncTab.deletePlot(f);
+				}
+			}
 		}
 	}
 	
@@ -403,15 +495,7 @@ public class V2GUI {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				File outputFile = GuiUtil.spawnExportDialog(filePath, frame);
-				if(outputFile != null){
-				filePath=outputFile.getPath().replace(outputFile.getName(), "");
-				try {
-					ObjectWriter.ObjectToFile(outputFile, new ZippedFunction[][]{FunctionUtil.zipFunctionList(stdFuncTab.getFunctionList()),FunctionUtil.zipFunctionList(paramFuncTab.getFunctionList()),FunctionUtil.zipFunctionList(sphFuncTab.getFunctionList())});
-				} catch (IOException e) {
-					JOptionPane.showMessageDialog(frame,new JLabel("Unable to write file.",JLabel.CENTER));
-				}
-				}
+				exportWorkspace();
 			}
 		});
 		mnFile.add(mntmSaveProject);
@@ -423,7 +507,7 @@ public class V2GUI {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				importFunctions();
+				importWorkspace();
 			}
 		});
 		mnFile.add(mntmLoadProject);
@@ -435,19 +519,6 @@ public class V2GUI {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				saveAsImage();
-			}
-
-			private void saveAsImage() {
-				String[][] fileEndings = {{"png"}, {"jpg", "jpeg"}, {"gif"}, {"bmp"}};
-				String[] description = {"PNG image", "JPEG image", "GIF image", "Bitmap graphic"};
-				
-				File outputFile = GuiUtil.spawnExportDialog(filePath, fileEndings, description, frame);
-				if(outputFile != null){
-					filePath=outputFile.getPath().replace(outputFile.getName(), "");
-
-					savePlotToDisk(outputFile);
-					
-				}
 			}
 		});
 		mnFile.add(mntmPrintCanvas);
@@ -466,21 +537,13 @@ public class V2GUI {
 		
 		mnColorOptions = new JMenu("Color Options");
 		menuBar.add(mnColorOptions);
-		
+
 		mntmExportColors = new JMenuItem("Export colors", new ImageIcon("Icons/save.png"));
 		mntmExportColors.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				File outputFile = GuiUtil.spawnExportDialog(filePath, frame);
-				if(outputFile != null){
-				filePath=outputFile.getPath().replace(outputFile.getName(), "");
-				try {
-					ObjectWriter.ObjectToFile(outputFile,colorList);
-				} catch (IOException e) {
-					JOptionPane.showMessageDialog(frame,new JLabel("Unable to write file.",JLabel.CENTER));
-				}
-				}
+				exportColors();
 			}
 		});
 		mnColorOptions.add(mntmExportColors);
@@ -490,16 +553,7 @@ public class V2GUI {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				File inputFile = GuiUtil.spawnImportDialog(filePath, frame);
-				if(inputFile != null){
-					filePath=inputFile.getPath().replace(inputFile.getName(), "");
-					try{
-						colorList = (ColorList) ObjectReader.ObjectFromFile(inputFile);
-					}
-					catch(IOException | ClassCastException | ClassNotFoundException e){
-						JOptionPane.showMessageDialog(frame,new JLabel("Unable to read color list from file.",JLabel.CENTER));
-					}
-				}
+				importColors();
 			}
 		});
 		mnColorOptions.add(mntmImportColors);

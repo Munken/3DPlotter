@@ -23,7 +23,6 @@ public class ParametricFunctionLabel extends AbstractFunctionLabel{
 	private JLabel lblY;
 	private JLabel lblZ;
 	
-
 	public ParametricFunctionLabel (Function function){
 		super(function);
 		
@@ -140,6 +139,8 @@ public class ParametricFunctionLabel extends AbstractFunctionLabel{
 				for (FocusListener l : listeners) {
 					l.focusGained(e);
 				}
+				
+				updateColor();
 			}
 			
 		};
@@ -149,53 +150,43 @@ public class ParametricFunctionLabel extends AbstractFunctionLabel{
 		exprFieldZ.addFocusListener(editListener);
 
 		KeyAdapter keyListener = new KeyAdapter() {
-
+			
 			@Override
 			public void keyReleased(KeyEvent e) {
-				if(!(exprFieldX.getBackground() == FAILED_COLOR) || !(e.getKeyCode() == KeyEvent.VK_ENTER)){
-					Function function = getMother();
-					if (!exprFieldX.getText().equals(function.getExpression()[0]) 
-							|| !exprFieldY.getText().equals(function.getExpression()[1]) 
-							|| !exprFieldZ.getText().equals(function.getExpression()[2])) {
+				
+				Function currentFunction = getMother();
+				boolean hasChanged = !exprFieldX.getText().equals(currentFunction.getExpression()[0]) 
+						|| !exprFieldY.getText().equals(currentFunction.getExpression()[1]) 
+						|| !exprFieldZ.getText().equals(currentFunction.getExpression()[2]);
+				
+				// They want to update the plot
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+					
+					if (hasChanged) {
 						
-						// They want to plot
-						if(e.getKeyCode() == KeyEvent.VK_ENTER){
-							// Inform the listeners					
-							notifyPlotUpdate(exprFieldX.getText(), exprFieldY.getText(), exprFieldZ.getText());
-							
-							// Update the colors
-							if(exprFieldX.getText().equals(function.getExpression()[0]) 
-									&& exprFieldY.getText().equals(function.getExpression()[1]) 
-									&& exprFieldZ.getText().equals(function.getExpression()[2])){
-								if(selected){
-									setExpressionFieldBackground(SELECTED_COLOR);
-								}
-								else{
-									setExpressionFieldBackground(NORMAL_COLOR);
-								}
-							}
-							else{
-								setExpressionFieldBackground(FAILED_COLOR);
-							}
-						} 
-						else { // Still working on the expression
-							setExpressionFieldBackground(WARNING_COLOR);
+						// Update the plot
+						notifyPlotUpdate(exprFieldX.getText(), exprFieldY.getText(), exprFieldZ.getText());
+						Function newFunction = getMother();
+						
+						if (currentFunction.equals(newFunction)) {
+							setState(STATE.FAILED);
+						} else {
+							setState(STATE.SELECTED);
 						}
-					}
-					// Nothing changed just keey calm and carry on
-					else {
-						if(selected){
-							setExpressionFieldBackground(SELECTED_COLOR);
-						}
-						else{
-							setExpressionFieldBackground(NORMAL_COLOR);
-						}
-					}
+					} 
+				}	
+				// Doing something else than plotting
+				else if (hasChanged) {
+					setState(STATE.CHANGED);
+
+				} else {
+					setState(STATE.SELECTED);
 				}
+				
+				updateColor();
 			}
-
-
 		};
+		
 		exprFieldX.addKeyListener(keyListener);
 		exprFieldY.addKeyListener(keyListener);
 		exprFieldZ.addKeyListener(keyListener);
@@ -224,12 +215,64 @@ public class ParametricFunctionLabel extends AbstractFunctionLabel{
 			}
 		}
 	}
-	
+
 
 	
 
-	
-
-	
 
 }
+
+
+/*
+ * Update on every keypress. Gets a little confusing. 
+ */
+//keyListener = new KeyAdapter() {
+//	
+//	@Override
+//	public void keyReleased(KeyEvent e) {
+//		Function currentFunction = getMother();
+//		boolean hasChanged = !exprFieldX.getText().equals(currentFunction.getExpression()[0]) 
+//				|| !exprFieldY.getText().equals(currentFunction.getExpression()[1]) 
+//				|| !exprFieldZ.getText().equals(currentFunction.getExpression()[2]);
+//		
+//		// They want to update the plot
+//		if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+//			
+//			if (hasChanged) {
+//				// Update the plot
+//				notifyPlotUpdate(exprFieldX.getText(), exprFieldY.getText(), exprFieldZ.getText());
+//				Function newFunction = getMother();
+//				
+//				if (currentFunction.equals(newFunction)) {
+//					setState(STATE.FAILED);
+//				} else {
+//					setState(STATE.SELECTED);
+//				}
+//			} 
+//		} else if (hasChanged) {
+//			
+//			try {
+//				ExpressionParser.parse(exprFieldX.getText(), FunctionMap.getDefault());
+//				ExpressionParser.parse(exprFieldY.getText(), FunctionMap.getDefault());
+//				ExpressionParser.parse(exprFieldZ.getText(), FunctionMap.getDefault());
+//				
+//				setState(STATE.CHANGED);
+//			} catch (IllegalExpressionException ex) {
+//				
+//				setState(STATE.FAILED);
+//			}
+//			
+//		} else {
+//			setState(STATE.SELECTED);
+//		}
+//		
+//		if (state == STATE.FAILED) {
+//			setExpressionFieldBackground(FAILED_COLOR);
+//		} else if (state == STATE.CHANGED) {
+//			setExpressionFieldBackground(WARNING_COLOR);
+//		} else {
+//			setExpressionFieldBackground(SELECTED_COLOR);
+//		}
+//	}
+//	
+//};

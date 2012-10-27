@@ -1,11 +1,13 @@
 package com.graphbuilder.math.func;
 
+import com.graphbuilder.math.*;
+
 /**
 The cosine function.
 
 @see java.lang.Math#cos(double)
 */
-public class CosFunction implements Function {
+public class CosFunction extends AbstractOneVariableFunction {
 
 	public CosFunction() {}
 
@@ -25,5 +27,13 @@ public class CosFunction implements Function {
 
 	public String toString() {
 		return "cos(x)";
+	}
+
+	@Override
+	public Expression getOuterDerivative(Expression inner, FuncMap f, String varName) {
+		FuncNode sin = new FuncNode("sin", true);
+		sin.add(inner);
+		
+		return sin;		
 	}
 }

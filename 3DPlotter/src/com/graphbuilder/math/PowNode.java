@@ -21,4 +21,16 @@ public class PowNode extends OpNode {
 	public String getSymbol() {
 		return "^";
 	}
+
+	@Override
+	public MultNode getDerivative(FuncMap fm, String varName) {
+		SubNode newPower = new SubNode(rightChild, ONE); 
+		PowNode lowerPower = new PowNode(leftChild, newPower);
+		
+		MultNode front = new MultNode(rightChild, leftChild.getDerivative(fm, varName));
+		
+		return new MultNode(front, lowerPower);
+	}
+	
+	
 }

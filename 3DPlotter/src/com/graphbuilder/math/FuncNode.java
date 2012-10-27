@@ -1,5 +1,6 @@
 package com.graphbuilder.math;
 
+import com.graphbuilder.math.func.Function;
 import com.graphbuilder.struc.Bag;
 
 /**
@@ -78,4 +79,17 @@ public class FuncNode extends TermNode {
 
 		return result;
 	}
+
+	@Override
+	public Expression getDerivative(FuncMap f, String varName) {
+		if (bag.size() > 1)
+			throw new UnsupportedOperationException(name + ". Functions of more than one variable not supported");
+		
+		Expression inner = (Expression) bag.get(0);
+		
+		Function function = f.getFunction(name, 1);
+		return function.getDerivative(inner, f, varName);
+	}
+	
+	
 }

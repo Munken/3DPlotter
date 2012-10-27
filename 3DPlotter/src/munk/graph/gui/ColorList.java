@@ -1,39 +1,41 @@
 package munk.graph.gui;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.vecmath.Color3f;
 
-import munk.graph.IO.ObjectReader;
-import munk.graph.IO.ObjectWriter;
-import munk.graph.appearance.Colors;
+import munk.graph.IO.XMLReader;
+import munk.graph.IO.XMLWriter;
 
 @SuppressWarnings("serial")
 public class ColorList extends ArrayList<Color3f> {
 	
 //	List<Function> functionList = new ArrayList<Function>();
 	
+	private static final String	COLOR_PATH	= "Files/colors.xml";
+
 	/*
 	 * Try to load colors from file, otherwise load default colors.
 	 */
 	public ColorList(){
+		// Beware the file must be read before adding to the list. 
+		// Else overwrite will occur
+			
+		readColorsFromXML(COLOR_PATH);
+		add(new Color3f(1, 0, 0)); 			//RED
 		
-		try{
-			this.addAll((ColorList) ObjectReader.ObjectFromFile(new File("Files/config.color")));
-		}
-		catch(Exception e){
-			// Tys !
-//			System.out.println("Color config file not found. Loading default colors.");
-			add(new Color3f(1, 0, 0)); 			//RED
-			add(new Color3f(0, .0749f, 1)); 	//SKYBLUE
-			add(new Color3f(0, 1, 0)); 			//GREEN
-			add(Colors.INDIGO);
-			add(Colors.TURQUISE);
-			add(Colors.ORANGE);
-			add(Colors.MAGENTA);
-			add(Colors.TEAL);
+
+	}
+		
+	private void readColorsFromXML(String inputPath) {
+		try {
+			XMLReader reader = new XMLReader(inputPath);
+
+			List<Color3f> list = reader.processColors();
+			for (Color3f c : list)
+				this.add(c);
+		} catch(Exception e) {
 		}
 	}
 
@@ -43,6 +45,7 @@ public class ColorList extends ArrayList<Color3f> {
 	public ColorIcon[] getIconList(){
 		ColorIcon[] iconList = new ColorIcon[this.size()];
 		int i = 0;
+		
 		for(Color3f c : this){
 			iconList[i] = new ColorIcon(c);
 			i++;
@@ -71,30 +74,34 @@ public class ColorList extends ArrayList<Color3f> {
 	/*
 	 * Save the color list, when a new color has been added.
 	 */
+	@Override
 	public boolean add(Color3f color){
-		Boolean returnBoolean = super.add(color);
-		try{
-		ObjectWriter.ObjectToFile(new File("Files/config.color"), this);
+		
+		if (!contains(color)) {
+			boolean returnBoolean = super.add(color);
+			outputColors();
+			return returnBoolean; 
 		}
-		catch(IOException e){
-			e.printStackTrace();
-		}
-		return returnBoolean;
+		return false;
 	}
-	
+
+	private void outputColors() {
+		XMLWriter writer = new XMLWriter();
+		for (Color3f c : this) {
+			writer.addColor(c);
+		}
+		writer.output(COLOR_PATH);
+	}
+
 	/*
 	 * Save the color list, when a new color has been removed.
 	 */
 	public Color3f remove(int i){
 		Color3f returnColor = null;
+		
 		if(this.size() > 1){
-		returnColor = super.remove(i);
-		try{
-		ObjectWriter.ObjectToFile(new File("Files/config.color"), this);
-		}
-		catch(IOException e){
-			e.printStackTrace();
-		}
+			returnColor = super.remove(i);
+			outputColors();
 		}
 		return returnColor;
 	}

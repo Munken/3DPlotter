@@ -1,8 +1,7 @@
 package munk.graph.gui.labels;
 
 import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,13 +11,22 @@ import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.text.Caret;
 import javax.swing.text.JTextComponent;
+import javax.vecmath.Color3f;
 
+import munk.graph.appearance.Colors;
 import munk.graph.function.Function;
 import munk.graph.gui.ToggleButton;
 import munk.graph.gui.listener.FunctionEvent;
 import munk.graph.gui.listener.FunctionListener;
 
 public abstract class AbstractFunctionLabel extends JPanel implements FunctionLabel {
+	
+	protected enum STATE {
+		FAILED,
+		CHANGED,
+		SELECTED;
+	}
+	private STATE state;
 	
 	private static final long	serialVersionUID	= -4247550891717359687L;
 	private Function function;
@@ -69,6 +77,29 @@ public abstract class AbstractFunctionLabel extends JPanel implements FunctionLa
 				
 				notifyListeners(ev);
 			}
+		};
+	}
+	
+	public KeyAdapter blinkFunctionListener() {
+		return new KeyAdapter() {
+			
+			Color3f color;
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_B && e.getModifiers() == KeyEvent.CTRL_MASK) {
+						color = (color == null) ? function.getColor() : color;
+						function.setColor(Colors.WHITE);
+				}
+			}
+			
+			@Override
+			public void keyReleased(KeyEvent e) {
+				if (color != null) {
+					function.setColor(color);
+					color = null;
+				}
+			}
+			
 		};
 	}
 	
@@ -138,6 +169,22 @@ public abstract class AbstractFunctionLabel extends JPanel implements FunctionLa
 			return mark;
 		}
 
+	}
+	
+	protected void updateColor() {
+		if (state == STATE.FAILED) {
+			setExpressionFieldBackground(FAILED_COLOR);
+			
+		} else if (state == STATE.CHANGED) {
+			setExpressionFieldBackground(WARNING_COLOR);
+		} else {
+			state = STATE.SELECTED;
+			setExpressionFieldBackground(SELECTED_COLOR);
+		}
+	}
+	
+	protected void setState(STATE state) {
+		this.state = state;
 	}
 	
 

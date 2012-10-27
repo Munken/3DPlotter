@@ -5,10 +5,12 @@ import java.util.*;
 
 import javax.vecmath.Color3f;
 
+import munk.emesp.*;
+import munk.emesp.exceptions.ExpressionParseException;
+import munk.emesp.exceptions.IllegalExpressionException;
 import munk.graph.gui.GuiUtil;
 import munk.graph.plot.parametric.*;
 
-import com.graphbuilder.math.*;
 
 /*
  * Parametric functions; to be evaluated directly by Mesp.
@@ -27,13 +29,14 @@ public class ParametricFunction extends AbstractFunction {
 	 * @throws IllegalEquationException 
 	 * @throws UndefinedVariableException 
 	 */
-	public ParametricFunction(String[] expressions, Color3f color, String[] bounds, float[] stepSize) throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
+	public ParametricFunction(String[] expressions, Color3f color, String[] bounds, float[] stepSize) 
+			throws IllegalExpressionException {
 		super(expressions, color, bounds, stepSize, 
 				createPlotter(expressions, GuiUtil.evalStringArray(bounds), stepSize));
 	}
 	
 	private static ParametricPlotter createPlotter(String[] expressions, float[] bounds, float[] stepsize) 
-									throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
+									throws IllegalExpressionException {
 		
 		String[] varNames = variableNames(expressions);
 		int nVariables = varNames.length;
@@ -51,7 +54,7 @@ public class ParametricFunction extends AbstractFunction {
 		} else if (nVariables == 2){
 			return new Parametric2D(xExpr, yExpr, zExpr, bounds[0], bounds[1], bounds[2], bounds[3], varNames, stepsize);
 		} else {
-			throw new IllegalEquationException("There must be one or two variables in the expression!");
+			throw new IllegalExpressionException("There must be one or two variables in the expression!");
 		}
 	}
 	
@@ -66,7 +69,7 @@ public class ParametricFunction extends AbstractFunction {
 		for (String ex : expressions) {
 			
 			if (!ex.equals("")) {
-				Expression n = ExpressionTree.parse(ex);
+				Expression n = ExpressionParser.parse(ex, FunctionMap.getDefault());
 				String[] variableNames = n.getVariableNames();
 				for (String var : variableNames) {
 					
@@ -86,5 +89,11 @@ public class ParametricFunction extends AbstractFunction {
 		variables.toArray(varNames);
 		Arrays.sort(varNames);
 		return varNames;
+	}
+	
+	@Override
+	public String toString() {
+		String[] expressions = getExpression();
+		return "x = " + expressions[0] + ", y = " + expressions[1] + ", z = " + expressions[2];  
 	}
 }

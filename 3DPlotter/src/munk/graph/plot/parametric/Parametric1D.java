@@ -1,13 +1,11 @@
 package munk.graph.plot.parametric;
 
-import javax.media.j3d.*;
+import javax.media.j3d.LineStripArray;
+import javax.media.j3d.Shape3D;
 import javax.vecmath.Point3f;
 
-import munk.graph.function.IllegalEquationException;
+import munk.emesp.exceptions.IllegalExpressionException;
 import munk.graph.plot.PlotUtil;
-
-import com.graphbuilder.math.ExpressionParseException;
-import com.graphbuilder.math.UndefinedVariableException;
 
 public class Parametric1D extends AbstractParametric{
 	
@@ -23,7 +21,7 @@ public class Parametric1D extends AbstractParametric{
 	public Parametric1D(String xExpr, String yExpr, String zExpr, 
 							float tMin, float tMax, 
 							String varName, float[] stepSize) 
-									throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
+									throws IllegalExpressionException {
 		super(xExpr, yExpr, zExpr, new String[] {varName}, new float[] {tMin});
 		this.tMin = tMin;
 		this.tMax = tMax;
@@ -33,7 +31,7 @@ public class Parametric1D extends AbstractParametric{
 	
 	public Parametric1D(String xExpr, String yExpr, String zExpr, 
 							float tMin, float tMax, float[] stepSize) 
-									throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
+									throws IllegalExpressionException {
 		this(xExpr, yExpr, zExpr, tMin, tMax, STD_VAR_NAMES, stepSize);
 	}
 

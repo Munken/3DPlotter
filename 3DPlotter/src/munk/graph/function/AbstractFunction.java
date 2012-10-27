@@ -1,10 +1,11 @@
 package munk.graph.function;
 
+import java.util.Arrays;
+
 import javax.media.j3d.*;
 import javax.vecmath.Color3f;
 
-import com.graphbuilder.math.ExpressionParseException;
-
+import munk.emesp.exceptions.IllegalExpressionException;
 import munk.graph.appearance.*;
 import munk.graph.gui.GuiUtil;
 import munk.graph.plot.Plotter;
@@ -27,7 +28,7 @@ public abstract class AbstractFunction implements Function{
 	private float[]	stepSize;
 	private boolean fasterImplicit;
 	
-	public AbstractFunction(String[] expr, Color3f color, String[] bounds, float[] stepSize, Plotter plotter) throws ExpressionParseException {
+	public AbstractFunction(String[] expr, Color3f color, String[] bounds, float[] stepSize, Plotter plotter) throws IllegalExpressionException {
 		this.expr = expr;
 		this.plotter = plotter;
 		this.visible = true;
@@ -159,5 +160,21 @@ public abstract class AbstractFunction implements Function{
 	
 	public void setBoundsString(String[] bounds){
 		this.boundsString = bounds;
+	}
+	
+	@Override
+	public boolean equals(Object other) {
+		if (this == other) return true;
+		if (other == null) return false;
+		
+		if (getClass() == other.getClass()) {
+			AbstractFunction af = (AbstractFunction) other;
+			
+			return Arrays.deepEquals(getExpression(), af.getExpression()) &&
+					Arrays.equals(bounds, af.bounds) &&
+					Arrays.equals(stepSize, stepSize);		
+		}
+		
+		return false;
 	}
 }

@@ -6,18 +6,13 @@ import javax.swing.JFrame;
 import javax.swing.JTextField;
 
 import munk.graph.appearance.Colors;
-import munk.graph.function.IllegalEquationException;
-import munk.graph.function.implicit.*;
-import munk.graph.plot.implicit.*;
+import munk.graph.function.SphericalSimple;
 import munk.graph.gui.Plotter3D;
-
-import com.graphbuilder.math.ExpressionParseException;
-import com.graphbuilder.math.UndefinedVariableException;
 
 public class PlotterDriver {
 	
 	@SuppressWarnings("unused")
-	public static void main(String[] args) throws ExpressionParseException, IllegalEquationException, UndefinedVariableException {
+	public static void main(String[] args) throws Exception {
 		final JFrame frame = new JFrame("Mega ultra");
 		
 		final Plotter3D p = new Plotter3D();
@@ -48,19 +43,12 @@ public class PlotterDriver {
 //		ImplicitIterativeFunction it = new ImplicitIterativeFunction("x^2 + y^2 = 1", Colors.BLUE, recBound, 0.1f);
 //		p.plotFunction(it);
 		
-		SphericalFunction sf = new SphericalFunction(new String[]{"r=0.5*cos(theta)^10 + 0.1*sin(phi)"}, Colors.BLUE, recBound, stepSize);
-		ImplicitMultiFunction m = new ImplicitMultiFunction(new String[] {"x^2 + y^2 + z^3= 1.5"}, 
-				Colors.BLUE, new String[] {"-2","2","-2","2","-2","2"}, new float[] {0.1f, 0.1f, 0.1f});
+		SphericalSimple sf = new SphericalSimple(new String[] {"sin(theta/2)*cos(phi)+phi^2"}, 
+				Colors.RED, 
+				new String[] {"0", "1", "0", "" + 2*Math.PI, "0", "" + Math.PI},
+				new float[] {0.1f, 0.1f, 0.1f});
 		
-		
-		ImplicitSlowFunction isf = new ImplicitSlowFunction(new String[] {"x^2 + y^2 + z^2 = 1"}, 
-				Colors.BLUE, new String[] {"-1","1","-1","1","-1","1"}, new float[] {0.05f, 0.05f, 0.05f});
-		
-		
-		
-		long start = System.currentTimeMillis();
-		p.plotFunction(isf);
-		System.out.println(System.currentTimeMillis() - start);
+		p.plotFunction(sf);
 		
 //		ImplicitSlow im = new ImplicitSlow("x^2 + y^2 + z^2 = 1", -2, 2, -2, 2, -2, 2, 0.1f, 0.2f, 0.1f);
 		
@@ -83,26 +71,6 @@ public class PlotterDriver {
 //		p.plotParametricFunction("0.5*cos(t)", "t/5", "0.5*sin(t)", 0, (float) (5*Math.PI));
 		
 		final JTextField function = new JTextField();
-//		function.addKeyListener(new KeyAdapter() {
-//			
-//			@Override
-//			public void keyReleased(KeyEvent e) {
-//				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-//
-////							p.plotFunction(function.getText(), -i, i, -i, i, Colors.RED);
-//							try {
-//								
-//								ImplicitIterativeFunction ip = 
-//										new ImplicitIterativeFunction(function.getText(), Colors.RED, recBound, 0.1f);
-//								p.plotFunction(ip);
-//							} catch (ExpressionParseException | IllegalEquationException | UndefinedVariableException e1) {
-//								// TODO Auto-generated catch block
-//								e1.printStackTrace();
-//							}
-//
-//				}
-//			}
-//		});
 		frame.add(function,BorderLayout.NORTH);
      	frame.add(p);
 

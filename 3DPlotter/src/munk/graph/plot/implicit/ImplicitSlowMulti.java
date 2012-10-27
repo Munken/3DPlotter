@@ -1,50 +1,51 @@
 package munk.graph.plot.implicit;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.*;
 
 import javax.media.j3d.Shape3D;
 import javax.vecmath.Point3f;
 
-import munk.graph.function.IllegalEquationException;
+import munk.emesp.*;
+import munk.emesp.exceptions.IllegalExpressionException;
 import munk.graph.marching.MarchingCubes;
 import munk.graph.marching.Triangle;
 
-import com.graphbuilder.math.*;
-
-public class ImplicitSlowMulti extends AbstractImplicit {
+public abstract class ImplicitSlowMulti extends AbstractImplicit {
 	
-	private static final FuncMap FUNC_MAP;
-	static {
-		FUNC_MAP = new FuncMap();
-		FUNC_MAP.loadDefaultFunctions();
-	}
-	
-	private String expression;
-	
+	private Expression expr;
 	
 	public ImplicitSlowMulti(String expression, float xMin, float xMax,
 			float yMin, float yMax, float zMin, float zMax, float xStepsize,
 			float yStepsize, float zStepsize) 
-					throws ExpressionParseException,
-						    IllegalEquationException, 
-						    UndefinedVariableException {
+					throws IllegalExpressionException {
 		super(expression, xMin, xMax, yMin, yMax, zMin, zMax, xStepsize, yStepsize,
 				zStepsize);
 		
-		this.expression = preParse(expression);
+		expression = preParse(expression);
+		expr = ExpressionParser.parse(expression, FunctionMap.getDefault());
 	}
 	
 	public ImplicitSlowMulti(String expression, float[] bounds, float[] stepsizes) 
-					throws ExpressionParseException,
-						    IllegalEquationException, 
-						    UndefinedVariableException {
+					throws IllegalExpressionException {
 		this(expression, 
 				bounds[0], bounds[1], bounds[2], 
 				bounds[3], bounds[4], bounds[5], 
 				stepsizes[0], stepsizes[1], stepsizes[2]);
 	}
 
+	
+//	private void deriviateExpression() {
+//		derivativeX = expr.getDerivative("x");
+//		derivativeX = derivativeX.accept(CollapseConstantsVisitor.getInstance());
+//		
+//		derivativeY = expr.getDerivative("y");
+//		derivativeY = derivativeY.accept(CollapseConstantsVisitor.getInstance());
+//		
+//		derivativeZ = expr.getDerivative("z");
+//		derivativeZ = derivativeZ.accept(CollapseConstantsVisitor.getInstance());
+//	}
 
 
 	@Override
@@ -54,30 +55,30 @@ public class ImplicitSlowMulti extends AbstractImplicit {
 		ExecutorService threadPool = Executors.newFixedThreadPool(4);
 		
 		
-		int zSteps = N + zLength / N + zLength % N;	float zStart = zMin;		
+		int zSteps = N + zLength / N + zLength % N;	
+		float zStart = zMin;		
 		for (int i = 0; i < N; i++) {
 			
-			int ySteps = N + yLength / N + yLength % N;	float yStart = yMin;			
+			int ySteps = N + yLength / N + yLength % N;	
+			float yStart = yMin;			
 			for (int j = 0; j < N; j++) {
 				
-				int xSteps = N + xLength / N + xLength % N;	float xStart = xMin;				
+				int xSteps = N + xLength / N + xLength % N;	
+				float xStart = xMin;				
 				for (int k = 0; k < N; k++) {
 
 					Callable<List<Point3f>> callable = createSubMarcher(xStart, yStart, zStart, xSteps, ySteps, zSteps);
 					Future<List<Point3f>> f = threadPool.submit(callable);
 					future.add(f);
 
-//					xStart = nextStartValue(xStart, xStepsize, xSteps);
 					xStart += (xSteps - 1) * xStepsize;
 					xSteps = xLength / N;
 				}
 				
-//				yStart = nextStartValue(yStart, yStepsize, ySteps);
 				yStart += (ySteps - 1) * yStepsize;				
 				ySteps = yLength / N;
 			}
 			
-//			zStart = nextStartValue(zStart, zStepsize, zSteps);
 			zStart += (zSteps - 1) * zStepsize;			
 			zSteps = zLength / N;
 			
@@ -85,14 +86,6 @@ public class ImplicitSlowMulti extends AbstractImplicit {
 
 		List<Point3f> result = concatResults(future);
 		return buildGeomtryFromTriangles(result);
-	}
-	
-	private float nextStartValue(float start, float stepsize, int nSteps) {
-		float result = start;
-		for (int i = 0; i < nSteps - 1; i++) {
-			result += stepsize;
-		}
-		return result;
 	}
 
 	private List<Point3f> concatResults(List<Future<List<Point3f>>> future) {
@@ -107,7 +100,6 @@ public class ImplicitSlowMulti extends AbstractImplicit {
 				
 				totalSize += result.size();
 			} catch (InterruptedException | ExecutionException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
@@ -119,8 +111,6 @@ public class ImplicitSlowMulti extends AbstractImplicit {
 			points.addAll(list);
 		}
 		
-//		Collections.sort(points, createPoint3fComparator());
-		
 		return points;
 	}
 
@@ -131,24 +121,24 @@ public class ImplicitSlowMulti extends AbstractImplicit {
 			
 			@Override
 			public List<Point3f> call() throws Exception {
-				SubCubeMarcher scm = new SubCubeMarcher(expression, xStart, yStart, zStart, xSteps, ySteps, zSteps);
+				SubCubeMarcher scm = new SubCubeMarcher(xStart, yStart, zStart, xSteps, ySteps, zSteps);
 				return scm.marchCubes();
 			}
 		};
 	}
 	
+	protected abstract boolean validCube(float x, float y, float z);
 	
 	
 	private class SubCubeMarcher {
 		
-		Expression expr;
-		VarMap vm;
+		VariableValues vm;
 		float xStart, yStart, zStart;
 		int xLength, yLength, zLength;
 
 		
-		private SubCubeMarcher(String expression, float xStart, float yStart, float zStart,
-				int xLength, int yLength, int zLength) {
+		private SubCubeMarcher(float xStart, float yStart, float zStart,
+				int xLength, int yLength, int zLength) throws IllegalExpressionException {
 			this.xStart = xStart;
 			this.yStart = yStart;
 			this.zStart = zStart;
@@ -156,12 +146,7 @@ public class ImplicitSlowMulti extends AbstractImplicit {
 			this.yLength = yLength;
 			this.zLength = zLength;
 			
-			try {
-				vm = new VarMap();
-				expr = ExpressionTree.parse(expression);
-			} catch(ExpressionParseException e) {
-				// The
-			}
+			vm = new VariableValues();
 		}
 		
 		private List<Point3f> marchCubes() {
@@ -186,51 +171,53 @@ public class ImplicitSlowMulti extends AbstractImplicit {
 					float x = xStart;
 					for (int i = 0; i < xLength - 1; i++) {
 						
-						corners[0].x = x;
-						corners[0].y = y;
-						corners[0].z = z;
-						values[0] = lower[j][i];
-						
-						corners[1].x = x + xStepsize;
-						corners[1].y = y;
-						corners[1].z = z; 
-						values[1] = lower[j][i+1];
-						
-						corners[2].x = x + xStepsize;
-						corners[2].y = y + yStepsize;
-						corners[2].z = z;
-						values[2] = lower[j+1][i+1];
-						
-						corners[3].x = x;
-						corners[3].y = y + yStepsize;
-						corners[3].z = z;
-						values[3] = lower[j+1][i];
-						
-						corners[4].x = x;
-						corners[4].y = y;
-						corners[4].z = z + zStepsize;
-						values[4] = upper[j][i];
-						
-						corners[5].x = x + xStepsize;
-						corners[5].y = y;
-						corners[5].z = z + zStepsize;
-						values[5] = upper[j][i+1];
-						
-						corners[6].x = x + xStepsize;
-						corners[6].y = y + yStepsize;
-						corners[6].z = z + zStepsize;
-						values[6] = value(corners[6]);
-						upper[j+1][i+1] = values[6];
-						
-						corners[7].x = x;
-						corners[7].y = y + yStepsize;
-						corners[7].z = z + zStepsize;
-						values[7] = upper[j+1][i];					
-						
-						int nFacets = marchCube(values, corners, tri);
-						
-						if (nFacets > 0) {
-							addTriangles(nFacets, tri, points);
+						if (validCube(x, y, z)) {
+							corners[0].x = x;
+							corners[0].y = y;
+							corners[0].z = z;
+							values[0] = lower[j][i];
+
+							corners[1].x = x + xStepsize;
+							corners[1].y = y;
+							corners[1].z = z; 
+							values[1] = lower[j][i+1];
+
+							corners[2].x = x + xStepsize;
+							corners[2].y = y + yStepsize;
+							corners[2].z = z;
+							values[2] = lower[j+1][i+1];
+
+							corners[3].x = x;
+							corners[3].y = y + yStepsize;
+							corners[3].z = z;
+							values[3] = lower[j+1][i];
+
+							corners[4].x = x;
+							corners[4].y = y;
+							corners[4].z = z + zStepsize;
+							values[4] = upper[j][i];
+
+							corners[5].x = x + xStepsize;
+							corners[5].y = y;
+							corners[5].z = z + zStepsize;
+							values[5] = upper[j][i+1];
+
+							corners[6].x = x + xStepsize;
+							corners[6].y = y + yStepsize;
+							corners[6].z = z + zStepsize;
+							values[6] = value(corners[6]);
+							upper[j+1][i+1] = values[6];
+
+							corners[7].x = x;
+							corners[7].y = y + yStepsize;
+							corners[7].z = z + zStepsize;
+							values[7] = upper[j+1][i];					
+
+							int nFacets = marchCube(values, corners, tri);
+
+							if (nFacets > 0) {
+								addTriangles(nFacets, tri, points);
+							}
 						}
 						
 						x += xStepsize;
@@ -248,9 +235,9 @@ public class ImplicitSlowMulti extends AbstractImplicit {
 			
 			return points;
 		}
-		
+
 		private float value() {
-			return (float) expr.eval(vm, FUNC_MAP);
+			return (float) expr.eval(vm);
 		}
 		
 		private float value(Point3f point) {

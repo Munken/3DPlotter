@@ -7,10 +7,11 @@ import java.util.regex.Pattern;
 
 import javax.media.j3d.*;
 import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
 
-
-
-import com.graphbuilder.math.*;
+import munk.emesp.*;
+import munk.emesp.exceptions.*;
+import munk.emesp.visitor.CollapseConstantsVisitor;
 
 public class XYZPlotter extends AbstractPlotter {
 	
@@ -27,9 +28,10 @@ public class XYZPlotter extends AbstractPlotter {
 	private float	yMin;
 	private float	yMax;
 
-	private VarMap vm;
-	private FuncMap fm;
 	private Expression expression;
+	private Expression derivativeVar1;
+	private Expression derivativeVar2;
+	private VariableValues vm;
 	
 	private String var1 = "x";
 	private String var2 = "y";
@@ -41,39 +43,41 @@ public class XYZPlotter extends AbstractPlotter {
 
 	
 	private XYZPlotter(String expr, float xMin, float xMax, float yMin, float yMax) 
-							throws ExpressionParseException, UndefinedVariableException{
+							throws IllegalExpressionException {
+		
 		this.xMin = xMin;
 		this.xMax = xMax;
 		this.yMin = yMin;
 		this.yMax = yMax;
 		
 		expr = preParse(expr);
-		expression = ExpressionTree.parse(expr);
+		expression = ExpressionParser.parse(expr, FunctionMap.getDefault());
+		derivativeVar1 = expression.getDerivative(var1);
+		derivativeVar1 = derivativeVar1.accept(CollapseConstantsVisitor.getInstance());
+		derivativeVar2 = expression.getDerivative(var2);
+		derivativeVar2 = derivativeVar2.accept(CollapseConstantsVisitor.getInstance());
 		
-		vm = new VarMap();
+		vm = new VariableValues();
 		vm.setValue(var1, xMin);
 		vm.setValue(var2, yMin);
-		
-		fm = new FuncMap();
-		fm.loadDefaultFunctions();
 
 		expression.ensureVariablesDefined(vm);
 	}
 	
 	public XYZPlotter(String expr, float xMin, float xMax, float yMin, float yMax, float xStepsize, float yStepsize) 
-							throws ExpressionParseException, UndefinedVariableException{
+			throws IllegalExpressionException {
 		this(expr, xMin, xMax, yMin, yMax);
 		this.xStepsize = xStepsize;
 		this.yStepsize = yStepsize;
 	}
 	
 	public XYZPlotter(String expr, float xMin, float xMax, float yMin, float yMax, float[] stepsizes) 
-			throws ExpressionParseException, UndefinedVariableException{
+			throws IllegalExpressionException {
 		this(expr, xMin, xMax, yMin, yMax, stepsizes[0], stepsizes[1]);
 	}
 	
 	public XYZPlotter(String expr, float[] bounds, float[] stepsizes) 
-			throws ExpressionParseException, UndefinedVariableException {
+			throws IllegalExpressionException {
 		this(expr, bounds[0], bounds[1], bounds[2], bounds[3], stepsizes);
 		
 		
@@ -120,6 +124,7 @@ public class XYZPlotter extends AbstractPlotter {
 		float[] xValues = initAxisArray(xMin, xSize, xStepsize);
 		float[] yValues = initAxisArray(yMin, ySize, yStepsize);
 		
+		Vector3f[][] normals = new Vector3f[ySize][xSize];
 		Point3f[][] points = new Point3f[ySize][xSize];
 		
 		for (int y = 0; y < ySize; y++) {
@@ -127,13 +132,20 @@ public class XYZPlotter extends AbstractPlotter {
 			for (int x = 0; x < xSize; x++) {
 				vm.setValue(var1, factorV1 * xValues[x]);
 				
-				float value = (float) expression.eval(vm, fm);
+				float value = (float) expression.eval(vm);
 				points[y][x] = new Point3f(xValues[x], yValues[y], value);
+				
+				float gradX = (float) derivativeVar1.eval(vm);
+				float gradY = (float) derivativeVar2.eval(vm);
+				
+				Vector3f normal = new Vector3f(-gradX, -gradY, 1);
+				normal.normalize();
+				normals[y][x] = normal;
 			}
 		}
 
 		if (points.length > 1) {
-			GeometryArray quad = PlotUtil.buildQuadArray(points);
+			GeometryArray quad = PlotUtil.buildQuadStripArray(points, normals);
 
 			shape = new Shape3D(quad);
 
@@ -146,6 +158,7 @@ public class XYZPlotter extends AbstractPlotter {
 			return null;
 	}	
 	
+
 	private String preParse(String expr) {
 		Matcher m = PATTERN.matcher(expr);
 		if (m.matches()) {

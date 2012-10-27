@@ -21,4 +21,11 @@ public class MultNode extends OpNode {
 	public String getSymbol() {
 		return "*";
 	}
+
+	@Override
+	public AddNode getDerivative(FuncMap f, String varName) {
+		MultNode left = new MultNode(leftChild.getDerivative(f, varName), rightChild);
+		MultNode right = new MultNode(leftChild, rightChild.getDerivative(f, varName));
+		return new AddNode(left, right);
+	}
 }

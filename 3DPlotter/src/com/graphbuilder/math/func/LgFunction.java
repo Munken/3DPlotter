@@ -1,9 +1,11 @@
 package com.graphbuilder.math.func;
 
+import com.graphbuilder.math.*;
+
 /**
 The log base 2 function.
 */
-public class LgFunction implements Function {
+public class LgFunction extends AbstractOneVariableFunction {
 
 	public LgFunction() {}
 
@@ -24,4 +26,14 @@ public class LgFunction implements Function {
 	public String toString() {
 		return "lg(x)";
 	}
+
+	@Override
+	public Expression getOuterDerivative(Expression inner, FuncMap f, String varName) {
+		ValNode nominator = new ValNode(1 / Math.log(2));
+		
+		
+		return new DivNode(nominator, inner);
+	}
+	
+	
 }

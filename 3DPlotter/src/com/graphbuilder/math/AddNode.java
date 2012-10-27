@@ -21,4 +21,11 @@ public class AddNode extends OpNode {
 	public String getSymbol() {
 		return "+";
 	}
+
+	@Override
+	public AddNode getDerivative(FuncMap f, String varName) {
+		return new AddNode(leftChild.getDerivative(f, varName), rightChild.getDerivative(f, varName));
+	}
+	
+	
 }

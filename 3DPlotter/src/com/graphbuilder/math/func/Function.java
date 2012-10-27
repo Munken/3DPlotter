@@ -1,5 +1,8 @@
 package com.graphbuilder.math.func;
 
+import com.graphbuilder.math.Expression;
+import com.graphbuilder.math.FuncMap;
+
 /**
 The Function interface represents a function that takes a number of inputs
 and returns a value.  The number of inputs expected depends on the function.
@@ -22,5 +25,11 @@ public interface Function {
 	the function processes.
 	*/
 	public boolean acceptNumParam(int numParam);
+	
+	/**
+	 * Return the derivative as an Expression object
+	 */
+	
+	public Expression getDerivative(Expression inner, FuncMap f, String varName);
 
 }

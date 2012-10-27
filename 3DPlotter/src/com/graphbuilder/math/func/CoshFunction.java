@@ -1,9 +1,11 @@
 package com.graphbuilder.math.func;
 
+import com.graphbuilder.math.*;
+
 /**
 The hyperbolic cosine function.
 */
-public class CoshFunction implements Function {
+public class CoshFunction extends AbstractOneVariableFunction{
 
 	public CoshFunction() {}
 
@@ -24,5 +26,13 @@ public class CoshFunction implements Function {
 
 	public String toString() {
 		return "cosh(x)";
+	}
+	
+	@Override
+	public Expression getOuterDerivative(Expression innerFunction, FuncMap f, String varName) {
+		FuncNode sinh = new FuncNode("sinh", false);
+		sinh.add(innerFunction);
+		
+		return sinh;
 	}
 }
