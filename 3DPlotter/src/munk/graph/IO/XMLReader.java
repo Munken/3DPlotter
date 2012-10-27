@@ -21,7 +21,7 @@ public class XMLReader {
 	
 	private Document	dom;
 
-	public XMLReader(String path) {
+	public XMLReader(String path) throws IOException {
 		//get the factory
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
@@ -38,8 +38,6 @@ public class XMLReader {
 			pce.printStackTrace();
 		}catch(SAXException se) {
 			se.printStackTrace();
-		}catch(IOException ioe) {
-			ioe.printStackTrace();
 		}
 	}
 	
