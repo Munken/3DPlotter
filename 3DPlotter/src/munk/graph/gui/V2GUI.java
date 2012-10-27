@@ -412,7 +412,7 @@ public class V2GUI {
 		}
 	}
 	
-	private void exportFunctions() {
+	private void exportWorkspace() {
 		File outputFile = GuiUtil.spawnExportDialog(filePath, frame);
 		if(outputFile != null){		
 			XMLWriter writer = new XMLWriter();
@@ -425,7 +425,7 @@ public class V2GUI {
 		}
 	}
 
-	private void importFunctions() {
+	private void importWorkspace() {
 		File inputFile = GuiUtil.spawnImportDialog(filePath, frame);
 		if(inputFile != null){
 			filePath=inputFile.getPath().replace(inputFile.getName(), "");
@@ -495,7 +495,7 @@ public class V2GUI {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				exportFunctions();
+				exportWorkspace();
 			}
 		});
 		mnFile.add(mntmSaveProject);
@@ -507,7 +507,7 @@ public class V2GUI {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				importFunctions();
+				importWorkspace();
 			}
 		});
 		mnFile.add(mntmLoadProject);

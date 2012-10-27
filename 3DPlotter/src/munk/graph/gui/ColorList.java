@@ -21,12 +21,22 @@ public class ColorList extends ArrayList<Color3f> {
 	public ColorList(){
 		// Beware the file must be read before adding to the list. 
 		// Else overwrite will occur
-		XMLReader reader = new XMLReader("Files/colors.xml");
+			
+		readColorsFromXML(COLOR_PATH);
 		add(new Color3f(1, 0, 0)); 			//RED
 		
-		List<Color3f> list = reader.processColors();
-		for (Color3f c : list)
-			add(c);
+
+	}
+		
+	private void readColorsFromXML(String inputPath) {
+		try {
+			XMLReader reader = new XMLReader(inputPath);
+
+			List<Color3f> list = reader.processColors();
+			for (Color3f c : list)
+				this.add(c);
+		} catch(Exception e) {
+		}
 	}
 
 	/*
