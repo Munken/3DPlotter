@@ -1,6 +1,7 @@
 package munk.graph.IO;
 
-import java.io.*;
+import java.io.FileWriter;
+import java.util.List;
 
 import javax.vecmath.Color3f;
 import javax.xml.parsers.*;
@@ -33,6 +34,38 @@ public class XMLWriter {
 		} catch (ParserConfigurationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+	}
+	
+	public void output(String path) {
+		try {
+        /////////////////
+        //Output the XML
+
+        //set up a transformer
+        TransformerFactory transfac = TransformerFactory.newInstance();
+        transfac.setAttribute("indent-number", 2);
+        Transformer trans = transfac.newTransformer();
+        trans.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+        trans.setOutputProperty(OutputKeys.INDENT, "yes");
+
+        //create string from xml tree
+        FileWriter writer = new FileWriter(path);
+        StreamResult result = new StreamResult(writer);
+        DOMSource source = new DOMSource(doc);
+        trans.transform(source, result);
+		}
+		catch (Exception e) {
+			
+		}
+	}
+	
+	public void addFunctions(List<Function> functions) {
+		for (Function function : functions) {
+			if (function.getClass() == XYZFunction.class)
+				addStdFunction((XYZFunction) function);
+			else
+				addParametricFunction((ParametricFunction) function);
 		}
 	}
 	
@@ -72,30 +105,6 @@ public class XMLWriter {
 		
 		
 		root.appendChild(function);
-	}
-
-	
-	public void output(String path) {
-		try {
-        /////////////////
-        //Output the XML
-
-        //set up a transformer
-        TransformerFactory transfac = TransformerFactory.newInstance();
-        transfac.setAttribute("indent-number", 2);
-        Transformer trans = transfac.newTransformer();
-        trans.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-        trans.setOutputProperty(OutputKeys.INDENT, "yes");
-
-        //create string from xml tree
-        FileWriter writer = new FileWriter(path);
-        StreamResult result = new StreamResult(writer);
-        DOMSource source = new DOMSource(doc);
-        trans.transform(source, result);
-		}
-		catch (Exception e) {
-			
-		}
 	}
 
 	
