@@ -85,4 +85,10 @@ public class ParametricFunction extends AbstractFunction {
 		Arrays.sort(varNames);
 		return varNames;
 	}
+	
+	@Override
+	public String toString() {
+		String[] expressions = getExpression();
+		return "x = " + expressions[0] + ", y = " + expressions[1] + ", z = " + expressions[2];  
+	}
 }
