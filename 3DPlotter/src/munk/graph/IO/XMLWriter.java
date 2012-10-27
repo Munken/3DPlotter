@@ -1,7 +1,6 @@
 package munk.graph.IO;
 
-import java.io.File;
-import java.io.StringWriter;
+import java.io.*;
 
 import javax.vecmath.Color3f;
 import javax.xml.parsers.*;
@@ -19,6 +18,7 @@ public class XMLWriter {
 	private Document doc;
 	private Element root;
 	private static final String[] AXES = {"x", "y", "z"};
+	private static final String[] PARAMETERS = {"t", "u"};
 	
 	public XMLWriter() {
 		try {
@@ -88,7 +88,8 @@ public class XMLWriter {
         trans.setOutputProperty(OutputKeys.INDENT, "yes");
 
         //create string from xml tree
-        StreamResult result = new StreamResult(new File("C:/file.xml"));
+        FileWriter writer = new FileWriter(path);
+        StreamResult result = new StreamResult(writer);
         DOMSource source = new DOMSource(doc);
         trans.transform(source, result);
 		}
@@ -126,7 +127,7 @@ public class XMLWriter {
 		String[] functionBounds = output.getBoundsString();
 		float[] stepsizes = output.getStepsize();
 		for (int i = 0; i < stepsizes.length; i++) {
-			String variable = "v" + i;
+			String variable = PARAMETERS[i];
 			
 			bounds.appendChild(createBound(variable, functionBounds[2*i], functionBounds[2*i+1]));
 			stepsize.appendChild(createStepsize(variable, stepsizes[i]));
