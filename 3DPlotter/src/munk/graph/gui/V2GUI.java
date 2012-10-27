@@ -293,28 +293,43 @@ public class V2GUI {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if(e.getID() == 0){
-					colorList.add((Color3f) e.getSource());
-					stdFuncTab.updateColors();
-					paramFuncTab.updateColors();
-					sphFuncTab.updateColors();
+					addColor((Color3f) e.getSource());
 				}
 				else if(e.getID() == 1){
 					if((int) e.getSource() >= 0){
-					colorList.remove((int) e.getSource());
-					stdFuncTab.updateColors();
-					paramFuncTab.updateColors();
-					sphFuncTab.updateColors();
+					removeColor((int) e.getSource());
 					}
 				}
 				else{
 					colorDialog.setVisible(false);
 				}
 			}
+
+			
 		});
 		colorDialog.getContentPane().add(colorOptionPanel);
 		colorDialog.pack();
 		}
 		colorDialog.setVisible(true);
+	}
+	
+	
+	
+	
+	private void addColor(Color3f color) {
+		colorList.add(color);
+		updateColorChooser();
+	}
+	
+	private void removeColor(int index) {
+		colorList.remove(index);
+		updateColorChooser();
+	}
+
+	private void updateColorChooser() {
+		stdFuncTab.updateColors();
+		paramFuncTab.updateColors();
+		sphFuncTab.updateColors();
 	}
 	
 	private void savePlotToDisk(final File outputFile) {
@@ -347,6 +362,54 @@ public class V2GUI {
 				JOptionPane.showMessageDialog(frame, message);
 			}
 		});
+	}
+	
+	private void saveAsImage() {
+		String[][] fileEndings = {{"png"}, {"jpg", "jpeg"}, {"gif"}, {"bmp"}};
+		String[] description = {"PNG image", "JPEG image", "GIF image", "Bitmap graphic"};
+		
+		File outputFile = GuiUtil.spawnExportDialog(filePath, fileEndings, description, frame);
+		if(outputFile != null){
+			filePath=outputFile.getPath().replace(outputFile.getName(), "");
+
+			savePlotToDisk(outputFile);
+			
+		}
+	}
+	
+	private void exportColors() {
+		File outputFile = GuiUtil.spawnExportDialog(filePath, frame);
+		if(outputFile != null){
+			filePath=outputFile.getPath().replace(outputFile.getName(), "");
+			try {
+				XMLWriter writer = new XMLWriter();
+				
+				writer.addColor(colorList);
+				writer.output(outputFile.getAbsolutePath());
+			} catch (Exception e) {
+				e.printStackTrace();
+				JOptionPane.showMessageDialog(frame,new JLabel("Unable to write file.",JLabel.CENTER));
+			}
+		}
+	}
+	
+	private void importColors() {
+		File inputFile = GuiUtil.spawnImportDialog(filePath, frame);
+		if(inputFile != null){
+			filePath=inputFile.getPath().replace(inputFile.getName(), "");
+			try{
+				XMLReader reader = new XMLReader(inputFile.getAbsolutePath());
+				
+				java.util.List<Color3f> list = reader.processColors();
+				for (Color3f color : list) {
+					colorList.add(color);
+				}
+				updateColorChooser();
+			}
+			catch(Exception e){
+				JOptionPane.showMessageDialog(frame,new JLabel("Unable to read color list from file.",JLabel.CENTER));
+			}
+		}
 	}
 	
 	private void exportFunctions() {
@@ -457,19 +520,6 @@ public class V2GUI {
 			public void actionPerformed(ActionEvent arg0) {
 				saveAsImage();
 			}
-
-			private void saveAsImage() {
-				String[][] fileEndings = {{"png"}, {"jpg", "jpeg"}, {"gif"}, {"bmp"}};
-				String[] description = {"PNG image", "JPEG image", "GIF image", "Bitmap graphic"};
-				
-				File outputFile = GuiUtil.spawnExportDialog(filePath, fileEndings, description, frame);
-				if(outputFile != null){
-					filePath=outputFile.getPath().replace(outputFile.getName(), "");
-
-					savePlotToDisk(outputFile);
-					
-				}
-			}
 		});
 		mnFile.add(mntmPrintCanvas);
 		
@@ -487,21 +537,13 @@ public class V2GUI {
 		
 		mnColorOptions = new JMenu("Color Options");
 		menuBar.add(mnColorOptions);
-		
+
 		mntmExportColors = new JMenuItem("Export colors", new ImageIcon("Icons/save.png"));
 		mntmExportColors.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				File outputFile = GuiUtil.spawnExportDialog(filePath, frame);
-				if(outputFile != null){
-				filePath=outputFile.getPath().replace(outputFile.getName(), "");
-				try {
-					ObjectWriter.ObjectToFile(outputFile,colorList);
-				} catch (IOException e) {
-					JOptionPane.showMessageDialog(frame,new JLabel("Unable to write file.",JLabel.CENTER));
-				}
-				}
+				exportColors();
 			}
 		});
 		mnColorOptions.add(mntmExportColors);
@@ -511,16 +553,7 @@ public class V2GUI {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				File inputFile = GuiUtil.spawnImportDialog(filePath, frame);
-				if(inputFile != null){
-					filePath=inputFile.getPath().replace(inputFile.getName(), "");
-					try{
-						colorList = (ColorList) ObjectReader.ObjectFromFile(inputFile);
-					}
-					catch(IOException | ClassCastException | ClassNotFoundException e){
-						JOptionPane.showMessageDialog(frame,new JLabel("Unable to read color list from file.",JLabel.CENTER));
-					}
-				}
+				importColors();
 			}
 		});
 		mnColorOptions.add(mntmImportColors);

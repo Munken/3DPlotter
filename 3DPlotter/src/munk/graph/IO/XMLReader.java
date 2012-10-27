@@ -65,6 +65,15 @@ public class XMLReader {
 		}
 		return functions;
 	}
+	
+	public List<Color3f> processColors() {
+		NodeList list = dom.getElementsByTagName("color");
+		
+		if (list != null && list.getLength() > 0) {
+			return getColor(list);
+		}
+		return new ArrayList<Color3f>();
+	}
 
 	private XYZFunction addStdFunction(Element el) throws IllegalExpressionException {
 		Color3f color = getColor(el);
@@ -88,13 +97,32 @@ public class XMLReader {
 		Element el = (Element) function.getElementsByTagName("color").item(0);
 		
 		String rgbString = el.getAttribute("rgb");
+		float[] values = getColor(rgbString);
+		return new Color3f(values);
+	}
+	
+	private List<Color3f> getColor(NodeList nl) {
+		List<Color3f> list = new ArrayList<Color3f>(nl.getLength());
+		
+		for (int i = 0; i < nl.getLength(); i++) {
+			Node n = nl.item(i);
+			if (n.getNodeType() == Node.ELEMENT_NODE) {
+				Element e = (Element) n;
+				String rgb = e.getAttribute("rgb");
+				list.add(new Color3f(getColor(rgb)));
+			}
+		}
+		return list;
+	}
+
+	private float[] getColor(String rgbString) {
 		String[] stringValues = rgbString.split(",");
 		float[] values = new float[3];
 		
 		for (int i = 0; i < values.length; i++) {
 			values[i] = Float.valueOf(stringValues[i]);
 		}
-		return new Color3f(values);
+		return values;
 	}
 	
 	private String[] getStdEquations(Element el) {

@@ -69,7 +69,7 @@ public class XMLWriter {
 	}
 	
 	public void addColor(Color3f color) {
-		doc.appendChild(createColor(color));
+		root.appendChild(createColor(color));
 	}
 	
 	public void addColor(List<Color3f> colors) {
