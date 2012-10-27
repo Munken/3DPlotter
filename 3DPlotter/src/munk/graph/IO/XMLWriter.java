@@ -1,6 +1,7 @@
 package munk.graph.IO;
 
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
 
 import javax.vecmath.Color3f;
@@ -38,10 +39,9 @@ public class XMLWriter {
 	}
 	
 	public void output(String path) {
-		try {
         /////////////////
         //Output the XML
-
+        try {
         //set up a transformer
         TransformerFactory transfac = TransformerFactory.newInstance();
         transfac.setAttribute("indent-number", 2);
@@ -54,9 +54,9 @@ public class XMLWriter {
         StreamResult result = new StreamResult(writer);
         DOMSource source = new DOMSource(doc);
         trans.transform(source, result);
-		}
-		catch (Exception e) {
-			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	
@@ -74,7 +74,7 @@ public class XMLWriter {
 		function.setAttribute("type", "std");
 
 		// Append formular
-		Element formular = doc.createElement("equation");
+		Element formular = doc.createElement("equations");
 		function.appendChild(formular);
 		
 		// Append equations

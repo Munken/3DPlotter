@@ -21,7 +21,7 @@ public class XMLReader {
 	
 	private Document	dom;
 
-	public XMLReader() {
+	public XMLReader(String path) {
 		//get the factory
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
@@ -30,7 +30,7 @@ public class XMLReader {
 			//Using factory get an instance of document builder
 			DocumentBuilder db = dbf.newDocumentBuilder();
 
-			dom = db.parse(new File("C:/file.xml"));
+			dom = db.parse(new File(path));
 			dom.normalize();
 
 

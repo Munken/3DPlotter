@@ -12,8 +12,7 @@ import javax.swing.*;
 import javax.vecmath.Color3f;
 
 import munk.emesp.exceptions.IllegalExpressionException;
-import munk.graph.IO.ObjectReader;
-import munk.graph.IO.ObjectWriter;
+import munk.graph.IO.*;
 import munk.graph.appearance.Colors;
 import munk.graph.function.*;
 import munk.graph.function.implicit.ImplicitFunction;
@@ -349,6 +348,19 @@ public class V2GUI {
 			}
 		});
 	}
+	
+	private void exportFunctions() {
+		File outputFile = GuiUtil.spawnExportDialog(filePath, frame);
+		if(outputFile != null){		
+			XMLWriter writer = new XMLWriter();
+			
+			writer.addFunctions(stdFuncTab.getFunctionList());
+			writer.addFunctions(paramFuncTab.getFunctionList());
+			writer.output(outputFile.getAbsolutePath());
+			
+			filePath=outputFile.getPath().replace(outputFile.getName(), "");
+		}
+	}
 
 	private void importFunctions() {
 		File inputFile = GuiUtil.spawnImportDialog(filePath, frame);
@@ -415,15 +427,7 @@ public class V2GUI {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				File outputFile = GuiUtil.spawnExportDialog(filePath, frame);
-				if(outputFile != null){
-				filePath=outputFile.getPath().replace(outputFile.getName(), "");
-				try {
-					ObjectWriter.ObjectToFile(outputFile, new ZippedFunction[][]{FunctionUtil.zipFunctionList(stdFuncTab.getFunctionList()),FunctionUtil.zipFunctionList(paramFuncTab.getFunctionList()),FunctionUtil.zipFunctionList(sphFuncTab.getFunctionList())});
-				} catch (IOException e) {
-					JOptionPane.showMessageDialog(frame,new JLabel("Unable to write file.",JLabel.CENTER));
-				}
-				}
+				exportFunctions();
 			}
 		});
 		mnFile.add(mntmSaveProject);
