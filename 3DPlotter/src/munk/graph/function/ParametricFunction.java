@@ -58,11 +58,6 @@ public class ParametricFunction extends AbstractFunction {
 		}
 	}
 	
-	@Override
-	public String toString() {
-		return "Parametric " + super.toString();
-	}
-	
 	private static String[] variableNames (String[] expressions) throws ExpressionParseException {
 		Set<String> variables = new HashSet<String>();
 		

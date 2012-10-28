@@ -419,6 +419,7 @@ public class V2GUI {
 			
 			writer.addFunctions(stdFuncTab.getFunctionList());
 			writer.addFunctions(paramFuncTab.getFunctionList());
+			writer.addColor(colorList);
 			writer.output(outputFile.getAbsolutePath());
 			
 			filePath=outputFile.getPath().replace(outputFile.getName(), "");
@@ -449,6 +450,15 @@ public class V2GUI {
 					
 					colorList.add(f.getColor());
 				}
+				
+				java.util.List<Color3f> colors = reader.processColors();
+				
+				for (Color3f c : colors) {
+					System.out.println(c);
+					colorList.add(c);
+				}
+				
+				updateColorChooser();
 			}
 			catch(Exception ex){
 				JOptionPane.showMessageDialog(frame,new JLabel("Unable to import workspace from file.",JLabel.CENTER));

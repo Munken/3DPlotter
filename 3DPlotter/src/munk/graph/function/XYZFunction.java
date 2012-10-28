@@ -19,6 +19,6 @@ public class XYZFunction extends AbstractFunction {
 	
 	@Override
 	public String toString() {
-		return "XYZ: " + super.toString();
+		return getExpression()[0];
 	}
 }
