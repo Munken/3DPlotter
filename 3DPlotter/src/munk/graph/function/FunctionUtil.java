@@ -7,11 +7,8 @@ import java.util.regex.Pattern;
 import javax.media.j3d.*;
 import javax.vecmath.Color3f;
 
-import munk.emesp.exceptions.IllegalExpressionException;
+import munk.emesp.exceptions.*;
 import munk.graph.function.implicit.ImplicitSlowFunction;
-
-import com.graphbuilder.math.ExpressionParseException;
-import com.graphbuilder.math.UndefinedVariableException;
 
 public class FunctionUtil {
 
